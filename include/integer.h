@@ -40,6 +40,11 @@ public:
         return *this;
     }
 
+    friend sized_integer<N> operator+(sized_integer<N> lhs, const sized_integer<N>& rhs) {
+        lhs += rhs;
+        return lhs;
+    }
+
 protected:
     virtual std::uint64_t* get_buf() override {
         return buf;
