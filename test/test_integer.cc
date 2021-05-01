@@ -24,4 +24,17 @@ BOOST_AUTO_TEST_CASE(given_initial_value)
     BOOST_TEST(static_cast<std::string>(n) == "123");
 }
 
+BOOST_AUTO_TEST_CASE(add)
+{
+    const uint64_t init_value1[] = {10};
+    bitwise_integer<64> n1(init_value1);
+
+    const uint64_t init_value2[] = {3};
+    bitwise_integer<64> n2(init_value2);
+
+    n1 += n2;
+    BOOST_TEST(n1.ref_buf()[0] == 13);
+    BOOST_TEST(n2.ref_buf()[0] == 3);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

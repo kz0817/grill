@@ -8,6 +8,7 @@ public:
     virtual std::size_t num_buf() const = 0;
     virtual const std::uint64_t* ref_buf() const = 0;
     operator std::string() const;
+    void add(const integer& n);
 
 protected:
     virtual std::uint64_t* get_buf() = 0;
@@ -32,6 +33,11 @@ public:
 
     const std::uint64_t* ref_buf() const override {
         return buf;
+    }
+
+    sized_integer<N>& operator+=(const sized_integer<N>& n) {
+        add(n);
+        return *this;
     }
 
 protected:
