@@ -21,3 +21,10 @@ void integer::sub(const integer& n) {
 
     get_buf()[0] -= n.ref_buf()[0];
 }
+
+void integer::mul(const integer& n) {
+    if (num_buf() != 1)
+        throw std::logic_error("Not implmented yet");
+
+    get_buf()[0] *= n.ref_buf()[0];
+}
