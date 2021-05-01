@@ -14,14 +14,14 @@ protected:
 };
 
 template<std::size_t N>
-class size_settable_integer : public integer {
+class sized_integer : public integer {
 public:
-    size_settable_integer() {
+    sized_integer() {
         for (std::size_t i = 0; i < N; i++)
             buf[i] = 0;
     }
 
-    size_settable_integer(const std::uint64_t src[N]) {
+    sized_integer(const std::uint64_t src[N]) {
         for (std::size_t i = 0; i < N; i++)
             buf[i] = src[i];
     }
@@ -44,12 +44,12 @@ private:
 };
 
 template<std::size_t N>
-class bitwise_integer : public size_settable_integer<N/64> {
+class bitwise_integer : public sized_integer<N/64> {
 public:
     bitwise_integer() {
     }
 
     bitwise_integer(const std::uint64_t src[N])
-    : size_settable_integer<N/64>(src) {
+    : sized_integer<N/64>(src) {
     }
 };
