@@ -21,3 +21,5 @@ missing
 **/.libs
 *.la
 *.lo
+*.o
+test/test-runner

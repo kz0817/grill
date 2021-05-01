@@ -13,5 +13,6 @@ CXXFLAGS="$CXXFLASG -I \${top_srcdir}/include -Wall -g3 -std=c++2a"
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+  test/Makefile
 ])
 AC_OUTPUT
