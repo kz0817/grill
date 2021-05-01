@@ -5,8 +5,8 @@
 
 class integer {
 public:
-    virtual std::size_t num_buf() const = 0;
-    virtual const std::uint64_t* ref_buf() const = 0;
+    virtual std::size_t num_chunks() const = 0;
+    virtual const std::uint64_t* ref_chunks() const = 0;
     operator std::string() const;
     void add(const integer& n);
     void sub(const integer& n);
@@ -15,7 +15,7 @@ public:
     void mod(const integer& n);
 
 protected:
-    virtual std::uint64_t* get_buf() = 0;
+    virtual std::uint64_t* get_chunks() = 0;
 };
 
 template<std::size_t N>
@@ -23,20 +23,20 @@ class sized_integer : public integer {
 public:
     sized_integer() {
         for (std::size_t i = 0; i < N; i++)
-            buf[i] = 0;
+            chunks[i] = 0;
     }
 
     sized_integer(const std::uint64_t src[N]) {
         for (std::size_t i = 0; i < N; i++)
-            buf[i] = src[i];
+            chunks[i] = src[i];
     }
 
-    std::size_t num_buf() const {
+    std::size_t num_chunks() const {
         return N;
     }
 
-    const std::uint64_t* ref_buf() const override {
-        return buf;
+    const std::uint64_t* ref_chunks() const override {
+        return chunks;
     }
 
     sized_integer<N>& operator+=(const sized_integer<N>& n) {
@@ -90,12 +90,12 @@ public:
     }
 
 protected:
-    virtual std::uint64_t* get_buf() override {
-        return buf;
+    virtual std::uint64_t* get_chunks() override {
+        return chunks;
     }
 
 private:
-    std::uint64_t buf[N];
+    std::uint64_t chunks[N];
 };
 
 template<std::size_t N>

@@ -6,13 +6,13 @@ BOOST_AUTO_TEST_SUITE(test_suite_long_integer)
 BOOST_AUTO_TEST_CASE(get_bytes)
 {
     bitwise_integer<64> n;
-    BOOST_TEST(n.num_buf() == 1);
+    BOOST_TEST(n.num_chunks() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(initial_value)
 {
     bitwise_integer<64> n;
-    BOOST_TEST(n.ref_buf()[0] == 0);
+    BOOST_TEST(n.ref_chunks()[0] == 0);
     BOOST_TEST(static_cast<std::string>(n) == "0");
 }
 
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(given_initial_value)
 {
     const uint64_t init_value[] = {123};
     bitwise_integer<64> n(init_value);
-    BOOST_TEST(n.ref_buf()[0] == 123);
+    BOOST_TEST(n.ref_chunks()[0] == 123);
     BOOST_TEST(static_cast<std::string>(n) == "123");
 }
 
@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE(add)
     bitwise_integer<64> n2(init_value2);
 
     n1 += n2;
-    BOOST_TEST(n1.ref_buf()[0] == 13);
-    BOOST_TEST(n2.ref_buf()[0] == 3);
+    BOOST_TEST(n1.ref_chunks()[0] == 13);
+    BOOST_TEST(n2.ref_chunks()[0] == 3);
 }
 
 BOOST_AUTO_TEST_CASE(add_binary_operator)
@@ -46,9 +46,9 @@ BOOST_AUTO_TEST_CASE(add_binary_operator)
     bitwise_integer<64> n2(init_value2);
 
     const auto n = n1 + n2;
-    BOOST_TEST(n1.ref_buf()[0] == 10);
-    BOOST_TEST(n2.ref_buf()[0] == 3);
-    BOOST_TEST(n.ref_buf()[0] == 13);
+    BOOST_TEST(n1.ref_chunks()[0] == 10);
+    BOOST_TEST(n2.ref_chunks()[0] == 3);
+    BOOST_TEST(n.ref_chunks()[0] == 13);
 }
 
 BOOST_AUTO_TEST_CASE(sub)
@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE(sub)
     bitwise_integer<64> n2(init_value2);
 
     n1 -= n2;
-    BOOST_TEST(n1.ref_buf()[0] == 7);
-    BOOST_TEST(n2.ref_buf()[0] == 3);
+    BOOST_TEST(n1.ref_chunks()[0] == 7);
+    BOOST_TEST(n2.ref_chunks()[0] == 3);
 }
 
 BOOST_AUTO_TEST_CASE(sub_binary_opreator)
@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE(sub_binary_opreator)
     bitwise_integer<64> n2(init_value2);
 
     const auto n = n1 - n2;
-    BOOST_TEST(n1.ref_buf()[0] == 10);
-    BOOST_TEST(n2.ref_buf()[0] == 3);
-    BOOST_TEST(n.ref_buf()[0] == 7);
+    BOOST_TEST(n1.ref_chunks()[0] == 10);
+    BOOST_TEST(n2.ref_chunks()[0] == 3);
+    BOOST_TEST(n.ref_chunks()[0] == 7);
 }
 
 BOOST_AUTO_TEST_CASE(mul)
@@ -87,8 +87,8 @@ BOOST_AUTO_TEST_CASE(mul)
     bitwise_integer<64> n2(init_value2);
 
     n1 *= n2;
-    BOOST_TEST(n1.ref_buf()[0] == 30);
-    BOOST_TEST(n2.ref_buf()[0] == 3);
+    BOOST_TEST(n1.ref_chunks()[0] == 30);
+    BOOST_TEST(n2.ref_chunks()[0] == 3);
 }
 
 BOOST_AUTO_TEST_CASE(mul_binary_opreator)
@@ -100,9 +100,9 @@ BOOST_AUTO_TEST_CASE(mul_binary_opreator)
     bitwise_integer<64> n2(init_value2);
 
     const auto n = n1 * n2;
-    BOOST_TEST(n1.ref_buf()[0] == 10);
-    BOOST_TEST(n2.ref_buf()[0] == 3);
-    BOOST_TEST(n.ref_buf()[0] == 30);
+    BOOST_TEST(n1.ref_chunks()[0] == 10);
+    BOOST_TEST(n2.ref_chunks()[0] == 3);
+    BOOST_TEST(n.ref_chunks()[0] == 30);
 }
 
 BOOST_AUTO_TEST_CASE(div)
@@ -114,8 +114,8 @@ BOOST_AUTO_TEST_CASE(div)
     bitwise_integer<64> n2(init_value2);
 
     n1 /= n2;
-    BOOST_TEST(n1.ref_buf()[0] == 2);
-    BOOST_TEST(n2.ref_buf()[0] == 4);
+    BOOST_TEST(n1.ref_chunks()[0] == 2);
+    BOOST_TEST(n2.ref_chunks()[0] == 4);
 }
 
 BOOST_AUTO_TEST_CASE(div_binary_opreator)
@@ -127,9 +127,9 @@ BOOST_AUTO_TEST_CASE(div_binary_opreator)
     bitwise_integer<64> n2(init_value2);
 
     const auto n = n1 / n2;
-    BOOST_TEST(n1.ref_buf()[0] == 11);
-    BOOST_TEST(n2.ref_buf()[0] == 4);
-    BOOST_TEST(n.ref_buf()[0] == 2);
+    BOOST_TEST(n1.ref_chunks()[0] == 11);
+    BOOST_TEST(n2.ref_chunks()[0] == 4);
+    BOOST_TEST(n.ref_chunks()[0] == 2);
 }
 
 BOOST_AUTO_TEST_CASE(mod)
@@ -141,8 +141,8 @@ BOOST_AUTO_TEST_CASE(mod)
     bitwise_integer<64> n2(init_value2);
 
     n1 %= n2;
-    BOOST_TEST(n1.ref_buf()[0] == 3);
-    BOOST_TEST(n2.ref_buf()[0] == 4);
+    BOOST_TEST(n1.ref_chunks()[0] == 3);
+    BOOST_TEST(n2.ref_chunks()[0] == 4);
 }
 
 BOOST_AUTO_TEST_CASE(mod_binary_opreator)
@@ -154,9 +154,9 @@ BOOST_AUTO_TEST_CASE(mod_binary_opreator)
     bitwise_integer<64> n2(init_value2);
 
     const auto n = n1 % n2;
-    BOOST_TEST(n1.ref_buf()[0] == 11);
-    BOOST_TEST(n2.ref_buf()[0] == 4);
-    BOOST_TEST(n.ref_buf()[0] == 3);
+    BOOST_TEST(n1.ref_chunks()[0] == 11);
+    BOOST_TEST(n2.ref_chunks()[0] == 4);
+    BOOST_TEST(n.ref_chunks()[0] == 3);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
