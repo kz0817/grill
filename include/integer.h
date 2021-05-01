@@ -21,6 +21,11 @@ public:
             buf[i] = 0;
     }
 
+    size_settable_integer(const std::uint64_t src[N]) {
+        for (std::size_t i = 0; i < N; i++)
+            buf[i] = src[i];
+    }
+
     std::size_t num_buf() const {
         return N;
     }
@@ -40,4 +45,11 @@ private:
 
 template<std::size_t N>
 class bitwise_integer : public size_settable_integer<N/64> {
+public:
+    bitwise_integer() {
+    }
+
+    bitwise_integer(const std::uint64_t src[N])
+    : size_settable_integer<N/64>(src) {
+    }
 };
