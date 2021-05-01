@@ -12,6 +12,7 @@ public:
     void sub(const integer& n);
     void mul(const integer& n);
     void div(const integer& n);
+    void mod(const integer& n);
 
 protected:
     virtual std::uint64_t* get_buf() = 0;
@@ -75,6 +76,16 @@ public:
 
     friend sized_integer<N> operator/(sized_integer<N> lhs, const sized_integer<N>& rhs) {
         lhs /= rhs;
+        return lhs;
+    }
+
+    sized_integer<N>& operator%=(const sized_integer<N>& n) {
+        mod(n);
+        return *this;
+    }
+
+    friend sized_integer<N> operator%(sized_integer<N> lhs, const sized_integer<N>& rhs) {
+        lhs %= rhs;
         return lhs;
     }
 

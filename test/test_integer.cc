@@ -132,4 +132,31 @@ BOOST_AUTO_TEST_CASE(div_binary_opreator)
     BOOST_TEST(n.ref_buf()[0] == 2);
 }
 
+BOOST_AUTO_TEST_CASE(mod)
+{
+    const uint64_t init_value1[] = {11};
+    bitwise_integer<64> n1(init_value1);
+
+    const uint64_t init_value2[] = {4};
+    bitwise_integer<64> n2(init_value2);
+
+    n1 %= n2;
+    BOOST_TEST(n1.ref_buf()[0] == 3);
+    BOOST_TEST(n2.ref_buf()[0] == 4);
+}
+
+BOOST_AUTO_TEST_CASE(mod_binary_opreator)
+{
+    const uint64_t init_value1[] = {11};
+    bitwise_integer<64> n1(init_value1);
+
+    const uint64_t init_value2[] = {4};
+    bitwise_integer<64> n2(init_value2);
+
+    const auto n = n1 % n2;
+    BOOST_TEST(n1.ref_buf()[0] == 11);
+    BOOST_TEST(n2.ref_buf()[0] == 4);
+    BOOST_TEST(n.ref_buf()[0] == 3);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
