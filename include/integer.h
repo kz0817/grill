@@ -19,14 +19,14 @@ protected:
 };
 
 template<std::size_t N>
-class sized_integer : public integer {
+class scalable_int : public integer {
 public:
-    sized_integer() {
+    scalable_int() {
         for (std::size_t i = 0; i < N; i++)
             chunks[i] = 0;
     }
 
-    sized_integer(const std::uint64_t src[N]) {
+    scalable_int(const std::uint64_t src[N]) {
         for (std::size_t i = 0; i < N; i++)
             chunks[i] = src[i];
     }
@@ -39,52 +39,52 @@ public:
         return chunks;
     }
 
-    sized_integer<N>& operator+=(const sized_integer<N>& n) {
+    scalable_int<N>& operator+=(const scalable_int<N>& n) {
         add(n);
         return *this;
     }
 
-    friend sized_integer<N> operator+(sized_integer<N> lhs, const sized_integer<N>& rhs) {
+    friend scalable_int<N> operator+(scalable_int<N> lhs, const scalable_int<N>& rhs) {
         lhs += rhs;
         return lhs;
     }
 
-    sized_integer<N>& operator-=(const sized_integer<N>& n) {
+    scalable_int<N>& operator-=(const scalable_int<N>& n) {
         sub(n);
         return *this;
     }
 
-    friend sized_integer<N> operator-(sized_integer<N> lhs, const sized_integer<N>& rhs) {
+    friend scalable_int<N> operator-(scalable_int<N> lhs, const scalable_int<N>& rhs) {
         lhs -= rhs;
         return lhs;
     }
 
-    sized_integer<N>& operator*=(const sized_integer<N>& n) {
+    scalable_int<N>& operator*=(const scalable_int<N>& n) {
         mul(n);
         return *this;
     }
 
-    friend sized_integer<N> operator*(sized_integer<N> lhs, const sized_integer<N>& rhs) {
+    friend scalable_int<N> operator*(scalable_int<N> lhs, const scalable_int<N>& rhs) {
         lhs *= rhs;
         return lhs;
     }
 
-    sized_integer<N>& operator/=(const sized_integer<N>& n) {
+    scalable_int<N>& operator/=(const scalable_int<N>& n) {
         div(n);
         return *this;
     }
 
-    friend sized_integer<N> operator/(sized_integer<N> lhs, const sized_integer<N>& rhs) {
+    friend scalable_int<N> operator/(scalable_int<N> lhs, const scalable_int<N>& rhs) {
         lhs /= rhs;
         return lhs;
     }
 
-    sized_integer<N>& operator%=(const sized_integer<N>& n) {
+    scalable_int<N>& operator%=(const scalable_int<N>& n) {
         mod(n);
         return *this;
     }
 
-    friend sized_integer<N> operator%(sized_integer<N> lhs, const sized_integer<N>& rhs) {
+    friend scalable_int<N> operator%(scalable_int<N> lhs, const scalable_int<N>& rhs) {
         lhs %= rhs;
         return lhs;
     }
@@ -99,12 +99,12 @@ private:
 };
 
 template<std::size_t N>
-class bitwise_integer : public sized_integer<N/64> {
+class bitwise_integer : public scalable_int<N/64> {
 public:
     bitwise_integer() {
     }
 
     bitwise_integer(const std::uint64_t src[N])
-    : sized_integer<N/64>(src) {
+    : scalable_int<N/64>(src) {
     }
 };
