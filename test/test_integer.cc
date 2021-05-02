@@ -24,6 +24,13 @@ BOOST_AUTO_TEST_CASE(given_initial_value)
     BOOST_TEST(static_cast<std::string>(n) == "123");
 }
 
+BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list)
+{
+    bitwise_integer<64> n({123});
+    BOOST_TEST(n.ref_chunks()[0] == 123);
+    BOOST_TEST(static_cast<std::string>(n) == "123");
+}
+
 BOOST_AUTO_TEST_CASE(add)
 {
     const uint64_t init_value1[] = {10};

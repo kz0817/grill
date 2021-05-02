@@ -31,6 +31,18 @@ public:
             chunks[i] = src[i];
     }
 
+    scalable_int(const std::initializer_list<uint64_t> src) {
+        const size_t num_args = src.size();
+        assert (num_args <= num_chunks());
+
+        const size_t num_zero_chunks = N - num_args;
+        for (std::size_t i = 0; i < num_zero_chunks; i++)
+            chunks[i] = 0;
+
+        for (std::size_t i = 0; i < num_args; i++)
+            chunks[num_zero_chunks + i] = src.begin()[i];
+    }
+
     std::size_t num_chunks() const {
         return N;
     }
@@ -105,6 +117,10 @@ public:
     }
 
     bitwise_integer(const std::uint64_t src[N])
+    : scalable_int<N/64>(src) {
+    }
+
+    bitwise_integer(const std::initializer_list<uint64_t>& src)
     : scalable_int<N/64>(src) {
     }
 };
