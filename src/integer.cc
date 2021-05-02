@@ -8,6 +8,11 @@ integer::operator std::string() const {
     return std::to_string(ref_chunks()[0]);
 }
 
+std::ostream& operator<<(std::ostream& os, const integer& data) {
+    os << static_cast<std::string>(data);
+    return os;
+}
+
 void integer::add(const integer& n) {
     if (num_chunks() != 1)
         throw std::logic_error("Not implmented yet");

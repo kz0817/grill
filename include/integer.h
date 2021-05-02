@@ -8,6 +8,8 @@ public:
     virtual std::size_t num_chunks() const = 0;
     virtual const std::uint64_t* ref_chunks() const = 0;
     operator std::string() const;
+    friend std::ostream& operator<<(std::ostream& os, const integer& data);
+
     void add(const integer& n);
     void sub(const integer& n);
     void mul(const integer& n);
