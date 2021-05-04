@@ -31,11 +31,36 @@ BOOST_AUTO_TEST_CASE(given_initial_value)
     BOOST_TEST(static_cast<std::string>(n) == "123");
 }
 
+BOOST_AUTO_TEST_CASE(given_initial_value_many_blocks)
+{
+    const uint64_t init_value[] = {1, 2, 3, 4};
+    wide_int<256> n(init_value);
+    const integer::block_t expected[] = {4, 3, 2, 1};
+    const integer::block_t* ref = n.ref_blocks();
+    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
+}
+
 BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list)
 {
     wide_int<64> n({123});
     BOOST_TEST(n.ref_blocks()[0] == 123);
     BOOST_TEST(static_cast<std::string>(n) == "123");
+}
+
+BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list_with_mutiple_data)
+{
+    wide_int<256> n({1, 2, 3});
+    const integer::block_t expected[] = {3, 2, 1, 0};
+    const integer::block_t* ref = n.ref_blocks();
+    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
+}
+
+BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list_with_full_data)
+{
+    wide_int<256> n({1, 2, 3, 4});
+    const integer::block_t expected[] = {4, 3, 2, 1};
+    const integer::block_t* ref = n.ref_blocks();
+    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
 }
 
 BOOST_AUTO_TEST_CASE(copy_constructor)

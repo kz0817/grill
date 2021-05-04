@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <cassert>
 
 
 class integer {
@@ -43,7 +44,7 @@ protected:
 
 private:
     std::size_t num_blocks;
-    block_t* blocks;
+    block_t* blocks; // Least significant block first
     bool blocks_owner;
 };
 
@@ -57,19 +58,20 @@ public:
     scalable_int(const block_t src[N])
     : integer(N, blocks) {
         for (std::size_t i = 0; i < N; i++)
-            blocks[i] = src[i];
+            blocks[i] = src[N-i-1];
     }
 
-    scalable_int(const std::initializer_list<block_t> src)
+    scalable_int(const std::initializer_list<block_t>& src)
     : integer(N, blocks) {
-        const size_t num_args = src.size();
+        const std::size_t num_args = src.size();
+        assert(num_args <= N);
+        int idx = num_args - 1;
+        for (const block_t& v: src)
+            blocks[idx--] = v;
 
-        const size_t num_zero_blocks = N - num_args;
-        for (std::size_t i = 0; i < num_zero_blocks; i++)
-            blocks[i] = 0;
-
-        for (std::size_t i = 0; i < num_args; i++)
-            blocks[num_zero_blocks + i] = src.begin()[i];
+        const std::size_t num_zero_blocks = N - num_args;
+        if (num_zero_blocks > 0)
+            memset(&blocks[num_args], 0, sizeof(block_t) * num_zero_blocks);
     }
 
 private:
@@ -87,7 +89,7 @@ public:
     : scalable_int<N/64>(src) {
     }
 
-    wide_int(const std::initializer_list<uint64_t>& src)
+    wide_int(const std::initializer_list<integer::block_t>& src)
     : scalable_int<N/64>(src) {
     }
 };
