@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include "integer.h"
 
-BOOST_AUTO_TEST_SUITE(test_suite_long_integer)
+BOOST_AUTO_TEST_SUITE(test_suite_integer)
 
 BOOST_AUTO_TEST_CASE(get_bytes)
 {
@@ -29,6 +29,30 @@ BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list)
     bitwise_integer<64> n({123});
     BOOST_TEST(n.ref_blocks()[0] == 123);
     BOOST_TEST(static_cast<std::string>(n) == "123");
+}
+
+BOOST_AUTO_TEST_CASE(copy_constructor)
+{
+    bitwise_integer<64> n1({123});
+    const auto n2(n1);
+
+    BOOST_TEST(n2.ref_blocks()[0] == 123);
+    BOOST_TEST(static_cast<std::string>(n2) == "123");
+    BOOST_TEST(n1.is_blocks_owner() == false);
+    BOOST_TEST(n2.is_blocks_owner() == true);
+    BOOST_TEST(n1.ref_blocks() != n2.ref_blocks());
+}
+
+BOOST_AUTO_TEST_CASE(move_constructor)
+{
+    bitwise_integer<64> n1({123});
+    const auto n2(std::move(n1));
+
+    BOOST_TEST(n2.ref_blocks()[0] == 123);
+    BOOST_TEST(static_cast<std::string>(n2) == "123");
+    BOOST_TEST(n1.is_blocks_owner() == false);
+    BOOST_TEST(n2.is_blocks_owner() == false);
+    BOOST_TEST(n1.ref_blocks() == n2.ref_blocks());
 }
 
 BOOST_AUTO_TEST_CASE(add)

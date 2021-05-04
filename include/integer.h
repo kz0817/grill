@@ -9,11 +9,14 @@ public:
     using block_t = uint64_t;
 
     integer(const integer& n);
+    integer(integer&& n);
     integer(const std::size_t num, block_t* const buf);
     virtual ~integer();
 
     std::size_t get_num_blocks() const;
     const block_t* ref_blocks() const;
+    bool is_blocks_owner() const;
+
     operator std::string() const;
     friend std::ostream& operator<<(std::ostream& os, const integer& data);
 

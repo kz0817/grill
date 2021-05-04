@@ -9,6 +9,14 @@ integer::integer(const integer& n)
     std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
 }
 
+integer::integer(integer&& n)
+: num_blocks(n.num_blocks),
+  blocks(n.blocks),
+  blocks_owner(n.blocks_owner) {
+    if (n.blocks_owner)
+        n.blocks_owner = false;
+}
+
 integer::integer(const std::size_t num, block_t* const buf)
 : num_blocks(num),
   blocks(buf),
@@ -30,6 +38,10 @@ integer::block_t* integer::get_blocks() const {
 
 const integer::block_t* integer::ref_blocks() const {
     return get_blocks();
+}
+
+bool integer::is_blocks_owner() const {
+    return this->blocks_owner;
 }
 
 integer::operator std::string() const {
