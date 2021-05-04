@@ -79,10 +79,11 @@ private:
 template<std::size_t N>
 class bitwise_integer : public scalable_int<N/64> {
 public:
-    bitwise_integer() {
+    bitwise_integer(const integer::block_t init_value = 0)
+    : scalable_int<N/64>(init_value) {
     }
 
-    bitwise_integer(const std::uint64_t src[N])
+    bitwise_integer(const std::uint64_t src[N/64])
     : scalable_int<N/64>(src) {
     }
 
