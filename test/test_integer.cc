@@ -197,4 +197,14 @@ BOOST_AUTO_TEST_CASE(mod_binary_opreator)
     BOOST_TEST(n.is_blocks_owner() == true);
 }
 
+BOOST_AUTO_TEST_CASE(substitution)
+{
+    wide_int<256> n({1, 2, 3, 4});
+    n = 5;
+
+    const integer::block_t expected[] = {5, 0, 0, 0};
+    const integer::block_t* ref = n.ref_blocks();
+    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

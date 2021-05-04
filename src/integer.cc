@@ -121,6 +121,15 @@ integer& integer::operator%=(const integer& n) {
     return *this;
 }
 
+integer& integer::operator=(const block_t n) {
+    this->blocks[0] = n;
+
+    const std::size_t num_zero_blocks = this->num_blocks - 1;
+    if (num_zero_blocks >= 1)
+        std::memset(&this->blocks[1], 0, sizeof(block_t) * num_zero_blocks);
+    return *this;
+}
+
 integer integer::operator+(const integer& r) const {
     integer n(*this);
     n += r;
