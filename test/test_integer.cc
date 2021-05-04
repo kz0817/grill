@@ -1,5 +1,16 @@
 #include <boost/test/unit_test.hpp>
+#include <vector>
 #include "integer.h"
+
+static std::vector<integer::block_t> create_block_vector(const integer& n) {
+    const int num_blocks = n.get_num_blocks();
+    std::vector<integer::block_t> vec;
+    vec.reserve(num_blocks);
+    const integer::block_t* blocks = n.ref_blocks();
+    for (int i = 0; i < num_blocks; i++)
+        vec.emplace_back(blocks[i]);
+    return vec;
+}
 
 BOOST_AUTO_TEST_SUITE(test_suite_integer)
 
@@ -36,8 +47,7 @@ BOOST_AUTO_TEST_CASE(given_initial_value_many_blocks)
     const uint64_t init_value[] = {1, 2, 3, 4};
     wide_int<256> n(init_value);
     const integer::block_t expected[] = {4, 3, 2, 1};
-    const integer::block_t* ref = n.ref_blocks();
-    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
+    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list)
@@ -51,16 +61,14 @@ BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list_with_mutiple_data
 {
     wide_int<256> n({1, 2, 3});
     const integer::block_t expected[] = {3, 2, 1, 0};
-    const integer::block_t* ref = n.ref_blocks();
-    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
+    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list_with_full_data)
 {
     wide_int<256> n({1, 2, 3, 4});
     const integer::block_t expected[] = {4, 3, 2, 1};
-    const integer::block_t* ref = n.ref_blocks();
-    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
+    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(copy_constructor)
@@ -203,8 +211,7 @@ BOOST_AUTO_TEST_CASE(substitution)
     n = 5;
 
     const integer::block_t expected[] = {5, 0, 0, 0};
-    const integer::block_t* ref = n.ref_blocks();
-    BOOST_CHECK_EQUAL_COLLECTIONS(ref, ref + 4, expected, expected + 4);
+    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
