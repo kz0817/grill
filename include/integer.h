@@ -17,11 +17,11 @@ public:
     operator std::string() const;
     friend std::ostream& operator<<(std::ostream& os, const integer& data);
 
-    void add(const integer& n);
-    void sub(const integer& n);
-    void mul(const integer& n);
-    void div(const integer& n);
-    void mod(const integer& n);
+    integer& add(const integer& n);
+    integer& sub(const integer& n);
+    integer& mul(const integer& n);
+    integer& div(const integer& n);
+    integer& mod(const integer& n);
 
     integer& operator+=(const integer& n);
     integer& operator-=(const integer& n);

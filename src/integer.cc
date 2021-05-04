@@ -44,39 +44,44 @@ std::ostream& operator<<(std::ostream& os, const integer& data) {
     return os;
 }
 
-void integer::add(const integer& n) {
+integer& integer::add(const integer& n) {
     if (get_num_blocks() != 1)
         throw std::logic_error("Not implmented yet");
 
     get_blocks()[0] += n.ref_blocks()[0];
+    return *this;
 }
 
-void integer::sub(const integer& n) {
+integer& integer::sub(const integer& n) {
     if (get_num_blocks() != 1)
         throw std::logic_error("Not implmented yet");
 
     get_blocks()[0] -= n.ref_blocks()[0];
+    return *this;
 }
 
-void integer::mul(const integer& n) {
+integer& integer::mul(const integer& n) {
     if (get_num_blocks() != 1)
         throw std::logic_error("Not implmented yet");
 
     get_blocks()[0] *= n.ref_blocks()[0];
+    return *this;
 }
 
-void integer::div(const integer& n) {
+integer& integer::div(const integer& n) {
     if (get_num_blocks() != 1)
         throw std::logic_error("Not implmented yet");
 
     get_blocks()[0] /= n.ref_blocks()[0];
+    return *this;
 }
 
-void integer::mod(const integer& n) {
+integer& integer::mod(const integer& n) {
     if (get_num_blocks() != 1)
         throw std::logic_error("Not implmented yet");
 
     get_blocks()[0] %= n.ref_blocks()[0];
+    return *this;
 }
 
 integer& integer::operator+=(const integer& n) {
