@@ -77,17 +77,17 @@ private:
 };
 
 template<std::size_t N>
-class bitwise_integer : public scalable_int<N/64> {
+class wide_int : public scalable_int<N/64> {
 public:
-    bitwise_integer(const integer::block_t init_value = 0)
+    wide_int(const integer::block_t init_value = 0)
     : scalable_int<N/64>(init_value) {
     }
 
-    bitwise_integer(const std::uint64_t src[N/64])
+    wide_int(const std::uint64_t src[N/64])
     : scalable_int<N/64>(src) {
     }
 
-    bitwise_integer(const std::initializer_list<uint64_t>& src)
+    wide_int(const std::initializer_list<uint64_t>& src)
     : scalable_int<N/64>(src) {
     }
 };

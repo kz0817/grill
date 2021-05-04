@@ -16,9 +16,9 @@ struct data_def {
 };
 
 static data_def data_set[] = {
-    {bitwise_integer<64>({2}), true},
-    {bitwise_integer<64>({3}), true},
-    {bitwise_integer<64>({4}), false},
+    {wide_int<64>({2}), true},
+    {wide_int<64>({3}), true},
+    {wide_int<64>({4}), false},
 };
 
 BOOST_AUTO_TEST_SUITE(test_suite_primality)
