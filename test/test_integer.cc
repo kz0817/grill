@@ -214,4 +214,12 @@ BOOST_AUTO_TEST_CASE(substitution)
     BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
+BOOST_AUTO_TEST_CASE(pow)
+{
+    const wide_int<64> n1 = 3;
+    const wide_int<64> e = 4;
+    const auto n2 = n1.pow(e);
+    BOOST_TEST(n2.ref_blocks()[0] == 81);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

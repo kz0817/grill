@@ -2,11 +2,12 @@
 #include <cstring>
 #include "integer.h"
 
-integer::integer(const integer& n)
+integer::integer(const integer& n, const bool skip_blocks_copy)
 : num_blocks(n.get_num_blocks()),
   blocks(new block_t[this->num_blocks]), //  TODO: use a custom allocator
   blocks_owner(true) {
-    std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
+    if (!skip_blocks_copy)
+        std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
 }
 
 integer::integer(integer&& n)
@@ -26,6 +27,13 @@ integer::integer(const std::size_t num, block_t* const buf)
 integer::~integer() {
     if (this->blocks_owner)
         delete [] this->blocks; // TODO: use a custom allocator
+}
+
+integer integer::create(const integer::block_t init_value) const {
+    const bool skip_block_copy = true;
+    integer n(*this, skip_block_copy);
+    n = init_value;
+    return n;
 }
 
 std::size_t integer::get_num_blocks() const {
@@ -157,5 +165,16 @@ integer integer::operator/(const integer& r) const {
 integer integer::operator%(const integer& r) const {
     integer n(*this);
     n %= r;
+    return n;
+}
+
+integer integer::pow(const integer& e) const {
+    if (get_num_blocks() != 1)
+        throw std::logic_error("Not implmented yet");
+
+    block_t cnt = e.ref_blocks()[0];
+    integer n = create(1);
+    for (block_t i = 0; i < cnt; i++)
+        n *= (*this);
     return n;
 }

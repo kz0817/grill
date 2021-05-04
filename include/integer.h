@@ -9,10 +9,11 @@ class integer {
 public:
     using block_t = uint64_t;
 
-    integer(const integer& n);
+    integer(const integer& n, const bool skip_blocks_copy=false);
     integer(integer&& n);
     integer(const std::size_t num, block_t* const buf);
     virtual ~integer();
+    integer create(const integer::block_t init_value) const;
 
     std::size_t get_num_blocks() const;
     const block_t* ref_blocks() const;
@@ -39,6 +40,8 @@ public:
     integer operator*(const integer& r) const;
     integer operator/(const integer& r) const;
     integer operator%(const integer& r) const;
+
+    integer pow(const integer& e) const;
 
 protected:
     block_t* get_blocks() const;
