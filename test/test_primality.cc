@@ -12,8 +12,7 @@ static struct sample_t {
     bool is_prime_number;
 
     friend std::ostream& operator<<(std::ostream& os, const sample_t& s) {
-        os << "num: " << s.num << ", is_prime_number: "
-           << (s.is_prime_number ? "true" : "false");
+        os << "num: " << s.num << ", is_prime_number: " << util::to_string(s.is_prime_number);
         return os;
     }
 } samples[] = {

@@ -41,4 +41,15 @@ BOOST_DATA_TEST_CASE(equal, gcd_samples)
     BOOST_TEST(util::gcd(sample.a, sample.b) == sample.expected);
 }
 
+BOOST_AUTO_TEST_CASE(to_string_of_true)
+{
+    BOOST_TEST(util::to_string(true) == "true");
+}
+
+BOOST_AUTO_TEST_CASE(to_string_of_false)
+{
+    BOOST_TEST(util::to_string(false) == "false");
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -13,4 +13,8 @@ integer util::gcd(const integer& a, const integer& b) {
     return (a >= b) ? calc_gcd(a, b) : calc_gcd(b, a);
 }
 
+std::string util::to_string(const bool b) {
+    return b ? "true" : "false";
+}
+
 } // namespace grill

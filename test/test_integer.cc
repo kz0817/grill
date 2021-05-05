@@ -2,6 +2,7 @@
 #include <boost/test/data/test_case.hpp>
 #include <vector>
 #include "integer.h"
+#include "util.h"
 
 using namespace grill;
 
@@ -264,7 +265,7 @@ struct cmp_sample_t {
 
     friend std::ostream& operator<<(std::ostream& os, const cmp_sample_t& s) {
         os << "lhs: " << s.lhs << ", rhs: " << s.rhs <<
-              ", expected: " << (s.expected ? "true" : "false");
+              ", expected: " << util::to_string(s.expected);
         return os;
     }
 };
