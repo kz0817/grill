@@ -187,6 +187,14 @@ integer integer::operator%(const integer& r) const {
     return n;
 }
 
+bool static is_all_zero(const integer::block_t* blocks, const int num) {
+    for (int i = 0; i < num; i++) {
+        if (blocks[i] != 0)
+            return false;
+    }
+    return true;
+}
+
 bool static is_equal(const integer& wide, const integer& other) {
     const integer::block_t* wide_blocks = wide.ref_blocks();
     const integer::block_t* other_blocks = other.ref_blocks();
@@ -206,6 +214,52 @@ bool static is_equal(const integer& wide, const integer& other) {
 
 bool integer::operator==(const integer& r) const {
     return (get_num_blocks() > r.get_num_blocks()) ? is_equal(*this, r) : is_equal(r, *this);
+}
+
+struct compare_param {
+    bool wider_blocks_is_non_zero;
+    bool lhs_is_greater;
+    bool rhs_is_greater;
+    bool lhs_equals_to_rhs;
+};
+
+// lhs should be wider or equals to rhs
+static bool compare(const integer& lhs, const integer& rhs, const compare_param& param) {
+    const int lhs_num_blocks = lhs.get_num_blocks();
+    const int rhs_num_blocks = rhs.get_num_blocks();
+    const int num_common_blocks = rhs_num_blocks;
+    assert(lhs_num_blocks >= rhs_num_blocks);
+
+    const integer::block_t* lhs_blocks = lhs.ref_blocks();
+    const integer::block_t* rhs_blocks = rhs.ref_blocks();
+
+    const int num_wider_blocks = lhs_num_blocks - num_common_blocks;
+    if (!is_all_zero(&lhs_blocks[num_common_blocks], num_wider_blocks))
+        return param.wider_blocks_is_non_zero;
+
+    for (int i = 0; i < num_common_blocks; i++) {
+        const int idx = num_common_blocks - i - 1;
+        if (lhs_blocks[idx] > rhs_blocks[idx])
+            return param.lhs_is_greater;
+        if (lhs_blocks[idx] < rhs_blocks[idx])
+            return param.rhs_is_greater;
+    }
+    return param.lhs_equals_to_rhs;
+}
+
+static compare_param cmp_param_gt_eq = {true, true, false, true};
+static compare_param cmp_param_lt_eq = {false, false, true, true};
+
+static bool is_gt_eq(const integer& lhs, const integer& rhs) {
+    return compare(lhs, rhs, cmp_param_gt_eq);
+}
+
+static bool is_lt_eq(const integer& lhs, const integer& rhs) {
+    return compare(lhs, rhs, cmp_param_lt_eq);
+}
+
+bool integer::operator>=(const integer& r) const {
+    return (get_num_blocks() >= r.get_num_blocks()) ? is_gt_eq(*this, r) : is_lt_eq(r, *this);
 }
 
 integer integer::pow(const integer& e) const {
