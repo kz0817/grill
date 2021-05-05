@@ -261,7 +261,8 @@ struct cmp_sample_t {
     bool expected;
 
     friend std::ostream& operator<<(std::ostream& os, const cmp_sample_t& s) {
-        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs <<
+              ", expected: " << (s.expected ? "true" : "false");
         return os;
     }
 };
@@ -278,12 +279,9 @@ static cmp_sample_t equal_samples[] {
     {wide_int<64>(7),  wide_int<256>(5), false},
 };
 
-BOOST_DATA_TEST_CASE(equal, pow_samples)
+BOOST_DATA_TEST_CASE(equal, equal_samples)
 {
-    const wide_int<64> n1 = sample.base;
-    const wide_int<64> e = sample.exponent;
-    const auto n2 = n1.pow(e);
-    BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
+    BOOST_TEST((sample.lhs == sample.rhs) == sample.expected);
 }
 
 

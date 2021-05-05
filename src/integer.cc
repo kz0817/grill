@@ -198,7 +198,7 @@ bool static is_equal(const integer& wide, const integer& other) {
 
     const int num_remaing_blocks = wide.get_num_blocks() - num_cmp_blocks;
     for (int i = 0; i <  num_remaing_blocks; i++) {
-        if (wide_blocks[i] != 0)
+        if (wide_blocks[num_cmp_blocks + i] != 0)
             return false;
     }
     return true;
