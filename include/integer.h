@@ -24,12 +24,6 @@ public:
     operator std::string() const;
     friend std::ostream& operator<<(std::ostream& os, const integer& data);
 
-    integer& add(const integer& n);
-    integer& sub(const integer& n);
-    integer& mul(const integer& n);
-    integer& div(const integer& n);
-    integer& mod(const integer& n);
-
     integer& operator+=(const integer& n);
     integer& operator-=(const integer& n);
     integer& operator*=(const integer& n);
