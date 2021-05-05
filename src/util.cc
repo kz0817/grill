@@ -2,16 +2,11 @@
 #include "util.h"
 
 // a should be greater than or equal to  b
-static integer calc(const integer& a, const integer& b) {
-    integer q = a / b;
-    integer r = a % b;
-    if (r == constant::zero)
-        return b;
-    if (r == constant::one)
-        return constant::one;
-    return calc(b, r);
+static integer calc_gcd(const integer& a, const integer& b) {
+    const integer r = a % b;
+    return (r == constant::zero) ? b : calc_gcd(b, r);
 }
 
 integer util::gcd(const integer& a, const integer& b) {
-    return (a >= b) ? calc(a, b) : calc(b, a);
+    return (a >= b) ? calc_gcd(a, b) : calc_gcd(b, a);
 }
