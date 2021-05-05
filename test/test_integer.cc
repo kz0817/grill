@@ -252,12 +252,15 @@ struct cmp_sample_t {
 };
 
 static cmp_sample_t equal_samples[] {
-    {wide_int<64>(9),  wide_int<64>(9),  true},
-    {wide_int<64>(9),  wide_int<64>(5),  false},
-    {wide_int<256>(9), wide_int<64>(9),  true},
-    {wide_int<256>(9), wide_int<64>(5),  false},
-    {wide_int<64>(9),  wide_int<256>(9), true},
-    {wide_int<64>(9),  wide_int<256>(5), false},
+    {wide_int<64>(7),  wide_int<64>(7),  true},
+    {wide_int<64>(7),  wide_int<64>(9),  false},
+    {wide_int<64>(7),  wide_int<64>(5),  false},
+    {wide_int<256>(7), wide_int<64>(7),  true},
+    {wide_int<256>(7), wide_int<64>(9),  false},
+    {wide_int<256>(7), wide_int<64>(5),  false},
+    {wide_int<64>(7),  wide_int<256>(7), true},
+    {wide_int<64>(7),  wide_int<256>(9), false},
+    {wide_int<64>(7),  wide_int<256>(5), false},
 };
 
 BOOST_DATA_TEST_CASE(equal, pow_samples)
