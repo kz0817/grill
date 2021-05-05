@@ -3,7 +3,11 @@
 #include "constant.h"
 #include "util.h"
 
+namespace grill {
+
 class primality {
 public:
     static bool fermat_test(const integer& n);
 };
+
+} // namespace grill

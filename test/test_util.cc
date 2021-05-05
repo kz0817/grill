@@ -2,6 +2,8 @@
 #include <boost/test/data/test_case.hpp>
 #include "util.h"
 
+using namespace grill;
+
 BOOST_AUTO_TEST_SUITE(test_suite_util)
 
 struct gcd_sample_t {

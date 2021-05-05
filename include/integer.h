@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cassert>
 
+namespace grill {
 
 class integer {
 public:
@@ -106,3 +107,5 @@ public:
         return static_cast<integer&>(*this) = n;
     }
 };
+
+} // namespace grill

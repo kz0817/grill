@@ -1,5 +1,7 @@
 #include "primality.h"
 
+namespace grill {
+
 static bool pass_fermat_little_theorem(const integer& n, const integer& a) {
     return ((a.pow(n - constant::one) % n) == constant::one);
 }
@@ -21,3 +23,5 @@ bool primality::fermat_test(const integer& n) {
     }
     return true;
 }
+
+} // namespace grill

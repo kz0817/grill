@@ -4,6 +4,8 @@
 #include <sstream>
 #include "integer.h"
 
+namespace grill {
+
 static std::string create_error_msg(const char* const filename, const int lineno,
                                     const char* const msg) {
     std::stringstream ss;
@@ -266,3 +268,5 @@ integer integer::pow(const integer& e) const {
         n *= (*this);
     return n;
 }
+
+} // namespace grill

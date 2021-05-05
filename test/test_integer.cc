@@ -3,6 +3,8 @@
 #include <vector>
 #include "integer.h"
 
+using namespace grill;
+
 static std::vector<integer::block_t> create_block_vector(const integer& n) {
     const int num_blocks = n.get_num_blocks();
     std::vector<integer::block_t> vec;

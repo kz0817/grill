@@ -3,6 +3,8 @@
 #include <iostream>
 #include "primality.h"
 
+using namespace grill;
+
 BOOST_AUTO_TEST_SUITE(test_suite_primality)
 
 static struct sample_t {
