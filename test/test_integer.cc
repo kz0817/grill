@@ -321,4 +321,28 @@ BOOST_DATA_TEST_CASE(gt_eq, gt_eq_samples)
     BOOST_TEST((sample.lhs >= sample.rhs) == sample.expected);
 }
 
+struct binary_op_sample_t {
+    const integer& lhs;
+    const integer& rhs;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const binary_op_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
+        return os;
+    }
+};
+
+static binary_op_sample_t bitwise_and_samples[] {
+    {wide_int<64>(0xea),  wide_int<64>(0xcc),  wide_int<64>(0xc8)},
+    {wide_int<256>(0xea), wide_int<64>(0xcc),  wide_int<256>(0xc8)},
+    {wide_int<64>(0xea),  wide_int<256>(0xcc), wide_int<256>(0xc8)},
+};
+
+BOOST_DATA_TEST_CASE(bitwise_and, bitwise_and_samples)
+{
+    const integer result = sample.lhs & sample.rhs;
+    BOOST_TEST(result == sample.expected);
+    BOOST_TEST(result.get_num_blocks() == sample.expected.get_num_blocks());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

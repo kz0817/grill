@@ -233,6 +233,24 @@ bool integer::operator>=(const integer& r) const {
     return (get_num_blocks() >= r.get_num_blocks()) ? is_gt_eq(*this, r) : is_lt_eq(r, *this);
 }
 
+static void bitwise_and(const integer& lhs, const integer& rhs, integer::block_t* blocks) {
+    const int num_common_blocks = rhs.get_num_blocks();
+    const integer::block_t* lhs_blocks = lhs.ref_blocks();
+    const integer::block_t* rhs_blocks = rhs.ref_blocks();
+    for (int i = 0; i < num_common_blocks; i++)
+        blocks[i] = lhs_blocks[i] & rhs_blocks[i];
+}
+
+integer integer::operator&(const integer& r) const {
+    const bool this_is_wider = (get_num_blocks() >= r.get_num_blocks());
+    const integer& wider = this_is_wider ? *this : r;
+    const integer& other = this_is_wider ? r : *this;
+    integer n = wider.create(0);
+    integer::block_t* blocks = n.get_blocks();
+    bitwise_and(wider, other, blocks);
+    return n;
+}
+
 integer integer::pow(const integer& e) const {
     if (get_num_blocks() != 1)
         throw std::logic_error("Not implmented yet");
