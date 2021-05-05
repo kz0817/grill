@@ -240,16 +240,18 @@ BOOST_DATA_TEST_CASE(pow, pow_samples)
     BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
 }
 
-static struct equal_sample_t {
+struct cmp_sample_t {
     integer lhs;
     integer rhs;
     bool expected;
 
-    friend std::ostream& operator<<(std::ostream& os, const equal_sample_t& s) {
+    friend std::ostream& operator<<(std::ostream& os, const cmp_sample_t& s) {
         os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
         return os;
     }
-} equal_samples[] {
+};
+
+static cmp_sample_t equal_samples[] {
     {wide_int<64>(9),  wide_int<64>(9),  true},
     {wide_int<64>(9),  wide_int<64>(5),  false},
     {wide_int<256>(9), wide_int<64>(9),  true},
