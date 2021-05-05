@@ -25,14 +25,12 @@ BOOST_AUTO_TEST_CASE(initial_value)
 {
     wide_int<64> n;
     BOOST_TEST(n.ref_blocks()[0] == 0);
-    BOOST_TEST(static_cast<std::string>(n) == "0");
 }
 
 BOOST_AUTO_TEST_CASE(one_initial_value)
 {
     wide_int<64> n(5);
     BOOST_TEST(n.ref_blocks()[0] == 5);
-    BOOST_TEST(static_cast<std::string>(n) == "5");
 }
 
 BOOST_AUTO_TEST_CASE(given_initial_value)
@@ -40,7 +38,6 @@ BOOST_AUTO_TEST_CASE(given_initial_value)
     const uint64_t init_value[] = {123};
     wide_int<64> n(init_value);
     BOOST_TEST(n.ref_blocks()[0] == 123);
-    BOOST_TEST(static_cast<std::string>(n) == "123");
 }
 
 BOOST_AUTO_TEST_CASE(given_initial_value_many_blocks)
@@ -55,7 +52,6 @@ BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list)
 {
     wide_int<64> n({123});
     BOOST_TEST(n.ref_blocks()[0] == 123);
-    BOOST_TEST(static_cast<std::string>(n) == "123");
 }
 
 BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list_with_mutiple_data)
@@ -78,7 +74,6 @@ BOOST_AUTO_TEST_CASE(copy_constructor)
     const auto n2(n1);
 
     BOOST_TEST(n2.ref_blocks()[0] == 123);
-    BOOST_TEST(static_cast<std::string>(n2) == "123");
     BOOST_TEST(n1.is_blocks_owner() == false);
     BOOST_TEST(n2.is_blocks_owner() == true);
     BOOST_TEST(n1.ref_blocks() != n2.ref_blocks());
@@ -90,10 +85,30 @@ BOOST_AUTO_TEST_CASE(move_constructor)
     const auto n2(std::move(n1));
 
     BOOST_TEST(n2.ref_blocks()[0] == 123);
-    BOOST_TEST(static_cast<std::string>(n2) == "123");
     BOOST_TEST(n1.is_blocks_owner() == false);
     BOOST_TEST(n2.is_blocks_owner() == false);
     BOOST_TEST(n1.ref_blocks() == n2.ref_blocks());
+}
+
+static struct cast_string_sample_t {
+    integer n;
+    std::string expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const cast_string_sample_t& s) {
+        os << "n.num_blocks: " << s.n.get_num_blocks() << ", expected: " << s.expected;
+        return os;
+    }
+} cast_string_samples[] {
+    {wide_int<64>(0x0123456789abcdef), "0123456789abcdef"},
+    {wide_int<64>(0xfedcba9876543210), "fedcba9876543210"},
+    {wide_int<128>(1), "0000000000000000" "0000000000000001"},
+    {wide_int<128>({0x0123456789abcdef, 0x11223344aabbccdd}),
+                   "0123456789abcdef" "11223344aabbccdd"},
+};
+
+BOOST_DATA_TEST_CASE(cast_string, cast_string_samples)
+{
+    BOOST_TEST(static_cast<std::string>(sample.n) == sample.expected);
 }
 
 BOOST_AUTO_TEST_CASE(add)

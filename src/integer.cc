@@ -1,6 +1,17 @@
 #include <stdexcept>
+#include <cstdio>
 #include <cstring>
+#include <sstream>
 #include "integer.h"
+
+static std::string create_error_msg(const char* const filename, const int lineno,
+                                    const char* const msg) {
+    std::stringstream ss;
+    ss << "[" << filename << ":" << lineno << "] " << msg;
+    return ss.str();
+}
+
+#define THROW_ERROR(MSG) throw std::runtime_error(create_error_msg(__FILE__, __LINE__, MSG))
 
 integer::integer(const integer& n, const bool skip_blocks_copy)
 : num_blocks(n.get_num_blocks()),
@@ -53,10 +64,18 @@ bool integer::is_blocks_owner() const {
 }
 
 integer::operator std::string() const {
-    if (get_num_blocks() != 1)
-        throw std::logic_error("Not implmented yet");
-
-    return std::to_string(ref_blocks()[0]);
+    std::stringstream ss;
+    const int buf_size = sizeof(block_t) * 2 + 1;
+    char buf[buf_size];
+    buf[buf_size - 1] = '\0';
+    const int num_blocks = get_num_blocks();
+    for (int i = 0; i < num_blocks; i++) {
+        const int idx = num_blocks - i - 1;
+        if (std::snprintf(buf, buf_size, "%016zx", ref_blocks()[idx]) < 0)
+            THROW_ERROR("Failed: snprintf()");
+        ss << buf;
+    }
+    return ss.str();
 }
 
 std::ostream& operator<<(std::ostream& os, const integer& data) {
