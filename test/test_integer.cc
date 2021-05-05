@@ -284,6 +284,23 @@ BOOST_DATA_TEST_CASE(equal, equal_samples)
     BOOST_TEST((sample.lhs == sample.rhs) == sample.expected);
 }
 
+static cmp_sample_t not_equal_samples[] {
+    {wide_int<64>(7),  wide_int<64>(7),  false},
+    {wide_int<64>(7),  wide_int<64>(9),  true},
+    {wide_int<64>(7),  wide_int<64>(5),  true},
+    {wide_int<256>(7), wide_int<64>(7),  false},
+    {wide_int<256>(7), wide_int<64>(9),  true},
+    {wide_int<256>(7), wide_int<64>(5),  true},
+    {wide_int<64>(7),  wide_int<256>(7), false},
+    {wide_int<64>(7),  wide_int<256>(9), true},
+    {wide_int<64>(7),  wide_int<256>(5), true},
+};
+
+BOOST_DATA_TEST_CASE(not_equal, not_equal_samples)
+{
+    BOOST_TEST((sample.lhs != sample.rhs) == sample.expected);
+}
+
 static cmp_sample_t gt_eq_samples[] {
     {wide_int<64>(7),  wide_int<64>(7),  true},
     {wide_int<64>(7),  wide_int<64>(9),  false},

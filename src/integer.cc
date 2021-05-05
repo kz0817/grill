@@ -236,6 +236,10 @@ bool integer::operator==(const integer& r) const {
     return (get_num_blocks() > r.get_num_blocks()) ? is_equal(*this, r) : is_equal(r, *this);
 }
 
+bool integer::operator!=(const integer& r) const {
+    return !((*this) == r);
+}
+
 static compare_param cmp_param_gt_eq = {true, true, false, true};
 
 static bool is_gt_eq(const integer& lhs, const integer& rhs) {
