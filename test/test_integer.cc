@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <boost/test/data/test_case.hpp>
 #include <vector>
 #include "integer.h"
 
@@ -214,12 +215,29 @@ BOOST_AUTO_TEST_CASE(substitution)
     BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
-BOOST_AUTO_TEST_CASE(pow)
+static struct pow_sample_t {
+    integer::block_t exponent;
+    integer::block_t base;
+    integer::block_t expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const pow_sample_t& s) {
+        os << "exponent: " << s.exponent << ", base: " << s.base << ", expected: " << s.expected;
+        return os;
+    }
+} pow_samples[] {
+    {0, 3, 1},
+    {1, 3, 3},
+    {2, 3, 9},
+    {3, 3, 27},
+    {4, 3, 81},
+};
+
+BOOST_DATA_TEST_CASE(pow, pow_samples)
 {
-    const wide_int<64> n1 = 3;
-    const wide_int<64> e = 4;
+    const wide_int<64> n1 = sample.base;
+    const wide_int<64> e = sample.exponent;
     const auto n2 = n1.pow(e);
-    BOOST_TEST(n2.ref_blocks()[0] == 81);
+    BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
