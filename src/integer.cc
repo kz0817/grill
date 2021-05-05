@@ -168,6 +168,27 @@ integer integer::operator%(const integer& r) const {
     return n;
 }
 
+bool static is_equal(const integer& wide, const integer& other) {
+    const integer::block_t* wide_blocks = wide.ref_blocks();
+    const integer::block_t* other_blocks = other.ref_blocks();
+
+    const int num_cmp_blocks = other.get_num_blocks();
+    const int cmp_size = sizeof(integer::block_t) * num_cmp_blocks;
+    if (std::memcmp(wide_blocks, other_blocks, cmp_size) != 0)
+        return false;
+
+    const int num_remaing_blocks = wide.get_num_blocks() - num_cmp_blocks;
+    for (int i = 0; i <  num_remaing_blocks; i++) {
+        if (wide_blocks[i] != 0)
+            return false;
+    }
+    return true;
+}
+
+bool integer::operator==(const integer& r) const {
+    return (get_num_blocks() > r.get_num_blocks()) ? is_equal(*this, r) : is_equal(r, *this);
+}
+
 integer integer::pow(const integer& e) const {
     if (get_num_blocks() != 1)
         throw std::logic_error("Not implmented yet");

@@ -41,6 +41,8 @@ public:
     integer operator/(const integer& r) const;
     integer operator%(const integer& r) const;
 
+    bool operator==(const integer& r) const;
+
     integer pow(const integer& e) const;
 
 protected:

@@ -240,4 +240,31 @@ BOOST_DATA_TEST_CASE(pow, pow_samples)
     BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
 }
 
+static struct equal_sample_t {
+    integer lhs;
+    integer rhs;
+    bool expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const equal_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
+        return os;
+    }
+} equal_samples[] {
+    {wide_int<64>(9),  wide_int<64>(9),  true},
+    {wide_int<64>(9),  wide_int<64>(5),  false},
+    {wide_int<256>(9), wide_int<64>(9),  true},
+    {wide_int<256>(9), wide_int<64>(5),  false},
+    {wide_int<64>(9),  wide_int<256>(9), true},
+    {wide_int<64>(9),  wide_int<256>(5), false},
+};
+
+BOOST_DATA_TEST_CASE(equal, pow_samples)
+{
+    const wide_int<64> n1 = sample.base;
+    const wide_int<64> e = sample.exponent;
+    const auto n2 = n1.pow(e);
+    BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
