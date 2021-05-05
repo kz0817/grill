@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(move_constructor)
 }
 
 static struct cast_string_sample_t {
-    integer n;
+    const integer& n;
     std::string expected;
 
     friend std::ostream& operator<<(std::ostream& os, const cast_string_sample_t& s) {
@@ -256,8 +256,8 @@ BOOST_DATA_TEST_CASE(pow, pow_samples)
 }
 
 struct cmp_sample_t {
-    integer lhs;
-    integer rhs;
+    const integer& lhs;
+    const integer& rhs;
     bool expected;
 
     friend std::ostream& operator<<(std::ostream& os, const cmp_sample_t& s) {
