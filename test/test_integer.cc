@@ -345,4 +345,33 @@ BOOST_DATA_TEST_CASE(bitwise_and, bitwise_and_samples)
     BOOST_TEST(result.get_num_blocks() == sample.expected.get_num_blocks());
 }
 
+struct integer_and_int_sample_t {
+    const integer& lhs;
+    int rhs;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const integer_and_int_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
+        return os;
+    }
+};
+
+static integer_and_int_sample_t left_shift_samples[] {
+    {wide_int<64>(0x40002000100080a5), 0, wide_int<64>(0x40002000100080a5)},
+    {wide_int<64>(0x40002000100080a5), 1, wide_int<64>(0x800040002001014a)},
+    {wide_int<128>(0x40002000100080a5), 8, wide_int<128>({0x40, 0x002000100080a500})},
+    {wide_int<128>(0x40002000100080a5), 64, wide_int<128>({0x40002000100080a5, 0})},
+    {wide_int<128>(0x40002000100080a5), 127, wide_int<128>({0x8000000000000000, 0})},
+    {wide_int<128>(0x40002000100080a5), 128, wide_int<128>({0, 0})},
+    {wide_int<128>(0x40002000100080a5), 129, wide_int<128>({0, 0})},
+    {wide_int<128>(0x40002000100080a5), 256, wide_int<128>({0, 0})},
+};
+
+BOOST_DATA_TEST_CASE(left_shift, left_shift_samples)
+{
+    integer n = sample.lhs;
+    BOOST_TEST((n <<= sample.rhs) == sample.expected);
+    BOOST_TEST(n == sample.expected);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

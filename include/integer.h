@@ -43,6 +43,8 @@ public:
 
     integer operator&(const integer& r) const;
 
+    integer& operator<<=(const int r);
+
     integer pow(const integer& e) const;
 
 protected:

@@ -6,6 +6,8 @@
 
 namespace grill {
 
+static const int BlockBits = sizeof(integer::block_t) * 8;
+
 static std::string create_error_msg(const char* const filename, const int lineno,
                                     const char* const msg) {
     std::stringstream ss;
@@ -249,6 +251,23 @@ integer integer::operator&(const integer& r) const {
     integer::block_t* blocks = n.get_blocks();
     bitwise_and(wider, other, blocks);
     return n;
+}
+
+integer& integer::operator<<=(const int r) {
+    const int shift_bits = r % BlockBits;
+    block_t* blocks = get_blocks();
+    for (int i = get_num_blocks() - 1; i >= 0; i--) {
+        const int src_upper_idx = i - (r / BlockBits);
+        const int src_lower_idx = src_upper_idx - 1;
+        const block_t x1 = src_upper_idx >= 0
+                           ? blocks[src_upper_idx] << shift_bits
+                           : 0;
+        const block_t x0 = (shift_bits != 0) && (src_lower_idx >= 0)
+                           ? blocks[src_lower_idx] >> (BlockBits - shift_bits)
+                           : 0;
+        blocks[i] = x1 | x0;
+    }
+    return *this;
 }
 
 integer integer::pow(const integer& e) const {
