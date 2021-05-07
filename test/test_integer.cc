@@ -244,33 +244,6 @@ BOOST_AUTO_TEST_CASE(move_substitution)
     BOOST_TEST(n.is_blocks_owner() == false);
 }
 
-static struct pow_sample_t {
-    integer::block_t exponent;
-    integer::block_t base;
-    integer::block_t expected;
-
-    friend std::ostream& operator<<(std::ostream& os, const pow_sample_t& s) {
-        os << "exponent: " << s.exponent << ", base: " << s.base << ", expected: " << s.expected;
-        return os;
-    }
-} pow_samples[] {
-    {0, 3, 1},
-    {1, 3, 3},
-    {2, 3, 9},
-    {3, 3, 27},
-    {4, 3, 81},
-    {5, 10, 10'0000},
-    {5, 0xff, 1'078'203'909'375},
-};
-
-BOOST_DATA_TEST_CASE(pow, pow_samples)
-{
-    const wide_int<64> n1 = sample.base;
-    const wide_int<64> e = sample.exponent;
-    const auto n2 = n1.pow(e);
-    BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
-}
-
 struct cmp_sample_t {
     const integer& lhs;
     const integer& rhs;
@@ -385,6 +358,33 @@ BOOST_DATA_TEST_CASE(left_shift, left_shift_samples)
     integer n = sample.lhs;
     BOOST_TEST((n <<= sample.rhs) == sample.expected);
     BOOST_TEST(n == sample.expected);
+}
+
+static struct pow_sample_t {
+    integer::block_t exponent;
+    integer::block_t base;
+    integer::block_t expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const pow_sample_t& s) {
+        os << "exponent: " << s.exponent << ", base: " << s.base << ", expected: " << s.expected;
+        return os;
+    }
+} pow_samples[] {
+    {0, 3, 1},
+    {1, 3, 3},
+    {2, 3, 9},
+    {3, 3, 27},
+    {4, 3, 81},
+    {5, 10, 10'0000},
+    {5, 0xff, 1'078'203'909'375},
+};
+
+BOOST_DATA_TEST_CASE(pow, pow_samples)
+{
+    const wide_int<64> n1 = sample.base;
+    const wide_int<64> e = sample.exponent;
+    const auto n2 = n1.pow(e);
+    BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
