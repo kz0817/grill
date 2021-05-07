@@ -259,6 +259,8 @@ static struct pow_sample_t {
     {2, 3, 9},
     {3, 3, 27},
     {4, 3, 81},
+    {5, 10, 10'0000},
+    {5, 0xff, 1'078'203'909'375},
 };
 
 BOOST_DATA_TEST_CASE(pow, pow_samples)

@@ -3,6 +3,7 @@
 #include <cstring>
 #include <sstream>
 #include "integer.h"
+#include "constant.h"
 
 namespace grill {
 
@@ -285,12 +286,18 @@ integer& integer::operator<<=(const int r) {
 
 integer integer::pow(const integer& e) const {
     if (get_num_blocks() != 1)
-        throw std::logic_error("Not implmented yet");
+        THROW_ERROR("Not implmented yet: pow()");
 
-    block_t cnt = e.ref_blocks()[0];
+    const int exp_bits = e.get_num_blocks() * sizeof(block_t) * 8;
     integer n = create(1);
-    for (block_t i = 0; i < cnt; i++)
-        n *= (*this);
+    integer x = (*this);
+    integer mask = e.create(1);
+    for (int b = 0; b < exp_bits; b++) {
+        if ((e & mask) != constant::Zero)
+            n *= x;
+        x *= x;
+        mask <<= 1;
+    }
     return n;
 }
 
