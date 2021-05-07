@@ -360,31 +360,22 @@ BOOST_DATA_TEST_CASE(left_shift, left_shift_samples)
     BOOST_TEST(n == sample.expected);
 }
 
-static struct pow_sample_t {
-    integer::block_t base;
-    integer::block_t exponent;
-    integer::block_t expected;
-
-    friend std::ostream& operator<<(std::ostream& os, const pow_sample_t& s) {
-        os << "exponent: " << s.exponent << ", base: " << s.base << ", expected: " << s.expected;
-        return os;
-    }
-} pow_samples[] {
-    {3, 0, 1},
-    {3, 1, 3},
-    {3, 2, 9},
-    {3, 3, 27},
-    {3, 4, 81},
-    {10, 5, 10'0000},
-    {0xff, 5, 1'078'203'909'375},
+static binary_op_sample_t pow_samples[] {
+    {wide_int<64>(3), wide_int<64>(0ul), wide_int<64>(1)},
+    {wide_int<64>(3), wide_int<64>(1), wide_int<64>(3)},
+    {wide_int<64>(3), wide_int<64>(2), wide_int<64>(9)},
+    {wide_int<64>(3), wide_int<64>(3), wide_int<64>(27)},
+    {wide_int<64>(3), wide_int<64>(4), wide_int<64>(81)},
+    {wide_int<64>(10), wide_int<64>(5), wide_int<64>(100'000)},
+    {wide_int<64>(0xff), wide_int<64>(5), wide_int<64>(1'078'203'909'375)},
 };
 
 BOOST_DATA_TEST_CASE(pow, pow_samples)
 {
-    const wide_int<64> n1 = sample.base;
-    const wide_int<64> e = sample.exponent;
-    const auto n2 = n1.pow(e);
-    BOOST_TEST(n2.ref_blocks()[0] == sample.expected);
+    integer base = sample.lhs;
+    const integer& exponent = sample.rhs;
+    const auto n = base.pow(exponent);
+    BOOST_TEST(n == sample.expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
