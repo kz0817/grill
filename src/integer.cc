@@ -267,7 +267,7 @@ integer integer::operator&(const integer& r) const {
     return n;
 }
 
-integer& integer::operator<<=(const int r) {
+integer& integer::operator<<=(const unsigned int r) {
     const int shift_bits = r % BlockBits;
     block_t* blocks = get_blocks();
     for (int i = get_num_blocks() - 1; i >= 0; i--) {
