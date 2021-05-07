@@ -30,6 +30,7 @@ public:
     integer& operator/=(const integer& n);
     integer& operator%=(const integer& n);
     integer& operator=(const block_t n);
+    integer& operator=(integer&& n);
 
     integer operator+(const integer& r) const;
     integer operator-(const integer& r) const;

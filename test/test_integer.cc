@@ -233,6 +233,17 @@ BOOST_AUTO_TEST_CASE(substitution)
     BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
+BOOST_AUTO_TEST_CASE(move_substitution)
+{
+    wide_int<256> src({1, 2, 3, 4});
+    const integer n = std::move(src);
+
+    const integer::block_t expected[] = {4, 3, 2, 1};
+    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
+    BOOST_TEST(src.is_blocks_owner() == false);
+    BOOST_TEST(n.is_blocks_owner() == false);
+}
+
 static struct pow_sample_t {
     integer::block_t exponent;
     integer::block_t base;

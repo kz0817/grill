@@ -136,6 +136,19 @@ integer& integer::operator=(const block_t n) {
     return *this;
 }
 
+integer& integer::operator=(integer&& n) {
+    if (this->blocks_owner)
+        delete [] this->blocks; // TODO: use a custom allocator
+
+    this->num_blocks = n.num_blocks;
+    this->blocks = n.blocks,
+    this->blocks_owner = n.blocks_owner;
+    if (n.blocks_owner)
+        n.blocks_owner = false;
+
+    return *this;
+}
+
 integer integer::operator+(const integer& r) const {
     integer n(*this);
     n += r;
