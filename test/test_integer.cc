@@ -361,8 +361,8 @@ BOOST_DATA_TEST_CASE(left_shift, left_shift_samples)
 }
 
 static struct pow_sample_t {
-    integer::block_t exponent;
     integer::block_t base;
+    integer::block_t exponent;
     integer::block_t expected;
 
     friend std::ostream& operator<<(std::ostream& os, const pow_sample_t& s) {
@@ -370,13 +370,13 @@ static struct pow_sample_t {
         return os;
     }
 } pow_samples[] {
-    {0, 3, 1},
-    {1, 3, 3},
-    {2, 3, 9},
+    {3, 0, 1},
+    {3, 1, 3},
+    {3, 2, 9},
     {3, 3, 27},
-    {4, 3, 81},
-    {5, 10, 10'0000},
-    {5, 0xff, 1'078'203'909'375},
+    {3, 4, 81},
+    {10, 5, 10'0000},
+    {0xff, 5, 1'078'203'909'375},
 };
 
 BOOST_DATA_TEST_CASE(pow, pow_samples)
