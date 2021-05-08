@@ -1,6 +1,6 @@
 #include <type_traits>
 #include <cstddef>
-#include <unordered_map>
+#include <map>
 #include "block_allocator.h"
 #include "integer.h"
 
@@ -22,7 +22,7 @@ struct block_packet_list_head {
 static constexpr std::size_t OffsetBlocks = offsetof(block_packet, blocks);
 
 struct block_allocator::private_context {
-    std::unordered_map<std::size_t, block_packet_list_head *> cache_table;
+    std::map<std::size_t, block_packet_list_head *> cache_table;
 
     block_packet_list_head* get_list_head(const std::size_t num_blocks) {
         const auto it = this->cache_table.find(num_blocks);
