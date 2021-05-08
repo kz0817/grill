@@ -6,6 +6,40 @@
 
 using namespace grill;
 
+struct cmp_sample_t {
+    const integer& lhs;
+    const integer& rhs;
+    bool expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const cmp_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs <<
+              ", expected: " << util::to_string(s.expected);
+        return os;
+    }
+};
+
+struct binary_op_sample_t {
+    const integer& lhs;
+    const integer& rhs;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const binary_op_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
+        return os;
+    }
+};
+
+struct integer_and_int_sample_t {
+    const integer& lhs;
+    int rhs;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const integer_and_int_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
+        return os;
+    }
+};
+
 static std::vector<integer::block_t> create_block_vector(const integer& n) {
     const int num_blocks = n.get_num_blocks();
     std::vector<integer::block_t> vec;
@@ -232,18 +266,6 @@ BOOST_AUTO_TEST_CASE(move_substitution)
     BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
-struct cmp_sample_t {
-    const integer& lhs;
-    const integer& rhs;
-    bool expected;
-
-    friend std::ostream& operator<<(std::ostream& os, const cmp_sample_t& s) {
-        os << "lhs: " << s.lhs << ", rhs: " << s.rhs <<
-              ", expected: " << util::to_string(s.expected);
-        return os;
-    }
-};
-
 static cmp_sample_t equal_samples[] {
     {wide_int<64>(7),  wide_int<64>(7),  true},
     {wide_int<64>(7),  wide_int<64>(9),  false},
@@ -295,17 +317,6 @@ BOOST_DATA_TEST_CASE(gt_eq, gt_eq_samples)
     BOOST_TEST((sample.lhs >= sample.rhs) == sample.expected);
 }
 
-struct binary_op_sample_t {
-    const integer& lhs;
-    const integer& rhs;
-    const integer& expected;
-
-    friend std::ostream& operator<<(std::ostream& os, const binary_op_sample_t& s) {
-        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
-        return os;
-    }
-};
-
 static binary_op_sample_t bitwise_and_samples[] {
     {wide_int<64>(0xea),  wide_int<64>(0xcc),  wide_int<64>(0xc8)},
     {wide_int<256>(0xea), wide_int<64>(0xcc),  wide_int<256>(0xc8)},
@@ -318,17 +329,6 @@ BOOST_DATA_TEST_CASE(bitwise_and, bitwise_and_samples)
     BOOST_TEST(result == sample.expected);
     BOOST_TEST(result.get_num_blocks() == sample.expected.get_num_blocks());
 }
-
-struct integer_and_int_sample_t {
-    const integer& lhs;
-    int rhs;
-    const integer& expected;
-
-    friend std::ostream& operator<<(std::ostream& os, const integer_and_int_sample_t& s) {
-        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
-        return os;
-    }
-};
 
 static integer_and_int_sample_t left_shift_samples[] {
     {wide_int<64>(0x40002000100080a5), 0, wide_int<64>(0x40002000100080a5)},
