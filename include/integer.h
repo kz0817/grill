@@ -59,10 +59,10 @@ private:
 
 template<std::size_t N>
 class wide_int : public integer {
-public:
     static_assert((N % 64) == 0, "N must be a multiple of 64");
     static constexpr std::size_t B = (N / 64);
 
+public:
     wide_int(const integer::block_t init_value = 0)
     : integer(B, {init_value}) {
     }
