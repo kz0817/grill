@@ -3,11 +3,15 @@
 #include <cstring>
 #include <sstream>
 #include "integer.h"
+#include "block_allocator.h"
 #include "constant.h"
 
 namespace grill {
 
 static const int BlockBits = sizeof(integer::block_t) * 8;
+
+// Don't delete 'allocator' because allocator::free() has to work always
+static thread_local block_allocator *allocator = new block_allocator;
 
 static std::string create_error_msg(const char* const filename, const int lineno,
                                     const char* const msg) {
@@ -23,7 +27,7 @@ static std::string create_error_msg(const char* const filename, const int lineno
 //
 integer::integer(const std::size_t n_blk)
 : num_blocks(n_blk),
-  blocks(new block_t[this->num_blocks]) { //  TODO: use a custom allocator
+  blocks(allocator->take(this->num_blocks)) {
 }
 
 integer::integer(const std::size_t n_blk, const block_t* const src)
@@ -67,7 +71,8 @@ integer::integer(const std::size_t n_blk, const std::initializer_list<block_t>& 
 }
 
 integer::~integer() {
-    delete [] this->blocks; // TODO: use a custom allocator
+    if (this->blocks != nullptr)
+        allocator->free(this->blocks);
 }
 
 std::size_t integer::get_num_blocks() const {
@@ -139,7 +144,7 @@ integer& integer::operator%=(const integer& n) {
 }
 
 integer& integer::operator=(integer&& n) {
-    delete [] this->blocks; // TODO: use a custom allocator
+    allocator->free(this->blocks);
 
     this->num_blocks = n.num_blocks;
     this->blocks = n.blocks,
