@@ -23,3 +23,4 @@ missing
 *.lo
 *.o
 test/test-runner
+tools/create-integers
