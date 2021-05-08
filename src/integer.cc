@@ -70,12 +70,6 @@ integer::~integer() {
     delete [] this->blocks; // TODO: use a custom allocator
 }
 
-integer integer::create(const integer::block_t init_value) const {
-    integer n(get_num_blocks());
-    n = init_value;
-    return n;
-}
-
 std::size_t integer::get_num_blocks() const {
     return this->num_blocks;
 }
@@ -141,15 +135,6 @@ integer& integer::operator%=(const integer& n) {
         throw std::logic_error("Not implmented yet");
 
     get_blocks()[0] %= n.ref_blocks()[0];
-    return *this;
-}
-
-integer& integer::operator=(const block_t n) {
-    this->blocks[0] = n;
-
-    const std::size_t num_zero_blocks = this->num_blocks - 1;
-    if (num_zero_blocks >= 1)
-        std::memset(&this->blocks[1], 0, sizeof(block_t) * num_zero_blocks);
     return *this;
 }
 
@@ -274,7 +259,7 @@ integer integer::operator&(const integer& r) const {
     const bool this_is_wider = (get_num_blocks() >= r.get_num_blocks());
     const integer& wider = this_is_wider ? *this : r;
     const integer& other = this_is_wider ? r : *this;
-    integer n = wider.create(0);
+    integer n(wider.get_num_blocks(), {0});
     integer::block_t* blocks = n.get_blocks();
     bitwise_and(wider, other, blocks);
     return n;
@@ -302,9 +287,9 @@ integer integer::pow(const integer& e) const {
         THROW_ERROR("Not implmented yet: pow()");
 
     const int exp_bits = e.get_num_blocks() * sizeof(block_t) * 8;
-    integer n = create(1);
+    integer n(get_num_blocks(), {1});
     integer x = (*this);
-    integer mask = e.create(1);
+    integer mask(e.get_num_blocks(), {1});
     for (int b = 0; b < exp_bits; b++) {
         if ((e & mask) != constant::Zero)
             n *= x;

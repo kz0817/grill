@@ -15,7 +15,6 @@ public:
     integer(integer&& n);
     integer(const std::size_t n_blk, const std::initializer_list<block_t>& src);
     virtual ~integer();
-    integer create(const integer::block_t init_value) const;
 
     std::size_t get_num_blocks() const;
     const block_t* ref_blocks() const;
@@ -28,7 +27,7 @@ public:
     integer& operator*=(const integer& n);
     integer& operator/=(const integer& n);
     integer& operator%=(const integer& n);
-    integer& operator=(const block_t n);
+
     integer& operator=(integer&& n);
 
     integer operator+(const integer& r) const;
