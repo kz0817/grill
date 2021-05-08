@@ -18,36 +18,60 @@ static std::string create_error_msg(const char* const filename, const int lineno
 
 #define THROW_ERROR(MSG) throw std::runtime_error(create_error_msg(__FILE__, __LINE__, MSG))
 
-integer::integer(const integer& n, const bool skip_blocks_copy)
-: num_blocks(n.get_num_blocks()),
-  blocks(new block_t[this->num_blocks]), //  TODO: use a custom allocator
-  blocks_owner(true) {
-    if (!skip_blocks_copy)
-        std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
+//
+// protected methods
+//
+integer::integer(const std::size_t n_blk)
+: num_blocks(n_blk),
+  blocks(new block_t[this->num_blocks]) { //  TODO: use a custom allocator
+}
+
+integer::integer(const std::size_t n_blk, const block_t* const src)
+: integer(n_blk) {
+    for (std::size_t i = 0; i < n_blk; i++) {
+        int idx = n_blk - i - 1;
+        this->blocks[idx] = src[i];
+    }
+}
+
+integer::block_t* integer::get_blocks() const {
+    return this->blocks;
+}
+
+//
+// public methods
+//
+integer::integer(const integer& n)
+: integer(n.num_blocks) {
+    std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
 }
 
 integer::integer(integer&& n)
 : num_blocks(n.num_blocks),
-  blocks(n.blocks),
-  blocks_owner(n.blocks_owner) {
-    if (n.blocks_owner)
-        n.blocks_owner = false;
+  blocks(n.blocks) {
+    n.blocks = nullptr;
 }
 
-integer::integer(const std::size_t num, block_t* const buf)
-: num_blocks(num),
-  blocks(buf),
-  blocks_owner(false) {
+integer::integer(const std::size_t n_blk, const std::initializer_list<block_t>& src)
+: integer(n_blk) {
+    const std::size_t num_args = src.size();
+    assert(num_args <= this->num_blocks);
+
+    int idx = num_args - 1;
+    for (const block_t& v: src)
+        blocks[idx--] = v;
+
+    const std::size_t num_zero_blocks = this->num_blocks - num_args;
+    if (num_zero_blocks > 0)
+        std::memset(&blocks[num_args], 0, sizeof(block_t) * num_zero_blocks);
 }
 
 integer::~integer() {
-    if (this->blocks_owner)
-        delete [] this->blocks; // TODO: use a custom allocator
+    delete [] this->blocks; // TODO: use a custom allocator
 }
 
 integer integer::create(const integer::block_t init_value) const {
-    const bool skip_block_copy = true;
-    integer n(*this, skip_block_copy);
+    integer n(get_num_blocks());
     n = init_value;
     return n;
 }
@@ -56,16 +80,8 @@ std::size_t integer::get_num_blocks() const {
     return this->num_blocks;
 }
 
-integer::block_t* integer::get_blocks() const {
-    return this->blocks;
-}
-
 const integer::block_t* integer::ref_blocks() const {
     return get_blocks();
-}
-
-bool integer::is_blocks_owner() const {
-    return this->blocks_owner;
 }
 
 integer::operator std::string() const {
@@ -138,14 +154,11 @@ integer& integer::operator=(const block_t n) {
 }
 
 integer& integer::operator=(integer&& n) {
-    if (this->blocks_owner)
-        delete [] this->blocks; // TODO: use a custom allocator
+    delete [] this->blocks; // TODO: use a custom allocator
 
     this->num_blocks = n.num_blocks;
     this->blocks = n.blocks,
-    this->blocks_owner = n.blocks_owner;
-    if (n.blocks_owner)
-        n.blocks_owner = false;
+    n.blocks = nullptr;
 
     return *this;
 }

@@ -18,16 +18,11 @@ static std::vector<integer::block_t> create_block_vector(const integer& n) {
 
 BOOST_AUTO_TEST_SUITE(test_suite_integer)
 
-BOOST_AUTO_TEST_CASE(get_bytes)
-{
-    wide_int<64> n;
-    BOOST_TEST(n.get_num_blocks() == 1);
-}
-
-BOOST_AUTO_TEST_CASE(initial_value)
+BOOST_AUTO_TEST_CASE(default_constructor)
 {
     wide_int<64> n;
     BOOST_TEST(n.ref_blocks()[0] == 0);
+    BOOST_TEST(n.get_num_blocks() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(one_initial_value)
@@ -77,20 +72,20 @@ BOOST_AUTO_TEST_CASE(copy_constructor)
     const auto n2(n1);
 
     BOOST_TEST(n2.ref_blocks()[0] == 123);
-    BOOST_TEST(n1.is_blocks_owner() == false);
-    BOOST_TEST(n2.is_blocks_owner() == true);
     BOOST_TEST(n1.ref_blocks() != n2.ref_blocks());
+    BOOST_TEST(n1.ref_blocks() != nullptr);
+    BOOST_TEST(n2.ref_blocks() != nullptr);
 }
 
 BOOST_AUTO_TEST_CASE(move_constructor)
 {
     wide_int<64> n1 = 123;
+    const auto n1_ref_blocks = n1.ref_blocks();
     const auto n2(std::move(n1));
 
     BOOST_TEST(n2.ref_blocks()[0] == 123);
-    BOOST_TEST(n1.is_blocks_owner() == false);
-    BOOST_TEST(n2.is_blocks_owner() == false);
-    BOOST_TEST(n1.ref_blocks() == n2.ref_blocks());
+    BOOST_TEST(n1_ref_blocks == n2.ref_blocks());
+    BOOST_TEST(n1.ref_blocks() == nullptr);
 }
 
 static struct cast_string_sample_t {
@@ -133,7 +128,6 @@ BOOST_AUTO_TEST_CASE(add_binary_operator)
     BOOST_TEST(n1.ref_blocks()[0] == 10);
     BOOST_TEST(n2.ref_blocks()[0] == 3);
     BOOST_TEST(n.ref_blocks()[0] == 13);
-    BOOST_TEST(n.is_blocks_owner() == true);
 }
 
 BOOST_AUTO_TEST_CASE(sub)
@@ -155,7 +149,6 @@ BOOST_AUTO_TEST_CASE(sub_binary_opreator)
     BOOST_TEST(n1.ref_blocks()[0] == 10);
     BOOST_TEST(n2.ref_blocks()[0] == 3);
     BOOST_TEST(n.ref_blocks()[0] == 7);
-    BOOST_TEST(n.is_blocks_owner() == true);
 }
 
 BOOST_AUTO_TEST_CASE(mul)
@@ -177,7 +170,6 @@ BOOST_AUTO_TEST_CASE(mul_binary_opreator)
     BOOST_TEST(n1.ref_blocks()[0] == 10);
     BOOST_TEST(n2.ref_blocks()[0] == 3);
     BOOST_TEST(n.ref_blocks()[0] == 30);
-    BOOST_TEST(n.is_blocks_owner() == true);
 }
 
 BOOST_AUTO_TEST_CASE(div)
@@ -199,7 +191,6 @@ BOOST_AUTO_TEST_CASE(div_binary_opreator)
     BOOST_TEST(n1.ref_blocks()[0] == 11);
     BOOST_TEST(n2.ref_blocks()[0] == 4);
     BOOST_TEST(n.ref_blocks()[0] == 2);
-    BOOST_TEST(n.is_blocks_owner() == true);
 }
 
 BOOST_AUTO_TEST_CASE(mod)
@@ -221,7 +212,6 @@ BOOST_AUTO_TEST_CASE(mod_binary_opreator)
     BOOST_TEST(n1.ref_blocks()[0] == 11);
     BOOST_TEST(n2.ref_blocks()[0] == 4);
     BOOST_TEST(n.ref_blocks()[0] == 3);
-    BOOST_TEST(n.is_blocks_owner() == true);
 }
 
 BOOST_AUTO_TEST_CASE(substitution)
@@ -240,8 +230,6 @@ BOOST_AUTO_TEST_CASE(move_substitution)
 
     const integer::block_t expected[] = {4, 3, 2, 1};
     BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
-    BOOST_TEST(src.is_blocks_owner() == false);
-    BOOST_TEST(n.is_blocks_owner() == false);
 }
 
 struct cmp_sample_t {

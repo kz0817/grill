@@ -51,5 +51,4 @@ BOOST_AUTO_TEST_CASE(to_string_of_false)
     BOOST_TEST(util::to_string(false) == "false");
 }
 
-
 BOOST_AUTO_TEST_SUITE_END()
