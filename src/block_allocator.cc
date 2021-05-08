@@ -6,8 +6,10 @@
 
 namespace grill {
 
+struct block_packet_list_head;
+
 struct block_packet {
-    std::size_t num_blocks;
+    block_packet_list_head* list_head;
     block_packet *next;
     integer::block_t blocks[];
 };
@@ -32,10 +34,11 @@ struct block_allocator::private_context {
         return head;
     }
 
-    block_packet* create_block_packet(const std::size_t num_blocks) {
+    block_packet* create_block_packet(const std::size_t num_blocks,
+                                      block_packet_list_head *list_head) {
         const std::size_t pkt_size = sizeof(block_packet) + sizeof(integer::block_t) * num_blocks;
         block_packet* pkt = reinterpret_cast<block_packet *>(new uint8_t[pkt_size]);
-        pkt->num_blocks = num_blocks;
+        pkt->list_head = list_head;
         pkt->next = nullptr;
         return pkt;
     }
@@ -51,7 +54,7 @@ struct block_allocator::private_context {
         if (pkt != nullptr)
             head->next = pkt->next; // take the first entry out
         else
-            pkt = create_block_packet(num_blocks);
+            pkt = create_block_packet(num_blocks, head);
         return pkt->blocks;
     }
 
@@ -60,7 +63,7 @@ struct block_allocator::private_context {
 
         // TODO: add pkt deletion when the number of caches is over the upper limit.
 
-        block_packet_list_head* head = get_list_head(pkt->num_blocks);
+        block_packet_list_head* head = pkt->list_head;
         pkt->next = head->next;
         head->next = pkt;
     }
