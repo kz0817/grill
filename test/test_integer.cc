@@ -18,6 +18,16 @@ struct cmp_sample_t {
     }
 };
 
+struct unary_op_sample_t {
+    const integer& n;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const unary_op_sample_t& s) {
+        os << "lhs: " << ", expected: " << s.expected;
+        return os;
+    }
+};
+
 struct binary_op_sample_t {
     const integer& lhs;
     const integer& rhs;
@@ -373,6 +383,18 @@ BOOST_DATA_TEST_CASE(left_shift, left_shift_samples)
     integer n = sample.lhs;
     BOOST_TEST((n <<= sample.rhs) == sample.expected);
     BOOST_TEST(n == sample.expected);
+}
+
+static unary_op_sample_t prefix_increment_samples[] {
+    {wide_int<64>(),  wide_int<64>(1)},
+    {wide_int<64>(1), wide_int<64>(2)},
+    {wide_int<64>(0xffff'ffff'ffff'ffff), wide_int<64>()},
+};
+
+BOOST_DATA_TEST_CASE(prefix_increment, prefix_increment_samples)
+{
+    integer n = sample.n;
+    BOOST_TEST(++n == sample.expected);
 }
 
 static integer_to_int_sample_t most_significant_active_bit_samples[] {

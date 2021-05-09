@@ -291,6 +291,11 @@ integer& integer::operator<<=(const unsigned int r) {
     return *this;
 }
 
+integer& integer::operator++() {
+    (*this) += constant::One;
+    return *this;
+}
+
 static int get_most_significant_active_bit(const integer::block_t blk) {
     integer::block_t mask = 1;
     mask <<= (BlockBits - 1);
