@@ -29,6 +29,12 @@ static struct sample_t {
     {wide_int<64>(12), false},
 };
 
+BOOST_DATA_TEST_CASE(test_trivial_division_for_native, samples)
+{
+    const integer::block_t n = sample.num.ref_blocks()[0];
+    BOOST_TEST(primality::trivial_division(n) == sample.is_prime_number);
+}
+
 BOOST_DATA_TEST_CASE(test_fermat_test, samples)
 {
     BOOST_TEST(primality::fermat_test(sample.num) == sample.is_prime_number);
