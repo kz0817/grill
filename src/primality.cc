@@ -23,21 +23,7 @@ bool templated_trivial_division(const T& n, const T& zero, const T& two) {
 }
 
 bool primality::trivial_division(const integer::block_t n) {
-
-    std::vector<integer::block_t> prime_numbers;
-    auto is_prime = [&](integer::block_t i) {
-        for (const auto& prime: prime_numbers) {
-            if ((i % prime) == 0)
-                return false;
-        }
-        return true;
-    };
-
-    for (integer::block_t i = 2; (i * i) <= n; i++) {
-        if (is_prime(i))
-            prime_numbers.emplace_back(i);
-    }
-    return is_prime(n);
+    return templated_trivial_division<integer::block_t>(n, 0, 2);
 }
 
 bool primality::trivial_division(const integer& n) {
