@@ -287,15 +287,40 @@ integer& integer::operator<<=(const unsigned int r) {
     return *this;
 }
 
+static int get_most_significant_active_bit(const integer::block_t blk) {
+    integer::block_t mask = 1;
+    mask <<= (BlockBits - 1);
+    for (int bit = BlockBits; bit >= 0; bit--) {
+        if ((blk & mask) == 0) {
+            mask >>= 1;
+            continue;
+        }
+        return bit;
+    }
+    return 0;
+}
+
+int integer::most_significant_active_bit() const {
+    const std::size_t num_blocks = get_num_blocks();
+    const block_t* blocks = ref_blocks();
+    for (int blk_idx = num_blocks - 1; blk_idx >= 0; blk_idx--) {
+        const block_t blk = blocks[blk_idx];
+        if (blk == 0)
+            continue;
+        return blk_idx * BlockBits + get_most_significant_active_bit(blk);
+    }
+    return 0;
+}
+
 integer integer::pow(const integer& e) const {
     if (get_num_blocks() != 1)
         THROW_ERROR("Not implmented yet: pow()");
 
-    const int exp_bits = e.get_num_blocks() * sizeof(block_t) * 8;
+    const int most_significant_active_bit = e.most_significant_active_bit();
     integer n(get_num_blocks(), {1});
     integer x = (*this);
     integer mask(e.get_num_blocks(), {1});
-    for (int b = 0; b < exp_bits; b++) {
+    for (int b = 0; b < most_significant_active_bit; b++) {
         if ((e & mask) != constant::Zero)
             n *= x;
         x *= x;

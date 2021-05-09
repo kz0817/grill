@@ -40,6 +40,16 @@ struct integer_and_int_sample_t {
     }
 };
 
+struct integer_to_int_sample_t {
+    const integer& n;
+    const int expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const integer_to_int_sample_t& s) {
+        os << "n: " << s.n << ", expected: " << s.expected;
+        return os;
+    }
+};
+
 static std::vector<integer::block_t> create_block_vector(const integer& n) {
     const int num_blocks = n.get_num_blocks();
     std::vector<integer::block_t> vec;
@@ -346,6 +356,24 @@ BOOST_DATA_TEST_CASE(left_shift, left_shift_samples)
     integer n = sample.lhs;
     BOOST_TEST((n <<= sample.rhs) == sample.expected);
     BOOST_TEST(n == sample.expected);
+}
+
+static integer_to_int_sample_t most_significant_active_bit_samples[] {
+    {wide_int<64>(),  0},
+    {wide_int<64>(1), 1},
+    {wide_int<64>(2), 2},
+    {wide_int<64>(3), 2},
+    {wide_int<64>(0xa5), 8},
+    {wide_int<64>(0x4123'4567'89ab'cdef), 63},
+    {wide_int<64>(0x8123'4567'89ab'cdef), 64},
+    {wide_int<128>({0, 0x8123'4567'89ab'cdef}), 64},
+    {wide_int<128>({1, 0x8123'4567'89ab'cdef}), 65},
+    {wide_int<128>({0xa0, 0x8123'4567'89ab'cdef}), 72},
+};
+
+BOOST_DATA_TEST_CASE(most_significant_active_bit, most_significant_active_bit_samples)
+{
+    BOOST_TEST(sample.n.most_significant_active_bit() == sample.expected);
 }
 
 static binary_op_sample_t pow_samples[] {

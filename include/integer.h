@@ -44,6 +44,7 @@ public:
 
     integer& operator<<=(const unsigned int r);
 
+    int most_significant_active_bit() const;
     integer pow(const integer& e) const;
 
 protected:
