@@ -8,6 +8,7 @@ namespace grill {
 class primality {
 public:
     static bool trivial_division(const integer::block_t n);
+    static bool trivial_division(const integer& n);
     static bool fermat_test(const integer& n);
 };
 

@@ -3,6 +3,24 @@
 
 namespace grill {
 
+template<typename T>
+bool templated_trivial_division(const T& n, const T& zero, const T& two) {
+
+    std::vector<T> prime_numbers;
+    auto is_prime = [&](const T& i) {
+        for (const auto& prime: prime_numbers) {
+            if ((i % prime) == zero)
+                return false;
+        }
+        return true;
+    };
+
+    for (T i = two; (i * i) <= n; ++i) {
+        if (is_prime(i))
+            prime_numbers.emplace_back(i);
+    }
+    return is_prime(n);
+}
 
 bool primality::trivial_division(const integer::block_t n) {
 
@@ -20,6 +38,10 @@ bool primality::trivial_division(const integer::block_t n) {
             prime_numbers.emplace_back(i);
     }
     return is_prime(n);
+}
+
+bool primality::trivial_division(const integer& n) {
+    return templated_trivial_division<integer>(n, constant::Zero, constant::Two);
 }
 
 static bool pass_fermat_little_theorem(const integer& n, const integer& a) {

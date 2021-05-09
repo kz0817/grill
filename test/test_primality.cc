@@ -35,6 +35,11 @@ BOOST_DATA_TEST_CASE(test_trivial_division_for_native, samples)
     BOOST_TEST(primality::trivial_division(n) == sample.is_prime_number);
 }
 
+BOOST_DATA_TEST_CASE(test_trivial_division, samples)
+{
+    BOOST_TEST(primality::trivial_division(sample.num) == sample.is_prime_number);
+}
+
 BOOST_DATA_TEST_CASE(test_fermat_test, samples)
 {
     BOOST_TEST(primality::fermat_test(sample.num) == sample.is_prime_number);
