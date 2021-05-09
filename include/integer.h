@@ -39,6 +39,7 @@ public:
     bool operator==(const integer& r) const;
     bool operator!=(const integer& r) const;
     bool operator>=(const integer& r) const;
+    bool operator<=(const integer& r) const;
 
     integer operator&(const integer& r) const;
 

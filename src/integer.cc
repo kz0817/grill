@@ -252,6 +252,10 @@ bool integer::operator>=(const integer& r) const {
     return (get_num_blocks() >= r.get_num_blocks()) ? is_gt_eq(*this, r) : is_lt_eq(r, *this);
 }
 
+bool integer::operator<=(const integer& r) const {
+    return (get_num_blocks() >= r.get_num_blocks()) ? is_lt_eq(*this, r) : is_gt_eq(r, *this);
+}
+
 static void bitwise_and(const integer& lhs, const integer& rhs, integer::block_t* blocks) {
     const int num_common_blocks = rhs.get_num_blocks();
     const integer::block_t* lhs_blocks = lhs.ref_blocks();

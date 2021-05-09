@@ -327,6 +327,23 @@ BOOST_DATA_TEST_CASE(gt_eq, gt_eq_samples)
     BOOST_TEST((sample.lhs >= sample.rhs) == sample.expected);
 }
 
+static cmp_sample_t lt_eq_samples[] {
+    {wide_int<64>(7),  wide_int<64>(7),  true},
+    {wide_int<64>(7),  wide_int<64>(9),  true},
+    {wide_int<64>(7),  wide_int<64>(5),  false},
+    {wide_int<256>(7), wide_int<64>(7),  true},
+    {wide_int<256>(7), wide_int<64>(9),  true},
+    {wide_int<256>(7), wide_int<64>(5),  false},
+    {wide_int<64>(7),  wide_int<256>(7), true},
+    {wide_int<64>(7),  wide_int<256>(9), true},
+    {wide_int<64>(7),  wide_int<256>(5), false},
+};
+
+BOOST_DATA_TEST_CASE(lt_eq, lt_eq_samples)
+{
+    BOOST_TEST((sample.lhs <= sample.rhs) == sample.expected);
+}
+
 static binary_op_sample_t bitwise_and_samples[] {
     {wide_int<64>(0xea),  wide_int<64>(0xcc),  wide_int<64>(0xc8)},
     {wide_int<256>(0xea), wide_int<64>(0xcc),  wide_int<256>(0xc8)},
