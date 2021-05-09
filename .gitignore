@@ -24,3 +24,4 @@ missing
 *.o
 test/test-runner
 tools/create-integers
+Leaf/
