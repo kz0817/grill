@@ -1,4 +1,5 @@
 *.swp
+.exrc
 COPYING
 INSTALL
 **/Makefile
@@ -24,4 +25,6 @@ missing
 *.o
 test/test-runner
 tools/create-integers
+tools/calc-pow
+tools/prime-number
 Leaf/
