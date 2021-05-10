@@ -7,6 +7,7 @@ struct constant {
     static const wide_int<64> Zero;
     static const wide_int<64> One;
     static const wide_int<64> Two;
+    static const wide_int<64> Three;
 };
 
 } // namespace grill
