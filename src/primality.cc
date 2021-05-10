@@ -7,8 +7,10 @@ template<typename T>
 bool templated_trivial_division(const T& n, const T& zero, const T& two, const T& three) {
     if (n == two)
         return true;
+    if (n % two == zero)
+        return false;
 
-    std::vector<T> prime_numbers = {two};
+    std::vector<T> prime_numbers = {};
     auto is_prime = [&](const T& i) {
         for (const auto& prime: prime_numbers) {
             if ((i % prime) == zero)
@@ -18,10 +20,13 @@ bool templated_trivial_division(const T& n, const T& zero, const T& two, const T
     };
 
     for (T i = three; (i * i) <= n; i += two) {
-        if (is_prime(i))
+        if (is_prime(i)) {
             prime_numbers.emplace_back(i);
+            if ((n % i) == zero)
+                return false;
+        }
     }
-    return is_prime(n);
+    return true;
 }
 
 bool primality::trivial_division(const integer::block_t n) {
