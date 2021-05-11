@@ -2,9 +2,12 @@
 #include <boost/test/data/test_case.hpp>
 #include <vector>
 #include "integer.h"
+#include "constant.h"
 #include "util.h"
 
 using namespace grill;
+
+const integer::block_t MaxBlockValue = 0xffff'ffff'ffff'ffff;
 
 struct cmp_sample_t {
     const integer& lhs;
@@ -163,14 +166,46 @@ BOOST_DATA_TEST_CASE(cast_string, cast_string_samples)
     BOOST_TEST(static_cast<std::string>(sample.n) == sample.expected);
 }
 
-BOOST_AUTO_TEST_CASE(add)
-{
-    wide_int<64> n1 = 10;
-    wide_int<64> n2 = 3;
+//
+// += operator
+//
+static binary_op_sample_t add_subst_operator_samples[] = {
+    {
+        wide_int<64>(10),
+        wide_int<64>(3),
+        wide_int<64>(13)
+    }, {
+        wide_int<64>(MaxBlockValue),
+        wide_int<64>(1),
+        constant::Zero
+    },
 
-    n1 += n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 13);
-    BOOST_TEST(n2.ref_blocks()[0] == 3);
+    {
+        wide_int<256>({1, 2, 3, 4}),
+        wide_int<128>({10, 20}),
+        wide_int<256>({1, 2, 13, 24})
+    }, {
+        wide_int<256>({1, MaxBlockValue, MaxBlockValue, MaxBlockValue}),
+        wide_int<128>({1, 2}),
+        wide_int<256>({2, 0, 1, 1})
+    },
+
+    {
+        wide_int<128>({1, 2}),
+        wide_int<256>({10, 20, 30, 40}),
+        wide_int<128>({31, 42})
+    }, {
+        wide_int<128>({1, MaxBlockValue}),
+        wide_int<256>({1, 2, 3, 4}),
+        wide_int<128>({5, 3})
+    },
+};
+
+BOOST_DATA_TEST_CASE(add_subst_operator, add_subst_operator_samples)
+{
+    integer lhs = sample.lhs;
+    lhs += sample.rhs;
+    BOOST_TEST(lhs == sample.expected);
 }
 
 BOOST_AUTO_TEST_CASE(add_binary_operator)

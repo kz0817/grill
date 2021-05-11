@@ -103,11 +103,36 @@ std::ostream& operator<<(std::ostream& os, const integer& data) {
     return os;
 }
 
-integer& integer::operator+=(const integer& n) {
-    if (get_num_blocks() != 1)
-        throw std::logic_error("Not implmented yet");
+static bool add_one_block(integer::block_t& lhs, const integer::block_t rhs,
+                          const bool carry_flag) {
+    const integer::block_t prev_lhs = lhs;
+    lhs += rhs;
+    bool overflow = (lhs < prev_lhs);
 
-    get_blocks()[0] += n.ref_blocks()[0];
+    if (carry_flag) {
+        lhs++;
+        if (lhs == 0)
+            overflow = true;
+    }
+    return overflow;
+}
+
+integer& integer::operator+=(const integer& n) {
+    const int lhs_num_blocks = get_num_blocks();
+    const int rhs_num_blocks = n.get_num_blocks();
+
+    block_t* lhs_blocks = get_blocks();
+    const block_t* rhs_blocks = n.ref_blocks();
+
+    const int num_common_blocks = (lhs_num_blocks <= rhs_num_blocks)
+                                  ? lhs_num_blocks : rhs_num_blocks;
+    bool carry_flag = false;
+    for (int i = 0; i < num_common_blocks; i++)
+        carry_flag = add_one_block(lhs_blocks[i], rhs_blocks[i], carry_flag);
+
+    for (int i = num_common_blocks; i < lhs_num_blocks; i++)
+        carry_flag = add_one_block(lhs_blocks[i], 0, carry_flag);
+
     return *this;
 }
 
