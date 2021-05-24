@@ -49,6 +49,9 @@ public:
     int most_significant_active_bit() const;
     integer pow(const integer& e) const;
 
+    bool is_odd() const;
+    bool is_even() const;
+
 protected:
     integer(const std::size_t n_blk);
     integer(const std::size_t n_blk, const block_t* const src);

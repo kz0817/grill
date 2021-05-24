@@ -363,4 +363,12 @@ integer integer::pow(const integer& e) const {
     return n;
 }
 
+bool integer::is_odd() const {
+    return this->blocks[0] & 1;
+}
+
+bool integer::is_even() const {
+    return !is_odd();
+}
+
 } // namespace grill

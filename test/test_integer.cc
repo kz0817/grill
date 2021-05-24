@@ -63,6 +63,16 @@ struct integer_to_int_sample_t {
     }
 };
 
+struct integer_to_bool_sample_t {
+    const integer& n;
+    const bool expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const integer_to_bool_sample_t& s) {
+        os << "n: " << s.n << ", expected: " << util::to_string(s.expected);
+        return os;
+    }
+};
+
 static std::vector<integer::block_t> create_block_vector(const integer& n) {
     const int num_blocks = n.get_num_blocks();
     std::vector<integer::block_t> vec;
@@ -466,6 +476,21 @@ BOOST_DATA_TEST_CASE(pow, pow_samples)
     const integer& exponent = sample.rhs;
     const auto n = base.pow(exponent);
     BOOST_TEST(n == sample.expected);
+}
+
+static integer_to_bool_sample_t is_odd_samples[] {
+    {wide_int<64>(),   false},
+    {wide_int<64>(1),  true},
+    {wide_int<64>(2),  false},
+    {wide_int<64>(3),  true},
+    {wide_int<256>(),  false},
+    {wide_int<256>(1), true},
+};
+
+BOOST_DATA_TEST_CASE(is_odd_even, is_odd_samples)
+{
+    BOOST_TEST(sample.n.is_odd() == sample.expected);
+    BOOST_TEST(sample.n.is_even() != sample.expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
