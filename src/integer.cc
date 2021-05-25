@@ -22,6 +22,12 @@ static std::string create_error_msg(const char* const filename, const int lineno
 
 #define THROW_ERROR(MSG) throw std::runtime_error(create_error_msg(__FILE__, __LINE__, MSG))
 
+static bool is_valid_index(const std::size_t num_blocks, const int idx) {
+    if (idx < 0)
+        return false;
+    return static_cast<std::size_t>(idx) < num_blocks;
+}
+
 //
 // protected methods
 //
@@ -310,6 +316,24 @@ integer& integer::operator<<=(const unsigned int r) {
                            : 0;
         const block_t x0 = (shift_bits != 0) && (src_lower_idx >= 0)
                            ? blocks[src_lower_idx] >> (BlockBits - shift_bits)
+                           : 0;
+        blocks[i] = x1 | x0;
+    }
+    return *this;
+}
+
+integer& integer::operator>>=(const unsigned int r) {
+    const int shift_bits = r % BlockBits;
+    block_t* blocks = get_blocks();
+    const std::size_t num_blocks = get_num_blocks();
+    for (size_t i = 0; i < num_blocks; i++) {
+        const int src_lower_idx = i + (r / BlockBits);
+        const int src_upper_idx = src_lower_idx + 1;
+        const block_t x1 = (shift_bits != 0) && is_valid_index(num_blocks, src_upper_idx)
+                           ? blocks[src_upper_idx] << (BlockBits - shift_bits)
+                           : 0;
+        const block_t x0 = is_valid_index(num_blocks, src_lower_idx)
+                           ? blocks[src_lower_idx] >> shift_bits
                            : 0;
         blocks[i] = x1 | x0;
     }

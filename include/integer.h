@@ -44,6 +44,7 @@ public:
     integer operator&(const integer& r) const;
 
     integer& operator<<=(const unsigned int r);
+    integer& operator>>=(const unsigned int r);
     integer& operator++();
 
     int most_significant_active_bit() const;

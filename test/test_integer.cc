@@ -430,6 +430,24 @@ BOOST_DATA_TEST_CASE(left_shift, left_shift_samples)
     BOOST_TEST(n == sample.expected);
 }
 
+static integer_and_int_sample_t right_shift_samples[] {
+    {wide_int<64>(0x40002000100080a5), 0, wide_int<64>(0x40002000100080a5)},
+    {wide_int<64>(0x800040002001014a), 1, wide_int<64>(0x40002000100080a5)},
+    {wide_int<128>({0x40, 0x002000100080a500}), 8, wide_int<128>(0x40002000100080a5)},
+    {wide_int<128>({0x40002000100080a5, 0}),   64, wide_int<128>(0x40002000100080a5)},
+    {wide_int<128>({0x8fff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 127, wide_int<128>(1)},
+    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 128, wide_int<128>()},
+    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 129, wide_int<128>()},
+    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 256, wide_int<128>()},
+};
+
+BOOST_DATA_TEST_CASE(right_shift, right_shift_samples)
+{
+    integer n = sample.lhs;
+    BOOST_TEST((n >>= sample.rhs) == sample.expected);
+    BOOST_TEST(n == sample.expected);
+}
+
 static unary_op_sample_t prefix_increment_samples[] {
     {wide_int<64>(),  wide_int<64>(1)},
     {wide_int<64>(1), wide_int<64>(2)},
