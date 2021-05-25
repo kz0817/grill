@@ -59,4 +59,63 @@ bool primality::fermat_test(const integer& n) {
     return true;
 }
 
+//
+// Miller-Rabbin primality test
+//
+static const auto& miller_rabin_test_bases = fermat_test_data;
+
+struct miller_rabin_factors {
+    // n - 1 = (2^s) * d, where n is an odd primary
+    std::size_t s = 0;
+    integer d;
+
+    miller_rabin_factors(const integer& n)
+    : d(n) {
+        while (d.is_even()) {
+            s++;
+            d >>= 1;
+        }
+    }
+};
+
+enum class number_type {
+    ProbablePrime,
+    Composite,
+};
+
+static integer miller_rabin_formula(const integer& a, const integer& exp, const integer& n) {
+    return (a.pow(exp) % n);
+}
+
+static number_type do_miller_rabin_test(
+        const integer& a, const integer& n, const integer& minus_one,
+        const miller_rabin_factors& factors) {
+    integer exp(factors.d);
+    const integer v0 = miller_rabin_formula(a, exp, n);
+    if (v0 == constant::One || v0 == minus_one)
+        return number_type::ProbablePrime;
+
+    for (std::size_t r = 1; r < factors.s; r++) {
+        exp <<= 1;
+        if (miller_rabin_formula(a, exp, n) == minus_one)
+            return number_type::ProbablePrime;
+    }
+    return number_type::Composite;
+}
+
+bool primality::miller_rabin_test(const integer& n) {
+    if (n == constant::Two)
+        return true;
+    if (n.is_even())
+        return false;
+
+    const integer minus_one = n - constant::One;
+    const miller_rabin_factors factors(minus_one);
+    for (const auto& a: miller_rabin_test_bases) {
+        if (do_miller_rabin_test(a, n, minus_one, factors) == number_type::ProbablePrime)
+            return true;
+    }
+    return false;
+}
+
 } // namespace grill
