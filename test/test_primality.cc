@@ -45,4 +45,9 @@ BOOST_DATA_TEST_CASE(test_fermat_test, samples)
     BOOST_TEST(primality::fermat_test(sample.num) == sample.is_prime_number);
 }
 
+BOOST_DATA_TEST_CASE(test_miller_rabin_test, samples)
+{
+    BOOST_TEST(primality::miller_rabin_test(sample.num) == sample.is_prime_number);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
