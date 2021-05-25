@@ -8,7 +8,7 @@ AC_PROG_CXX
 AC_CONFIG_MACRO_DIR([m4])
 AM_SILENT_RULES([yes])
 
-CXXFLAGS="$CXXFLASG -I \${top_srcdir}/include -Wall -O3 -g3 -std=c++2a"
+CXXFLAGS="$CXXFLASG -I \${top_srcdir}/include -Wall -O2 -pipe -g3 -std=c++2a"
 
 AC_CONFIG_FILES([
   Makefile
