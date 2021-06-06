@@ -410,12 +410,10 @@ integer integer::pow(const integer& e) const {
     const int most_significant_active_bit = e.most_significant_active_bit();
     integer n(get_num_blocks(), {1});
     integer x = (*this);
-    integer mask(e.get_num_blocks(), {1});
     for (int b = 0; b < most_significant_active_bit; b++) {
-        if ((e & mask) != constant::Zero)
+        if (e.get_bit_value(b))
             n *= x;
         x *= x;
-        mask <<= 1;
     }
     return n;
 }
