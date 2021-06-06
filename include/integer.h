@@ -48,6 +48,7 @@ public:
     integer& operator++();
 
     int most_significant_active_bit() const;
+    bool get_bit_value(const int b) const;
     integer pow(const integer& e) const;
 
     bool is_odd() const;

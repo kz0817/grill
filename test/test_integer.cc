@@ -63,6 +63,18 @@ struct integer_to_int_sample_t {
     }
 };
 
+struct integer_int_to_bool_sample_t {
+    const integer& lhs;
+    const int rhs;
+    const bool expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const integer_int_to_bool_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs
+           << ", expected: " << util::to_string(s.expected);
+        return os;
+    }
+};
+
 struct integer_to_bool_sample_t {
     const integer& n;
     const bool expected;
@@ -476,6 +488,24 @@ static integer_to_int_sample_t most_significant_active_bit_samples[] {
 BOOST_DATA_TEST_CASE(most_significant_active_bit, most_significant_active_bit_samples)
 {
     BOOST_TEST(sample.n.most_significant_active_bit() == sample.expected);
+}
+
+static integer_int_to_bool_sample_t get_bit_value_samples[] {
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001),  0, true},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001),  1, false},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001), 62, false},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001), 63, true},
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  0,  false},
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  63, false},
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  64, true},
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  65, false},
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 126, false},
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 127, true},
+};
+
+BOOST_DATA_TEST_CASE(get_bit_value, get_bit_value_samples)
+{
+    BOOST_TEST(sample.lhs.get_bit_value(sample.rhs) == sample.expected);
 }
 
 static binary_op_sample_t pow_samples[] {
