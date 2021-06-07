@@ -50,6 +50,7 @@ public:
     int most_significant_active_bit() const;
     bool get_bit_value(const int b) const;
     integer pow(const integer& e) const;
+    integer pow_mod(const integer& e, const integer& mod) const;
 
     bool is_odd() const;
     bool is_even() const;

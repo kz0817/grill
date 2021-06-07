@@ -403,6 +403,27 @@ bool integer::get_bit_value(const int b) const {
     return this->blocks[block_idx] & BitMask[mask_idx];
 }
 
+template<bool MODULO>
+integer pow_template(const integer& base, const integer& e, const integer& mod) {
+    if (base.get_num_blocks() != 1)
+        THROW_ERROR("Not implmented yet: pow()");
+
+    const int most_significant_active_bit = e.most_significant_active_bit();
+    integer n(base.get_num_blocks(), {1});
+    integer x = base;
+    for (int b = 0; b < most_significant_active_bit; b++) {
+        if (e.get_bit_value(b)) {
+            n *= x;
+            if (MODULO)
+                n %= mod;
+        }
+        x *= x;
+        if (MODULO)
+            x %= mod;
+    }
+    return n;
+}
+
 integer integer::pow(const integer& e) const {
     if (get_num_blocks() != 1)
         THROW_ERROR("Not implmented yet: pow()");
@@ -416,6 +437,10 @@ integer integer::pow(const integer& e) const {
         x *= x;
     }
     return n;
+}
+
+integer integer::pow_mod(const integer& e, const integer& mod) const {
+    return pow_template<true>(*this, e, mod);
 }
 
 bool integer::is_odd() const {

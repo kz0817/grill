@@ -42,6 +42,19 @@ struct binary_op_sample_t {
     }
 };
 
+struct binary_mod_op_sample_t {
+    const integer& lhs;
+    const integer& rhs;
+    const integer& mod;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const binary_mod_op_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs
+           << ", mod: " << s.mod << ", expected: " << s.expected;
+        return os;
+    }
+};
+
 struct integer_and_int_sample_t {
     const integer& lhs;
     int rhs;
@@ -523,6 +536,25 @@ BOOST_DATA_TEST_CASE(pow, pow_samples)
     integer base = sample.lhs;
     const integer& exponent = sample.rhs;
     const auto n = base.pow(exponent);
+    BOOST_TEST(n == sample.expected);
+}
+
+static binary_mod_op_sample_t pow_mod_samples[] {
+    {wide_int<64>(3), wide_int<64>(), wide_int<64>(5), wide_int<64>(1)},
+    {wide_int<64>(3), wide_int<64>(1), wide_int<64>(5), wide_int<64>(3)},
+    {wide_int<64>(3), wide_int<64>(2), wide_int<64>(5), wide_int<64>(4)},
+    {wide_int<64>(3), wide_int<64>(3), wide_int<64>(5), wide_int<64>(2)},
+    {wide_int<64>(3), wide_int<64>(4), wide_int<64>(5), wide_int<64>(1)},
+    {wide_int<64>(10), wide_int<64>(5), wide_int<64>(5), wide_int<64>()},
+    {wide_int<64>(0xff), wide_int<64>(5), wide_int<64>(5), wide_int<64>()},
+};
+
+BOOST_DATA_TEST_CASE(pow_mod, pow_mod_samples)
+{
+    integer base = sample.lhs;
+    const integer& exponent = sample.rhs;
+    const integer& mod = sample.mod;
+    const auto n = base.pow_mod(exponent, mod);
     BOOST_TEST(n == sample.expected);
 }
 
