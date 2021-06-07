@@ -425,18 +425,7 @@ integer pow_template(const integer& base, const integer& e, const integer& mod) 
 }
 
 integer integer::pow(const integer& e) const {
-    if (get_num_blocks() != 1)
-        THROW_ERROR("Not implmented yet: pow()");
-
-    const int most_significant_active_bit = e.most_significant_active_bit();
-    integer n(get_num_blocks(), {1});
-    integer x = (*this);
-    for (int b = 0; b < most_significant_active_bit; b++) {
-        if (e.get_bit_value(b))
-            n *= x;
-        x *= x;
-    }
-    return n;
+    return pow_template<false>(*this, e, constant::One);
 }
 
 integer integer::pow_mod(const integer& e, const integer& mod) const {
