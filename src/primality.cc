@@ -89,7 +89,7 @@ enum class number_type {
 };
 
 static integer miller_rabin_formula(const integer& a, const integer& exp, const integer& n) {
-    return (a.pow(exp) % n);
+    return a.pow_mod(exp, n);
 }
 
 static number_type do_miller_rabin_test(
