@@ -109,11 +109,6 @@ static number_type do_miller_rabin_test(
 }
 
 bool primality::miller_rabin_test(const integer& n) {
-    if (n == constant::Two)
-        return true;
-    if (n.is_even())
-        return false;
-
     const integer minus_one = n - constant::One; // n-1 is congruent to -1 (mod n)
     const miller_rabin_factors factors(minus_one);
     for (const auto& a: miller_rabin_test_bases) {
