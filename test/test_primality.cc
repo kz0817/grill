@@ -27,6 +27,23 @@ static struct sample_t {
     {wide_int<64>(10), false},
     {wide_int<64>(11), true},
     {wide_int<64>(12), false},
+    {wide_int<64>(13), true},
+    {wide_int<64>(14), false},
+    {wide_int<64>(15), false},
+    {wide_int<64>(16), false},
+    {wide_int<64>(17), true},
+    {wide_int<64>(18), false},
+    {wide_int<64>(19), true},
+    {wide_int<64>(20), false},
+    {wide_int<64>(21), false},
+    {wide_int<64>(22), false},
+    {wide_int<64>(23), true},
+    {wide_int<64>(24), false},
+    {wide_int<64>(25), false},
+    {wide_int<64>(26), false},
+    {wide_int<64>(27), false},
+    {wide_int<64>(28), false},
+    {wide_int<64>(29), true},
 };
 
 BOOST_DATA_TEST_CASE(test_trivial_division_for_native, samples)

@@ -38,7 +38,7 @@ bool primality::trivial_division(const integer& n) {
 }
 
 static bool pass_fermat_little_theorem(const integer& n, const integer& a) {
-    return ((a.pow(n - constant::One) % n) == constant::One);
+    return (a.pow_mod(n - constant::One, n) == constant::One);
 }
 
 static const wide_int<64> fermat_test_data[] = {
@@ -56,7 +56,7 @@ static const wide_int<64> fermat_test_data[] = {
 
 bool primality::fermat_test(const integer& n) {
     for (const auto& a: fermat_test_data) {
-        if (a == n)
+        if (a >= n)
             continue;
         if (util::gcd(a, n) != constant::One)
              return false;
