@@ -521,6 +521,55 @@ BOOST_DATA_TEST_CASE(get_bit_value, get_bit_value_samples)
     BOOST_TEST(sample.lhs.get_bit_value(sample.rhs) == sample.expected);
 }
 
+struct set_bit_value_sample_t {
+    const integer& n;
+    const int bit;
+    const bool v;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const set_bit_value_sample_t& s) {
+        os << "n: " << s.n << ", bit: " << s.bit << ", v: " << util::to_string(s.v)
+           << ", expected: " << s.expected;
+        return os;
+    }
+};
+
+static set_bit_value_sample_t set_bit_value_samples[] {
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001),  0, false, wide_int<64>(0xa5a5'5a5a'ffff'0000)},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001),  0, true,  wide_int<64>(0xa5a5'5a5a'ffff'0001)},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001),  1, false, wide_int<64>(0xa5a5'5a5a'ffff'0001)},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001),  1, true,  wide_int<64>(0xa5a5'5a5a'ffff'0003)},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001), 62, true,  wide_int<64>(0xe5a5'5a5a'ffff'0001)},
+    {wide_int<64>(0xa5a5'5a5a'ffff'0001), 63, false, wide_int<64>(0x25a5'5a5a'ffff'0001)},
+
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  0,  false,
+     wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000})},
+
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  1,  true,
+     wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0002})},
+
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  63, true,
+     wide_int<128>({0xa000'0000'0000'0001, 0xd000'0000'0000'0000})},
+
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  64, false,
+     wide_int<128>({0xa000'0000'0000'0000, 0x5000'0000'0000'0000})},
+
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  65, true,
+     wide_int<128>({0xa000'0000'0000'0003, 0x5000'0000'0000'0000})},
+
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 126, true,
+     wide_int<128>({0xe000'0000'0000'0001, 0x5000'0000'0000'0000})},
+
+    {wide_int<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 127, false,
+     wide_int<128>({0x2000'0000'0000'0001, 0x5000'0000'0000'0000})},
+};
+
+BOOST_DATA_TEST_CASE(set_bit_value, set_bit_value_samples)
+{
+    integer n(sample.n);
+    BOOST_TEST(n.set_bit_value(sample.bit, sample.v) == sample.expected);
+}
+
 static binary_op_sample_t pow_samples[] {
     {wide_int<64>(3), wide_int<64>(0ul), wide_int<64>(1)},
     {wide_int<64>(3), wide_int<64>(1), wide_int<64>(3)},

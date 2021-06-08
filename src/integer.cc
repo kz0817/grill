@@ -403,6 +403,21 @@ bool integer::get_bit_value(const int b) const {
     return this->blocks[block_idx] & BitMask[mask_idx];
 }
 
+integer& integer::set_bit_value(const int b, const bool v) {
+    const size_t block_idx = b / BlockBits;
+    const size_t mask_idx = b % BlockBits;
+    if (block_idx >= get_num_blocks()) {
+        std::stringstream ss;
+        ss << "Out of range: bit: " << b << ", blocks: " << get_num_blocks();
+        THROW_ERROR(ss.str().c_str());
+    }
+    if (v)
+        this->blocks[block_idx] |= BitMask[mask_idx];
+    else
+        this->blocks[block_idx] &= ~BitMask[mask_idx];
+    return *this;
+}
+
 template<bool MODULO>
 integer pow_template(const integer& base, const integer& e, const integer& mod) {
     if (base.get_num_blocks() != 1)
