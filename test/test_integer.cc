@@ -622,4 +622,18 @@ BOOST_DATA_TEST_CASE(is_odd_even, is_odd_samples)
     BOOST_TEST(sample.n.is_even() != sample.expected);
 }
 
+static integer_to_bool_sample_t is_zero_samples[] {
+    {wide_int<64>(),   true},
+    {wide_int<64>(1),  false},
+    {wide_int<64>(2),  false},
+    {wide_int<256>(),  true},
+    {wide_int<256>(1), false},
+    {wide_int<256>(2), false},
+};
+
+BOOST_DATA_TEST_CASE(is_zero, is_zero_samples)
+{
+    BOOST_TEST(sample.n.is_zero() == sample.expected);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

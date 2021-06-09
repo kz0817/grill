@@ -455,4 +455,8 @@ bool integer::is_even() const {
     return !is_odd();
 }
 
+bool integer::is_zero() const {
+    return is_all_zero(this->blocks, this->num_blocks);
+}
+
 } // namespace grill

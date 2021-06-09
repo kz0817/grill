@@ -56,6 +56,13 @@ public:
     bool is_odd() const;
     bool is_even() const;
 
+    /**
+     * Returns whether the value is zero.
+     *
+     * @return true if the value is zero. Otherwise false.
+     */
+    bool is_zero() const;
+
 protected:
     integer(const std::size_t n_blk);
     integer(const std::size_t n_blk, const block_t* const src);
