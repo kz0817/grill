@@ -53,6 +53,16 @@ public:
     integer pow(const integer& e) const;
     integer pow_mod(const integer& e, const integer& mod) const;
 
+    /**
+     * Returns the value of 2 to the power of e.
+     *
+     * The number of blocks of the returned integer is automatically decided.
+     *
+     * @param e An exponent.
+     * @return The value of 2 to the power of e.
+     */
+    static integer pow2(const int e);
+
     bool is_odd() const;
     bool is_even() const;
 

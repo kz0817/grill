@@ -76,6 +76,16 @@ struct integer_to_int_sample_t {
     }
 };
 
+struct int_to_integer_sample_t {
+    const int n;
+    const integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const int_to_integer_sample_t& s) {
+        os << "n: " << s.n << ", expected: " << s.expected;
+        return os;
+    }
+};
+
 struct integer_int_to_bool_sample_t {
     const integer& lhs;
     const int rhs;
@@ -605,6 +615,24 @@ BOOST_DATA_TEST_CASE(pow_mod, pow_mod_samples)
     const integer& mod = sample.mod;
     const auto n = base.pow_mod(exponent, mod);
     BOOST_TEST(n == sample.expected);
+}
+
+static int_to_integer_sample_t pow2_samples[] {
+    {0, wide_int<64>(1)},
+    {1, wide_int<64>(2)},
+    {15, wide_int<64>(0x8000)},
+    {16, wide_int<64>(0x1'0000)},
+    {63, wide_int<64>(0x8000'0000'0000'0000)},
+    {64, wide_int<128>({1, 0})},
+    {127, wide_int<128>({0x8000'0000'0000'0000, 0})},
+    {128, wide_int<192>({1, 0, 0})},
+    {255, wide_int<256>({0x8000'0000'0000'0000, 0, 0, 0})},
+    {256, wide_int<320>({1, 0, 0, 0, 0})},
+};
+
+BOOST_DATA_TEST_CASE(pow2, pow2_samples)
+{
+    BOOST_TEST(integer::pow2(sample.n) == sample.expected);
 }
 
 static integer_to_bool_sample_t is_odd_samples[] {

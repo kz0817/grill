@@ -447,6 +447,20 @@ integer integer::pow_mod(const integer& e, const integer& mod) const {
     return pow_template<true>(*this, e, mod);
 }
 
+integer integer::pow2(const int e) {
+    const int num_blocks = e / BlockBits + 1;
+    integer n(num_blocks);
+
+    block_t* blocks = n.get_blocks();
+    const int idx = e % BlockBits;
+    blocks[num_blocks-1] = BitMask[idx];
+
+    const size_t zero_fill_size = (num_blocks - 1) * sizeof(integer::block_t);
+    std::memset(blocks, 0, zero_fill_size);
+
+    return n;
+}
+
 bool integer::is_odd() const {
     return this->blocks[0] & 1;
 }
