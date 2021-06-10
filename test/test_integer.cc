@@ -306,6 +306,28 @@ BOOST_AUTO_TEST_CASE(mul_binary_opreator)
     BOOST_TEST(n.ref_blocks()[0] == 30);
 }
 
+static binary_op_sample_t div_operator_samples[] {
+    {wide_int<64>(),   wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(1),  wide_int<64>(1),  wide_int<64>(1)},
+    {wide_int<64>(1),  wide_int<64>(2),  wide_int<64>()},
+    {wide_int<64>(2),  wide_int<64>(1),  wide_int<64>(2)},
+    {wide_int<64>(2),  wide_int<64>(2),  wide_int<64>(1)},
+    {wide_int<64>(2),  wide_int<64>(3),  wide_int<64>()},
+    {wide_int<64>(3),  wide_int<64>(1),  wide_int<64>(3)},
+    {wide_int<64>(3),  wide_int<64>(2),  wide_int<64>(1)},
+    {wide_int<64>(3),  wide_int<64>(3),  wide_int<64>(1)},
+    {wide_int<64>(3),  wide_int<64>(4),  wide_int<64>()},
+    {wide_int<64>(4),  wide_int<64>(1),  wide_int<64>(4)},
+    {wide_int<64>(4),  wide_int<64>(2),  wide_int<64>(2)},
+    {wide_int<64>(4),  wide_int<64>(3),  wide_int<64>(1)},
+    {wide_int<64>(4),  wide_int<64>(4),  wide_int<64>(1)},
+    {wide_int<64>(4),  wide_int<64>(5),  wide_int<64>()},
+    {wide_int<64>(11),  wide_int<64>(4),  wide_int<64>(2)},
+    {wide_int<64>(0x1234'5678'9abc'def0),  wide_int<64>(0xfedc'ba98),  wide_int<64>(0x1249'2492)},
+    {wide_int<64>(0x1234'5678'9abc'def0),  wide_int<64>(0xfedc),  wide_int<64>(0x1249'31f5'96dc)},
+    // TODO: add samples with greater digits
+};
+
 BOOST_AUTO_TEST_CASE(div)
 {
     wide_int<64> n1 = 11;
@@ -316,15 +338,9 @@ BOOST_AUTO_TEST_CASE(div)
     BOOST_TEST(n2.ref_blocks()[0] == 4);
 }
 
-BOOST_AUTO_TEST_CASE(div_binary_opreator)
+BOOST_DATA_TEST_CASE(div_binary_opreator, div_operator_samples)
 {
-    wide_int<64> n1 = 11;
-    wide_int<64> n2 = 4;
-
-    const auto n = n1 / n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 11);
-    BOOST_TEST(n2.ref_blocks()[0] == 4);
-    BOOST_TEST(n.ref_blocks()[0] == 2);
+    BOOST_TEST((sample.lhs / sample.rhs) == sample.expected);
 }
 
 BOOST_AUTO_TEST_CASE(mod)

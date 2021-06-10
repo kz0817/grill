@@ -224,10 +224,33 @@ integer integer::operator*(const integer& r) const {
     return n;
 }
 
+struct div_solution {
+    integer q; // quotient
+    integer r; // remainder
+};
+
+static div_solution div(const integer& lhs, const integer& rhs) {
+    const int lhs_msb = lhs.most_significant_active_bit();
+    const int rhs_msb = rhs.most_significant_active_bit();
+    div_solution sol {
+        integer(lhs.get_num_blocks(), {}),
+        integer(lhs),
+    };
+    for (int b = lhs_msb - rhs_msb; b >= 0; b--) {
+        // TODO: consider appropriate digit of x
+        integer x = rhs * integer::pow2(b);
+        if (sol.r >= x) {
+            sol.q.set_bit_value(b, true);
+            sol.r -= x;
+            if (sol.r.is_zero())
+                break;
+        }
+    }
+    return sol;
+}
+
 integer integer::operator/(const integer& r) const {
-    integer n(*this);
-    n /= r;
-    return n;
+    return div(*this, r).q;
 }
 
 integer integer::operator%(const integer& r) const {
