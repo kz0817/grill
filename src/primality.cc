@@ -3,17 +3,25 @@
 
 namespace grill {
 
+static bool is_zero(const integer::block_t n) {
+    return n == 0;
+}
+
+static bool is_zero(const integer& n) {
+    return n.is_zero();
+}
+
 template<typename T>
-bool templated_trivial_division(const T& n, const T& zero, const T& two, const T& three) {
+bool templated_trivial_division(const T& n, const T& two, const T& three) {
     if (n == two)
         return true;
-    if (n % two == zero)
+    if (is_zero(n % two))
         return false;
 
     std::vector<T> prime_numbers = {};
     auto is_prime = [&](const T& i) {
         for (const auto& prime: prime_numbers) {
-            if ((i % prime) == zero)
+            if (is_zero(i % prime))
                 return false;
         }
         return true;
@@ -22,7 +30,7 @@ bool templated_trivial_division(const T& n, const T& zero, const T& two, const T
     for (T i = three; (i * i) <= n; i += two) {
         if (is_prime(i)) {
             prime_numbers.emplace_back(i);
-            if ((n % i) == zero)
+            if (is_zero(n % i))
                 return false;
         }
     }
@@ -30,11 +38,11 @@ bool templated_trivial_division(const T& n, const T& zero, const T& two, const T
 }
 
 bool primality::trivial_division(const integer::block_t n) {
-    return templated_trivial_division<integer::block_t>(n, 0, 2, 3);
+    return templated_trivial_division<integer::block_t>(n, 2, 3);
 }
 
 bool primality::trivial_division(const integer& n) {
-    return templated_trivial_division<integer>(n, constant::Zero, constant::Two, constant::Three);
+    return templated_trivial_division<integer>(n, constant::Two, constant::Three);
 }
 
 static bool pass_fermat_little_theorem(const integer& n, const integer& a) {
