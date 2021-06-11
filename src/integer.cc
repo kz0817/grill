@@ -181,11 +181,7 @@ integer& integer::operator*=(const integer& n) {
 }
 
 integer& integer::operator/=(const integer& n) {
-    if (get_num_blocks() != 1)
-        throw std::logic_error("Not implmented yet");
-
-    get_blocks()[0] /= n.ref_blocks()[0];
-    return *this;
+    return *this = (*this) / n;
 }
 
 integer& integer::operator%=(const integer& n) {
@@ -232,6 +228,9 @@ struct div_solution {
 static div_solution div(const integer& lhs, const integer& rhs) {
     const int lhs_msb = lhs.most_significant_active_bit();
     const int rhs_msb = rhs.most_significant_active_bit();
+    if (rhs_msb == 0)
+        throw std::out_of_range("Divided by zero");
+
     div_solution sol {
         integer(lhs.get_num_blocks(), {}),
         integer(lhs),

@@ -328,19 +328,23 @@ static binary_op_sample_t div_operator_samples[] {
     // TODO: add samples with greater digits
 };
 
-BOOST_AUTO_TEST_CASE(div)
+BOOST_DATA_TEST_CASE(div_unary_operator, div_operator_samples)
 {
-    wide_int<64> n1 = 11;
-    wide_int<64> n2 = 4;
-
-    n1 /= n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 2);
-    BOOST_TEST(n2.ref_blocks()[0] == 4);
+    integer n = sample.lhs;
+    BOOST_TEST((n /= sample.rhs) == sample.expected);
+    BOOST_TEST(n == sample.expected);
 }
 
 BOOST_DATA_TEST_CASE(div_binary_opreator, div_operator_samples)
 {
     BOOST_TEST((sample.lhs / sample.rhs) == sample.expected);
+}
+
+BOOST_AUTO_TEST_CASE(div_by_zero)
+{
+    wide_int<64> one = 1;
+    wide_int<64> zero;
+    BOOST_CHECK_THROW(one / zero, std::out_of_range);
 }
 
 BOOST_AUTO_TEST_CASE(mod)
