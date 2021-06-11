@@ -185,11 +185,7 @@ integer& integer::operator/=(const integer& n) {
 }
 
 integer& integer::operator%=(const integer& n) {
-    if (get_num_blocks() != 1)
-        throw std::logic_error("Not implmented yet");
-
-    get_blocks()[0] %= n.ref_blocks()[0];
-    return *this;
+    return *this = (*this) % n;
 }
 
 integer& integer::operator=(integer&& n) {
@@ -253,9 +249,7 @@ integer integer::operator/(const integer& r) const {
 }
 
 integer integer::operator%(const integer& r) const {
-    integer n(*this);
-    n %= r;
-    return n;
+    return div(*this, r).r;
 }
 
 bool static is_all_zero(const integer::block_t* blocks, const int num) {

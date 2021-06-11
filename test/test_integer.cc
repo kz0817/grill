@@ -347,25 +347,38 @@ BOOST_AUTO_TEST_CASE(div_by_zero)
     BOOST_CHECK_THROW(one / zero, std::out_of_range);
 }
 
-BOOST_AUTO_TEST_CASE(mod)
-{
-    wide_int<64> n1 = 11;
-    wide_int<64> n2 = 4;
+static binary_op_sample_t mod_operator_samples[] {
+    {wide_int<64>(),   wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(1),  wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(1),  wide_int<64>(2),  wide_int<64>(1)},
+    {wide_int<64>(2),  wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(2),  wide_int<64>(2),  wide_int<64>()},
+    {wide_int<64>(2),  wide_int<64>(3),  wide_int<64>(2)},
+    {wide_int<64>(3),  wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(3),  wide_int<64>(2),  wide_int<64>(1)},
+    {wide_int<64>(3),  wide_int<64>(3),  wide_int<64>()},
+    {wide_int<64>(3),  wide_int<64>(4),  wide_int<64>(3)},
+    {wide_int<64>(4),  wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(4),  wide_int<64>(2),  wide_int<64>()},
+    {wide_int<64>(4),  wide_int<64>(3),  wide_int<64>(1)},
+    {wide_int<64>(4),  wide_int<64>(4),  wide_int<64>()},
+    {wide_int<64>(4),  wide_int<64>(5),  wide_int<64>(4)},
+    {wide_int<64>(11),  wide_int<64>(4),  wide_int<64>(3)},
+    {wide_int<64>(0x1234'5678'9abc'def0),  wide_int<64>(0xfedc'ba98),  wide_int<64>(0x5145'1440)},
+    {wide_int<64>(0x1234'5678'9abc'def0),  wide_int<64>(0xfedc),  wide_int<64>(0xf1e0)},
+    // TODO: add samples with greater digits
+};
 
-    n1 %= n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 3);
-    BOOST_TEST(n2.ref_blocks()[0] == 4);
+BOOST_DATA_TEST_CASE(mod_unary_operator, mod_operator_samples)
+{
+    integer n = sample.lhs;
+    BOOST_TEST((n %= sample.rhs) == sample.expected);
+    BOOST_TEST(n == sample.expected);
 }
 
-BOOST_AUTO_TEST_CASE(mod_binary_opreator)
+BOOST_DATA_TEST_CASE(mod_binary_opreator, mod_operator_samples)
 {
-    wide_int<64> n1 = 11;
-    wide_int<64> n2 = 4;
-
-    const auto n = n1 % n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 11);
-    BOOST_TEST(n2.ref_blocks()[0] == 4);
-    BOOST_TEST(n.ref_blocks()[0] == 3);
+    BOOST_TEST((sample.lhs % sample.rhs) == sample.expected);
 }
 
 BOOST_AUTO_TEST_CASE(substitution)
