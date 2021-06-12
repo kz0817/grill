@@ -312,14 +312,11 @@ static binary_op_sample_t mul_operator_samples[] {
                     0x4d0f'77fe'1940'eedc, 0xa5e2'0890'f2a5'2100})},
 };
 
-BOOST_AUTO_TEST_CASE(mul)
+BOOST_DATA_TEST_CASE(mul_unary_operator, mul_operator_samples)
 {
-    wide_int<64> n1 = 10;
-    wide_int<64> n2 = 3;
-
-    n1 *= n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 30);
-    BOOST_TEST(n2.ref_blocks()[0] == 3);
+    integer n = sample.lhs;
+    BOOST_TEST((n *= sample.rhs) == sample.expected);
+    BOOST_TEST(n == sample.expected);
 }
 
 BOOST_DATA_TEST_CASE(mul_binary_opreator, mul_operator_samples)
