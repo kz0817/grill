@@ -10,7 +10,7 @@ namespace grill {
 
 static const int BlockBits = sizeof(integer::block_t) * 8;
 
-static const integer::block_t BitMask[] = {
+static constexpr integer::block_t BitMask[] = {
     0x0000'0000'0000'0001, 0x0000'0000'0000'0002, 0x0000'0000'0000'0004, 0x0000'0000'0000'0008,
     0x0000'0000'0000'0010, 0x0000'0000'0000'0020, 0x0000'0000'0000'0040, 0x0000'0000'0000'0080,
     0x0000'0000'0000'0100, 0x0000'0000'0000'0200, 0x0000'0000'0000'0400, 0x0000'0000'0000'0800,
@@ -48,6 +48,15 @@ static bool is_valid_index(const std::size_t num_blocks, const int idx) {
     if (idx < 0)
         return false;
     return static_cast<std::size_t>(idx) < num_blocks;
+}
+
+static integer::block_t upper_half_block(const integer::block_t n) {
+    return (n >> (BlockBits/2));
+}
+
+static integer::block_t lower_half_block(const integer::block_t n) {
+    constexpr integer::block_t mask = ~(-BitMask[BlockBits/2]);
+    return mask & n;
 }
 
 //
@@ -145,6 +154,18 @@ static bool add_one_block(integer::block_t& lhs, const integer::block_t rhs,
     return overflow;
 }
 
+static void add(integer::block_t* dest, const std::size_t num_dest_blocks,
+                const integer::block_t* src, const std::size_t num_src_blocks) {
+    bool carry_flag = false;
+    for (std::size_t i = 0; i < num_dest_blocks; i++) {
+        const bool src_is_valid = (i < num_src_blocks);
+        if (!carry_flag && !src_is_valid)
+            break;
+        const integer::block_t src_val = src_is_valid ? src[i] : 0;
+        carry_flag = add_one_block(dest[i], src_val, carry_flag);
+    }
+}
+
 integer& integer::operator+=(const integer& n) {
     const int lhs_num_blocks = get_num_blocks();
     const int rhs_num_blocks = n.get_num_blocks();
@@ -210,9 +231,50 @@ integer integer::operator-(const integer& r) const {
     return n;
 }
 
-integer integer::operator*(const integer& r) const {
-    integer n(*this);
-    n *= r;
+static void mul_blocks(const integer::block_t lhs, const integer::block_t rhs,
+                       integer::block_t dest[2]) {
+    const integer::block_t lhs_upper_half = upper_half_block(lhs);
+    const integer::block_t lhs_lower_half = lower_half_block(lhs);
+    const integer::block_t rhs_upper_half = upper_half_block(rhs);
+    const integer::block_t rhs_lower_half = lower_half_block(rhs);
+    dest[0] = lhs_lower_half * rhs_lower_half;
+    dest[1] = lhs_upper_half * rhs_upper_half;
+
+    const integer::block_t x0 = lhs_upper_half * rhs_lower_half;
+    const integer::block_t src0[2] = {x0 << (BlockBits/2), upper_half_block(x0)};
+    add(dest, 2, src0, 2);
+
+    const integer::block_t x1 = rhs_upper_half * lhs_lower_half;
+    const integer::block_t src1[2] = {x1 << (BlockBits/2), upper_half_block(x1)};
+    add(dest, 2, src1, 2);
+}
+
+static void mul(const integer& lhs, const integer& rhs,
+                integer::block_t* blocks, const std::size_t num_blocks) {
+    const std::size_t l_num_blocks = lhs.get_num_blocks();
+    const std::size_t r_num_blocks = rhs.get_num_blocks();
+
+    const integer::block_t* l_blocks = lhs.ref_blocks();
+    const integer::block_t* r_blocks = rhs.ref_blocks();
+
+    for (std::size_t l_idx = 0; l_idx < l_num_blocks; l_idx++) {
+        for (std::size_t r_idx = 0; r_idx < r_num_blocks; r_idx++) {
+            // skip calculation for the block beyond the output value range
+            const std::size_t idx = l_idx + r_idx;
+            if (idx >= num_blocks)
+                continue;
+
+            // create a partially multiplied number and accumulate it
+            integer::block_t x[2];
+            mul_blocks(l_blocks[l_idx], r_blocks[r_idx], x);
+            add(&blocks[idx], num_blocks - idx, x, 2);
+        }
+    }
+}
+
+integer integer::operator*(const integer& rhs) const {
+    integer n(this->get_num_blocks(), {});
+    mul(*this, rhs, n.get_blocks(), n.get_num_blocks());
     return n;
 }
 

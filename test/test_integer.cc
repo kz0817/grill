@@ -285,6 +285,33 @@ BOOST_AUTO_TEST_CASE(sub_binary_opreator)
     BOOST_TEST(n.ref_blocks()[0] == 7);
 }
 
+static binary_op_sample_t mul_operator_samples[] {
+    {wide_int<64>(),   wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(1),  wide_int<64>(1),  wide_int<64>(1)},
+    {wide_int<64>(1),  wide_int<64>(2),  wide_int<64>(2)},
+    {wide_int<64>(3),  wide_int<64>(10),  wide_int<64>(30)},
+    {wide_int<64>(0xffff'ffff),  wide_int<64>(0xffff'ffff), wide_int<64>(0xffff'fffe'0000'0001)},
+    {wide_int<64>(0x1'0000'0001),  wide_int<64>(0x2'0000'0003), wide_int<64>(0x5'0000'0003)},
+
+    {wide_int<64>(0x1234'5678'ffff'ffff),  wide_int<64>(0x2468'ace0'ffff'ffff),
+     wide_int<64>(0xc962'fca6'0000'0001)},
+
+    {wide_int<128>(0x0001'0002'0000'0003),  wide_int<64>(0x0002'0003'0000'0001),
+     wide_int<128>({0x2'0007'0006, 0x7'000b'0000'0003})},
+
+    {wide_int<128>(0x1234'5678'ffff'ffff),  wide_int<64>(0x2468'ace0'ffff'ffff),
+     wide_int<128>({0x296'cdb7'4f41'4c58, 0xc962'fca6'0000'0001})},
+
+    {wide_int<128>({0x1234'5678'9abc'def0, 0x1234'5678'9abc'def0}),
+     wide_int<128>({0x1234'5678'9abc'def0, 0x1234'5678'9abc'def0}),
+     wide_int<128>({0x4d0f'77fe'1940'eedc, 0xa5e2'0890'f2a5'2100})},
+
+    {wide_int<256>({0x1234'5678'9abc'def0, 0x1234'5678'9abc'def0}),
+     wide_int<256>({0x1234'5678'9abc'def0, 0x1234'5678'9abc'def0}),
+     wide_int<256>({0x014b'66dc'33f6'acdc, 0xa878'd649'5a92'7ab9,
+                    0x4d0f'77fe'1940'eedc, 0xa5e2'0890'f2a5'2100})},
+};
+
 BOOST_AUTO_TEST_CASE(mul)
 {
     wide_int<64> n1 = 10;
@@ -295,15 +322,9 @@ BOOST_AUTO_TEST_CASE(mul)
     BOOST_TEST(n2.ref_blocks()[0] == 3);
 }
 
-BOOST_AUTO_TEST_CASE(mul_binary_opreator)
+BOOST_DATA_TEST_CASE(mul_binary_opreator, mul_operator_samples)
 {
-    wide_int<64> n1 = 10;
-    wide_int<64> n2 = 3;
-
-    const auto n = n1 * n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 10);
-    BOOST_TEST(n2.ref_blocks()[0] == 3);
-    BOOST_TEST(n.ref_blocks()[0] == 30);
+    BOOST_TEST((sample.lhs * sample.rhs) == sample.expected);
 }
 
 static binary_op_sample_t div_operator_samples[] {
