@@ -167,22 +167,7 @@ static void add(integer::block_t* dest, const std::size_t num_dest_blocks,
 }
 
 integer& integer::operator+=(const integer& n) {
-    const int lhs_num_blocks = get_num_blocks();
-    const int rhs_num_blocks = n.get_num_blocks();
-
-    block_t* lhs_blocks = get_blocks();
-    const block_t* rhs_blocks = n.ref_blocks();
-
-    const int num_common_blocks = (lhs_num_blocks <= rhs_num_blocks)
-                                  ? lhs_num_blocks : rhs_num_blocks;
-    bool carry_flag = false;
-    for (int i = 0; i < num_common_blocks; i++)
-        carry_flag = add_one_block(lhs_blocks[i], rhs_blocks[i], carry_flag);
-
-    for (int i = num_common_blocks; i < lhs_num_blocks; i++)
-        carry_flag = add_one_block(lhs_blocks[i], 0, carry_flag);
-
-    return *this;
+    return *this = (*this) + n;
 }
 
 integer& integer::operator-=(const integer& n) {
@@ -217,7 +202,7 @@ integer& integer::operator=(integer&& n) {
 
 integer integer::operator+(const integer& r) const {
     integer n(*this);
-    n += r;
+    add(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
     return n;
 }
 
@@ -302,12 +287,12 @@ static div_solution div(const integer& lhs, const integer& rhs) {
     return sol;
 }
 
-integer integer::operator/(const integer& r) const {
-    return div(*this, r).q;
+integer integer::operator/(const integer& rhs) const {
+    return div(*this, rhs).q;
 }
 
-integer integer::operator%(const integer& r) const {
-    return div(*this, r).r;
+integer integer::operator%(const integer& rhs) const {
+    return div(*this, rhs).r;
 }
 
 bool static is_all_zero(const integer::block_t* blocks, const int num) {

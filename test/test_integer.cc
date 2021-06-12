@@ -212,9 +212,9 @@ BOOST_DATA_TEST_CASE(cast_string, cast_string_samples)
 }
 
 //
-// += operator
+// += and + operator
 //
-static binary_op_sample_t add_subst_operator_samples[] = {
+static binary_op_sample_t add_operator_samples[] = {
     {
         wide_int<64>(10),
         wide_int<64>(3),
@@ -246,22 +246,16 @@ static binary_op_sample_t add_subst_operator_samples[] = {
     },
 };
 
-BOOST_DATA_TEST_CASE(add_subst_operator, add_subst_operator_samples)
+BOOST_DATA_TEST_CASE(add_unary_operator, add_operator_samples)
 {
-    integer lhs = sample.lhs;
-    lhs += sample.rhs;
-    BOOST_TEST(lhs == sample.expected);
+    integer n = sample.lhs;
+    BOOST_TEST((n += sample.rhs) == sample.expected);
+    BOOST_TEST(n == sample.expected);
 }
 
-BOOST_AUTO_TEST_CASE(add_binary_operator)
+BOOST_DATA_TEST_CASE(add_binary_operator, add_operator_samples)
 {
-    wide_int<64> n1 = 10;
-    wide_int<64> n2 = 3;
-
-    const auto n = n1 + n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 10);
-    BOOST_TEST(n2.ref_blocks()[0] == 3);
-    BOOST_TEST(n.ref_blocks()[0] == 13);
+    BOOST_TEST((sample.lhs + sample.rhs) == sample.expected);
 }
 
 BOOST_AUTO_TEST_CASE(sub)
