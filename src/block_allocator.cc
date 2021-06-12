@@ -1,6 +1,6 @@
 #include <type_traits>
 #include <cstddef>
-#include <map>
+#include <cassert>
 #include "block_allocator.h"
 #include "integer.h"
 
@@ -16,17 +16,38 @@ static_assert(std::is_standard_layout<block_packet>::value, "block_packet must b
 static constexpr std::size_t OffsetBlocks = offsetof(block_packet, blocks);
 
 struct block_allocator::private_context {
-    std::map<int, block_packet*> cache_table;
+    static constexpr std::size_t DEFAULT_TABLE_SIZE = 256; // 16384 (8192*2) bit
+    block_packet** cache_tables = nullptr;
+    std::size_t cache_table_size = DEFAULT_TABLE_SIZE;
+
+    private_context() {
+        this->cache_tables = new block_packet*[this->cache_table_size];
+        for (std::size_t i = 0; i < this->cache_table_size; i++)
+            this->cache_tables[i] = nullptr;
+    }
+
+    virtual ~private_context() {
+        // TODO: free cache_table
+    }
 
     block_packet* get_list_head(const std::size_t num_blocks) {
-        const auto it = this->cache_table.find(num_blocks);
-        if (it != this->cache_table.end())
-            return it->second;
-        return nullptr;
+        const std::size_t idx = num_blocks - 1;
+        if (idx >= this->cache_table_size)
+            return nullptr;
+        return this->cache_tables[idx];
     }
 
     void set_list_head(const std::size_t num_blocks, block_packet* pkt) {
-        this->cache_table[num_blocks] = pkt;
+        const std::size_t idx = num_blocks - 1;
+        if (idx >= this->cache_table_size)
+            resize_cache_table(num_blocks);
+
+        this->cache_tables[idx] = pkt;
+    }
+
+    void resize_cache_table(const std::size_t num_tables) {
+        // TODO: implement
+        assert(false);
     }
 
     block_packet* create_block_packet(const std::size_t num_blocks) {
