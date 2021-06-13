@@ -427,16 +427,15 @@ integer& integer::operator++() {
 }
 
 static int get_most_significant_active_bit(const integer::block_t blk) {
-    integer::block_t mask = 1;
-    mask <<= (BlockBits - 1);
-    for (int bit = BlockBits; bit >= 0; bit--) {
-        if ((blk & mask) == 0) {
-            mask >>= 1;
-            continue;
-        }
-        return bit;
+    int width = BlockBits;
+    int idx = 0;
+    while (width > 0) {
+        width >>= 1;
+        idx += width;
+        if (blk < BitMask[idx])
+            idx -= width;
     }
-    return 0;
+    return idx + 1;
 }
 
 int integer::most_significant_active_bit() const {
