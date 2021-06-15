@@ -32,17 +32,7 @@ static constexpr integer::block_t BitMask[] = {
     0x1000'0000'0000'0000, 0x2000'0000'0000'0000, 0x4000'0000'0000'0000, 0x8000'0000'0000'0000,
 };
 
-// C++11's local_thread has a run-time penalty. So we use the GCC's __thread feature.
-// See also: https://gcc.gnu.org/gcc-4.8/changes.html#cxx
-static __thread block_allocator *_allocator;
-
-static inline block_allocator *get_allocator() {
-    // Don't delete 'allocator' because allocator::free() may be called after its destruction
-    // due to the destructor of static integer objects.
-    if (_allocator == nullptr)
-        _allocator = new block_allocator;
-    return _allocator;
-}
+__thread block_allocator<integer::block_t> *integer::allocator = nullptr;
 
 static std::string create_error_msg(const char* const filename, const int lineno,
                                     const char* const msg) {
@@ -114,11 +104,6 @@ integer::integer(const std::size_t n_blk, const std::initializer_list<block_t>& 
     const std::size_t num_zero_blocks = this->num_blocks - num_args;
     if (num_zero_blocks > 0)
         std::memset(&blocks[num_args], 0, sizeof(block_t) * num_zero_blocks);
-}
-
-integer::~integer() {
-    if (this->blocks != nullptr)
-        get_allocator()->free(this->blocks);
 }
 
 std::size_t integer::get_num_blocks() const {

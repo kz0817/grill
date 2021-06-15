@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include <cassert>
+#include "block_allocator.h"
 
 namespace grill {
 
@@ -14,7 +15,14 @@ public:
     integer(const integer& n);
     integer(integer&& n);
     integer(const std::size_t n_blk, const std::initializer_list<block_t>& src);
-    virtual ~integer();
+
+    /**
+     * Destructor
+     */
+    virtual ~integer() {
+        if (this->blocks != nullptr)
+            this->allocator->free(this->blocks);
+    }
 
     std::size_t get_num_blocks() const;
     const block_t* ref_blocks() const;
@@ -79,8 +87,20 @@ protected:
     block_t* get_blocks() const;
 
 private:
+    // C++11's local_thread has a run-time penalty. So we use the GCC's __thread feature.
+    // See also: https://gcc.gnu.org/gcc-4.8/changes.html#cxx
+    static __thread block_allocator<block_t> *allocator;
+
     std::size_t num_blocks;
     block_t* blocks; // Least significant block first
+
+    inline block_allocator<block_t> *get_allocator() {
+        // Don't delete 'allocator' because allocator::free() may be called after its destruction
+        // due to the destructor of static integer objects.
+        if (this->allocator == nullptr)
+            this->allocator = new block_allocator<block_t>;
+        return allocator;
+    }
 };
 
 template<std::size_t N>
