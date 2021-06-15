@@ -3,10 +3,10 @@
 #include <type_traits>
 #include <cstddef>
 #include <cassert>
-#include "integer.h"
 
 namespace grill {
 
+template<typename T>
 class block_allocator {
 public:
     block_allocator() {
@@ -19,7 +19,7 @@ public:
         // TODO: free cache_table
     }
 
-    integer::block_t* take(const std::size_t num_blocks) {
+    T* take(const std::size_t num_blocks) {
         block_packet* head = get_list_head(num_blocks);
         if (head == nullptr)
             return create_block_packet(num_blocks)->blocks;
@@ -28,7 +28,7 @@ public:
         return head->blocks;
     }
 
-    void free(integer::block_t* blocks) {
+    void free(T* blocks) {
         block_packet* pkt = calc_object_addr(blocks);
 
         // TODO: add pkt deletion when the number of caches is over the upper limit.
@@ -42,7 +42,7 @@ private:
     struct block_packet {
         block_packet *next;
         std::size_t num_blocks;
-        integer::block_t blocks[];
+        T blocks[];
     };
     static_assert(std::is_standard_layout<block_packet>::value,
                   "block_packet must be standard layout");
@@ -73,14 +73,14 @@ private:
     }
 
     block_packet* create_block_packet(const std::size_t num_blocks) {
-        const std::size_t pkt_size = sizeof(block_packet) + sizeof(integer::block_t) * num_blocks;
+        const std::size_t pkt_size = sizeof(block_packet) + sizeof(T) * num_blocks;
         block_packet* pkt = reinterpret_cast<block_packet *>(new uint8_t[pkt_size]);
         pkt->next = nullptr;
         pkt->num_blocks = num_blocks;
         return pkt;
     }
 
-    block_packet* calc_object_addr(integer::block_t* blocks) {
+    block_packet* calc_object_addr(T* blocks) {
         uint8_t *addr = reinterpret_cast<uint8_t*>(blocks);
         return reinterpret_cast<block_packet *>(addr - OffsetBlocks);
     }
