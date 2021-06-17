@@ -109,12 +109,8 @@ class wide_int : public integer {
     static constexpr std::size_t B = (N / 64);
 
 public:
-    wide_int(const integer::block_t init_value = 0)
+    wide_int(const integer::block_t init_value)
     : integer(B, {init_value}) {
-    }
-
-    wide_int(const std::uint64_t src[B])
-    : integer(B, src) {
     }
 
     wide_int(const std::initializer_list<integer::block_t>& src)

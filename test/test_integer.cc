@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_SUITE(test_suite_integer)
 
 BOOST_AUTO_TEST_CASE(default_constructor)
 {
-    wide_int<64> n;
+    wide_int<64> n(0);
     BOOST_TEST(n.ref_blocks()[0] == 0);
     BOOST_TEST(n.get_num_blocks() == 1);
 }
@@ -131,21 +131,6 @@ BOOST_AUTO_TEST_CASE(one_initial_value)
 {
     wide_int<64> n(5);
     BOOST_TEST(n.ref_blocks()[0] == 5);
-}
-
-BOOST_AUTO_TEST_CASE(given_initial_value)
-{
-    const uint64_t init_value[] = {123};
-    wide_int<64> n(init_value);
-    BOOST_TEST(n.ref_blocks()[0] == 123);
-}
-
-BOOST_AUTO_TEST_CASE(given_initial_value_many_blocks)
-{
-    const uint64_t init_value[] = {1, 2, 3, 4};
-    wide_int<256> n(init_value);
-    const integer::block_t expected[] = {4, 3, 2, 1};
-    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(given_initial_value_with_initializer_list)
@@ -280,10 +265,10 @@ BOOST_AUTO_TEST_CASE(sub_binary_opreator)
 }
 
 static binary_op_sample_t mul_operator_samples[] {
-    {wide_int<64>(),   wide_int<64>(1),  wide_int<64>()},
-    {wide_int<64>(1),  wide_int<64>(1),  wide_int<64>(1)},
-    {wide_int<64>(1),  wide_int<64>(2),  wide_int<64>(2)},
-    {wide_int<64>(3),  wide_int<64>(10),  wide_int<64>(30)},
+    {wide_int<64>(0), wide_int<64>(1),  wide_int<64>(0)},
+    {wide_int<64>(1), wide_int<64>(1),  wide_int<64>(1)},
+    {wide_int<64>(1), wide_int<64>(2),  wide_int<64>(2)},
+    {wide_int<64>(3), wide_int<64>(10), wide_int<64>(30)},
     {wide_int<64>(0xffff'ffff),  wide_int<64>(0xffff'ffff), wide_int<64>(0xffff'fffe'0000'0001)},
     {wide_int<64>(0x1'0000'0001),  wide_int<64>(0x2'0000'0003), wide_int<64>(0x5'0000'0003)},
 
@@ -319,21 +304,21 @@ BOOST_DATA_TEST_CASE(mul_binary_opreator, mul_operator_samples)
 }
 
 static binary_op_sample_t div_operator_samples[] {
-    {wide_int<64>(),   wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(0),  wide_int<64>(1),  wide_int<64>(0)},
     {wide_int<64>(1),  wide_int<64>(1),  wide_int<64>(1)},
-    {wide_int<64>(1),  wide_int<64>(2),  wide_int<64>()},
+    {wide_int<64>(1),  wide_int<64>(2),  wide_int<64>(0)},
     {wide_int<64>(2),  wide_int<64>(1),  wide_int<64>(2)},
     {wide_int<64>(2),  wide_int<64>(2),  wide_int<64>(1)},
-    {wide_int<64>(2),  wide_int<64>(3),  wide_int<64>()},
+    {wide_int<64>(2),  wide_int<64>(3),  wide_int<64>(0)},
     {wide_int<64>(3),  wide_int<64>(1),  wide_int<64>(3)},
     {wide_int<64>(3),  wide_int<64>(2),  wide_int<64>(1)},
     {wide_int<64>(3),  wide_int<64>(3),  wide_int<64>(1)},
-    {wide_int<64>(3),  wide_int<64>(4),  wide_int<64>()},
+    {wide_int<64>(3),  wide_int<64>(4),  wide_int<64>(0)},
     {wide_int<64>(4),  wide_int<64>(1),  wide_int<64>(4)},
     {wide_int<64>(4),  wide_int<64>(2),  wide_int<64>(2)},
     {wide_int<64>(4),  wide_int<64>(3),  wide_int<64>(1)},
     {wide_int<64>(4),  wide_int<64>(4),  wide_int<64>(1)},
-    {wide_int<64>(4),  wide_int<64>(5),  wide_int<64>()},
+    {wide_int<64>(4),  wide_int<64>(5),  wide_int<64>(0)},
     {wide_int<64>(11),  wide_int<64>(4),  wide_int<64>(2)},
     {wide_int<64>(0x1234'5678'9abc'def0),  wide_int<64>(0xfedc'ba98),  wide_int<64>(0x1249'2492)},
     {wide_int<64>(0x1234'5678'9abc'def0),  wide_int<64>(0xfedc),  wide_int<64>(0x1249'31f5'96dc)},
@@ -354,26 +339,24 @@ BOOST_DATA_TEST_CASE(div_binary_opreator, div_operator_samples)
 
 BOOST_AUTO_TEST_CASE(div_by_zero)
 {
-    wide_int<64> one = 1;
-    wide_int<64> zero;
-    BOOST_CHECK_THROW(one / zero, std::out_of_range);
+    BOOST_CHECK_THROW(constant::One / constant::Zero, std::out_of_range);
 }
 
 static binary_op_sample_t mod_operator_samples[] {
-    {wide_int<64>(),   wide_int<64>(1),  wide_int<64>()},
-    {wide_int<64>(1),  wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(0),  wide_int<64>(1),  wide_int<64>(0)},
+    {wide_int<64>(1),  wide_int<64>(1),  wide_int<64>(0)},
     {wide_int<64>(1),  wide_int<64>(2),  wide_int<64>(1)},
-    {wide_int<64>(2),  wide_int<64>(1),  wide_int<64>()},
-    {wide_int<64>(2),  wide_int<64>(2),  wide_int<64>()},
+    {wide_int<64>(2),  wide_int<64>(1),  wide_int<64>(0)},
+    {wide_int<64>(2),  wide_int<64>(2),  wide_int<64>(0)},
     {wide_int<64>(2),  wide_int<64>(3),  wide_int<64>(2)},
-    {wide_int<64>(3),  wide_int<64>(1),  wide_int<64>()},
+    {wide_int<64>(3),  wide_int<64>(1),  wide_int<64>(0)},
     {wide_int<64>(3),  wide_int<64>(2),  wide_int<64>(1)},
-    {wide_int<64>(3),  wide_int<64>(3),  wide_int<64>()},
+    {wide_int<64>(3),  wide_int<64>(3),  wide_int<64>(0)},
     {wide_int<64>(3),  wide_int<64>(4),  wide_int<64>(3)},
-    {wide_int<64>(4),  wide_int<64>(1),  wide_int<64>()},
-    {wide_int<64>(4),  wide_int<64>(2),  wide_int<64>()},
+    {wide_int<64>(4),  wide_int<64>(1),  wide_int<64>(0)},
+    {wide_int<64>(4),  wide_int<64>(2),  wide_int<64>(0)},
     {wide_int<64>(4),  wide_int<64>(3),  wide_int<64>(1)},
-    {wide_int<64>(4),  wide_int<64>(4),  wide_int<64>()},
+    {wide_int<64>(4),  wide_int<64>(4),  wide_int<64>(0)},
     {wide_int<64>(4),  wide_int<64>(5),  wide_int<64>(4)},
     {wide_int<64>(11),  wide_int<64>(4),  wide_int<64>(3)},
     {wide_int<64>(0x1234'5678'9abc'def0),  wide_int<64>(0xfedc'ba98),  wide_int<64>(0x5145'1440)},
@@ -516,9 +499,9 @@ static integer_and_int_sample_t right_shift_samples[] {
     {wide_int<128>({0x40, 0x002000100080a500}), 8, wide_int<128>(0x40002000100080a5)},
     {wide_int<128>({0x40002000100080a5, 0}),   64, wide_int<128>(0x40002000100080a5)},
     {wide_int<128>({0x8fff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 127, wide_int<128>(1)},
-    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 128, wide_int<128>()},
-    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 129, wide_int<128>()},
-    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 256, wide_int<128>()},
+    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 128, wide_int<128>(0)},
+    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 129, wide_int<128>(0)},
+    {wide_int<128>({0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}), 256, wide_int<128>(0)},
 };
 
 BOOST_DATA_TEST_CASE(right_shift, right_shift_samples)
@@ -529,9 +512,9 @@ BOOST_DATA_TEST_CASE(right_shift, right_shift_samples)
 }
 
 static unary_op_sample_t prefix_increment_samples[] {
-    {wide_int<64>(),  wide_int<64>(1)},
+    {wide_int<64>(0), wide_int<64>(1)},
     {wide_int<64>(1), wide_int<64>(2)},
-    {wide_int<64>(0xffff'ffff'ffff'ffff), wide_int<64>()},
+    {wide_int<64>(0xffff'ffff'ffff'ffff), wide_int<64>(0)},
 };
 
 BOOST_DATA_TEST_CASE(prefix_increment, prefix_increment_samples)
@@ -541,7 +524,7 @@ BOOST_DATA_TEST_CASE(prefix_increment, prefix_increment_samples)
 }
 
 static integer_to_int_sample_t most_significant_active_bit_samples[] {
-    {wide_int<64>(),  0},
+    {wide_int<64>(0), 0},
     {wide_int<64>(1), 1},
     {wide_int<64>(2), 2},
     {wide_int<64>(3), 2},
@@ -644,13 +627,13 @@ BOOST_DATA_TEST_CASE(pow, pow_samples)
 }
 
 static binary_mod_op_sample_t pow_mod_samples[] {
-    {wide_int<64>(3), wide_int<64>(), wide_int<64>(5), wide_int<64>(1)},
+    {wide_int<64>(3), wide_int<64>(0), wide_int<64>(5), wide_int<64>(1)},
     {wide_int<64>(3), wide_int<64>(1), wide_int<64>(5), wide_int<64>(3)},
     {wide_int<64>(3), wide_int<64>(2), wide_int<64>(5), wide_int<64>(4)},
     {wide_int<64>(3), wide_int<64>(3), wide_int<64>(5), wide_int<64>(2)},
     {wide_int<64>(3), wide_int<64>(4), wide_int<64>(5), wide_int<64>(1)},
-    {wide_int<64>(10), wide_int<64>(5), wide_int<64>(5), wide_int<64>()},
-    {wide_int<64>(0xff), wide_int<64>(5), wide_int<64>(5), wide_int<64>()},
+    {wide_int<64>(10), wide_int<64>(5), wide_int<64>(5), wide_int<64>(0)},
+    {wide_int<64>(0xff), wide_int<64>(5), wide_int<64>(5), wide_int<64>(0)},
 };
 
 BOOST_DATA_TEST_CASE(pow_mod, pow_mod_samples)
@@ -681,11 +664,11 @@ BOOST_DATA_TEST_CASE(pow2, pow2_samples)
 }
 
 static integer_to_bool_sample_t is_odd_samples[] {
-    {wide_int<64>(),   false},
+    {wide_int<64>(0),  false},
     {wide_int<64>(1),  true},
     {wide_int<64>(2),  false},
     {wide_int<64>(3),  true},
-    {wide_int<256>(),  false},
+    {wide_int<256>(0), false},
     {wide_int<256>(1), true},
 };
 
@@ -696,10 +679,10 @@ BOOST_DATA_TEST_CASE(is_odd_even, is_odd_samples)
 }
 
 static integer_to_bool_sample_t is_zero_samples[] {
-    {wide_int<64>(),   true},
+    {wide_int<64>(0),  true},
     {wide_int<64>(1),  false},
     {wide_int<64>(2),  false},
-    {wide_int<256>(),  true},
+    {wide_int<256>(0), true},
     {wide_int<256>(1), false},
     {wide_int<256>(2), false},
 };
