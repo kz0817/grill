@@ -58,10 +58,8 @@ static Integer hex_str_to_Integer(const std::string& hex_str) {
     std::size_t pos = 0;
     const auto fill_block = [&](const int str_chunk_idx, const std::size_t len) {
         const std::string blk = hex_str.substr(pos, len);
-
-        // The order of blocks is the least significant block first.
-        const int block_idx = num_blocks - str_chunk_idx - 1;
-        blocks[block_idx] = std::stoul(blk);
+        blocks[str_chunk_idx] = std::stoul(blk, nullptr, 16);
+        pos += len;
     };
 
     fill_block(0, msb_digits == 0 ? str_len_per_block : msb_digits);
@@ -73,7 +71,7 @@ static Integer hex_str_to_Integer(const std::string& hex_str) {
 
 static Integer hex_str_with_prefix_to_Integer(const std::string& s) {
     const std::string hex_str = s.substr(HexPrefix.size());
-    if (!is_valid_hex_number(s))
+    if (!is_valid_hex_number(hex_str))
         throw std::invalid_argument(hex_str);
     return hex_str_to_Integer(hex_str);
 }

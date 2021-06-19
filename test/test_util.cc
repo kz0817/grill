@@ -74,6 +74,16 @@ static string_to_Integer_sample_t to_Integer_samples[] {
     {"9223372036854775807", WideInt<64>(0x7fff'ffff'ffff'ffff)},
     {"9223372036854775808", WideInt<64>(0x8000'0000'0000'0000)},
     {"18446744073709551615", WideInt<64>(0xffff'ffff'ffff'ffff)},
+
+    {"0x0", constant::Zero},
+    {"0x1", constant::One},
+    {"0x123", WideInt<64>(0x123)},
+    {"0xffffffffffffffff", WideInt<64>(0xffff'ffff'ffff'ffff)},
+    {"0x1ffffeeeeddddcccc", WideInt<128>({1, 0xffff'eeee'dddd'cccc})},
+    {"0x123456789abcdef0ffffeeeeddddcccc",
+     WideInt<128>({0x1234'5678'9abc'def0, 0xffff'eeee'dddd'cccc})},
+    {"0x1230000111122223333123456789abcdef0ffffeeeeddddcccc",
+     WideInt<256>({0x123, 0x1111'2222'3333, 0x1234'5678'9abc'def0, 0xffff'eeee'dddd'cccc})},
 };
 
 BOOST_DATA_TEST_CASE(to_Integer, to_Integer_samples)
