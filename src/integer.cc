@@ -8,8 +8,6 @@
 
 namespace grill {
 
-static const int BlockBits = sizeof(integer::block_t) * 8;
-
 static constexpr integer::block_t BitMask[] = {
     0x0000'0000'0000'0001, 0x0000'0000'0000'0002, 0x0000'0000'0000'0004, 0x0000'0000'0000'0008,
     0x0000'0000'0000'0010, 0x0000'0000'0000'0020, 0x0000'0000'0000'0040, 0x0000'0000'0000'0080,
@@ -50,11 +48,11 @@ static bool is_valid_index(const std::size_t num_blocks, const int idx) {
 }
 
 static integer::block_t upper_half_block(const integer::block_t n) {
-    return (n >> (BlockBits/2));
+    return (n >> (integer::BlockBits/2));
 }
 
 static integer::block_t lower_half_block(const integer::block_t n) {
-    constexpr integer::block_t mask = ~(-BitMask[BlockBits/2]);
+    constexpr integer::block_t mask = ~(-BitMask[integer::BlockBits/2]);
     return mask & n;
 }
 
@@ -216,11 +214,11 @@ static void mul_blocks(const integer::block_t lhs, const integer::block_t rhs,
     dest[1] = lhs_upper_half * rhs_upper_half;
 
     const integer::block_t x0 = lhs_upper_half * rhs_lower_half;
-    const integer::block_t src0[2] = {x0 << (BlockBits/2), upper_half_block(x0)};
+    const integer::block_t src0[2] = {x0 << (integer::BlockBits/2), upper_half_block(x0)};
     add(dest, 2, src0, 2);
 
     const integer::block_t x1 = rhs_upper_half * lhs_lower_half;
-    const integer::block_t src1[2] = {x1 << (BlockBits/2), upper_half_block(x1)};
+    const integer::block_t src1[2] = {x1 << (integer::BlockBits/2), upper_half_block(x1)};
     add(dest, 2, src1, 2);
 }
 
@@ -421,7 +419,7 @@ integer& integer::operator++() {
 }
 
 static int get_most_significant_active_bit(const integer::block_t blk) {
-    int width = BlockBits;
+    int width = integer::BlockBits;
     int idx = 0;
     while (width > 0) {
         width >>= 1;

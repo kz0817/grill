@@ -11,6 +11,7 @@ namespace grill {
 class integer {
 public:
     using block_t = uint64_t;
+    static constexpr int BlockBits = sizeof(integer::block_t) * 8;
 
     integer(const integer& n);
     integer(integer&& n);
