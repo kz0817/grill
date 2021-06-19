@@ -84,7 +84,17 @@ public:
 
 protected:
     Integer(const std::size_t n_blk);
+
+    /**
+     * Constructor
+     *
+     * The number of blocks of the create Integer is n_blk.
+     *
+     * @param n_blk The number of src.
+     * @param src An initial value array for this instance. The most siginificant block first.
+     */
     Integer(const std::size_t n_blk, const block_t* const src);
+
     block_t* get_blocks() const;
 
 private:
