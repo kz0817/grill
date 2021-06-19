@@ -444,8 +444,7 @@ Integer Integer::pow2(const int e) {
     const int idx = e % BlockBits;
     blocks[num_blocks-1] = BitMask[idx];
 
-    const size_t zero_fill_size = (num_blocks - 1) * sizeof(Integer::block_t);
-    std::memset(blocks, 0, zero_fill_size);
+    internal_impl::fill_zero(blocks, num_blocks - 1);
 
     return n;
 }

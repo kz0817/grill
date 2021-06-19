@@ -2,7 +2,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
-#include <cstring>
 #include <cassert>
 #include "BlockAllocator.h"
 
@@ -17,6 +16,19 @@ bool is_all_zero(const T* blocks, const int num) {
     }
     return true;
 }
+
+template<typename T>
+void copy(T* dest, const T* src, std::size_t n) {
+    for (std::size_t i = 0; i < n; i++)
+        dest[i] = src[i];
+}
+
+template<typename T>
+void fill_zero(T* dest, std::size_t n) {
+    for (std::size_t i = 0; i < n; i++)
+        dest[i] = 0;
+}
+
 } // namespace internal_impl
 
 class Integer {
@@ -31,7 +43,7 @@ public:
      */
     Integer(const Integer& n)
     : Integer(n.num_blocks) {
-        std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
+        internal_impl::copy(this->blocks, n.blocks, this->num_blocks);
     }
 
     /**
@@ -64,7 +76,7 @@ public:
 
         const std::size_t num_zero_blocks = this->num_blocks - num_args;
         if (num_zero_blocks > 0)
-            std::memset(&blocks[num_args], 0, sizeof(block_t) * num_zero_blocks);
+            internal_impl::fill_zero(&blocks[num_args], num_zero_blocks);
     }
 
     /**
