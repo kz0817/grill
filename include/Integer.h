@@ -13,9 +13,48 @@ public:
     using block_t = uint64_t;
     static constexpr int BlockBits = sizeof(Integer::block_t) * 8;
 
-    Integer(const Integer& n);
-    Integer(Integer&& n);
-    Integer(const std::size_t n_blk, const std::initializer_list<block_t>& src);
+    /**
+     * Copy constructor
+     *
+     * @param n An Integer instance.
+     */
+    Integer(const Integer& n)
+    : Integer(n.num_blocks) {
+        std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
+    }
+
+    /**
+     * Move constructor
+     *
+     * @param n An Integer instance.
+     */
+    Integer(Integer&& n)
+    : num_blocks(n.num_blocks),
+      blocks(n.blocks) {
+        n.blocks = nullptr;
+    }
+
+    /**
+     * Constructor with the initial value.
+     *
+     * The number of blocks of the created Integer is n_blk.
+     *
+     * @param n_blk The number of src.
+     * @param src An initial value. The most siginificant block first.
+     */
+    Integer(const std::size_t n_blk, const std::initializer_list<block_t>& src)
+    : Integer(n_blk) {
+        const std::size_t num_args = src.size();
+        assert(num_args <= this->num_blocks);
+
+        int idx = num_args - 1;
+        for (const block_t& v: src)
+            blocks[idx--] = v;
+
+        const std::size_t num_zero_blocks = this->num_blocks - num_args;
+        if (num_zero_blocks > 0)
+            std::memset(&blocks[num_args], 0, sizeof(block_t) * num_zero_blocks);
+    }
 
     /**
      * Destructor
@@ -83,17 +122,34 @@ public:
     bool is_zero() const;
 
 protected:
-    Integer(const std::size_t n_blk);
-
     /**
      * Constructor
      *
-     * The number of blocks of the create Integer is n_blk.
+     * The number of blocks of the created Integer is n_blk.
+     * The value of the created Integer is undefined.
+     *
+     * @param n_blk The number of blocks the craeted Integer instance has.
+     */
+    Integer(const std::size_t n_blk)
+    : num_blocks(n_blk),
+      blocks(get_allocator()->take(this->num_blocks)) {
+    }
+
+    /**
+     * Constructor with the initial value.
+     *
+     * The number of blocks of the created Integer is n_blk.
      *
      * @param n_blk The number of src.
-     * @param src An initial value array for this instance. The most siginificant block first.
+     * @param src An initial value array. The most siginificant block first.
      */
-    Integer(const std::size_t n_blk, const block_t* const src);
+    Integer(const std::size_t n_blk, const block_t* const src)
+    : Integer(n_blk) {
+        for (std::size_t i = 0; i < n_blk; i++) {
+            int idx = n_blk - i - 1;
+            this->blocks[idx] = src[i];
+        }
+    }
 
     block_t* get_blocks() const;
 

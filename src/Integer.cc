@@ -59,19 +59,6 @@ static Integer::block_t lower_half_block(const Integer::block_t n) {
 //
 // protected methods
 //
-Integer::Integer(const std::size_t n_blk)
-: num_blocks(n_blk),
-  blocks(get_allocator()->take(this->num_blocks)) {
-}
-
-Integer::Integer(const std::size_t n_blk, const block_t* const src)
-: Integer(n_blk) {
-    for (std::size_t i = 0; i < n_blk; i++) {
-        int idx = n_blk - i - 1;
-        this->blocks[idx] = src[i];
-    }
-}
-
 Integer::block_t* Integer::get_blocks() const {
     return this->blocks;
 }
@@ -79,31 +66,6 @@ Integer::block_t* Integer::get_blocks() const {
 //
 // public methods
 //
-Integer::Integer(const Integer& n)
-: Integer(n.num_blocks) {
-    std::memcpy(this->blocks, n.blocks, sizeof(block_t) * this->num_blocks);
-}
-
-Integer::Integer(Integer&& n)
-: num_blocks(n.num_blocks),
-  blocks(n.blocks) {
-    n.blocks = nullptr;
-}
-
-Integer::Integer(const std::size_t n_blk, const std::initializer_list<block_t>& src)
-: Integer(n_blk) {
-    const std::size_t num_args = src.size();
-    assert(num_args <= this->num_blocks);
-
-    int idx = num_args - 1;
-    for (const block_t& v: src)
-        blocks[idx--] = v;
-
-    const std::size_t num_zero_blocks = this->num_blocks - num_args;
-    if (num_zero_blocks > 0)
-        std::memset(&blocks[num_args], 0, sizeof(block_t) * num_zero_blocks);
-}
-
 std::size_t Integer::get_num_blocks() const {
     return this->num_blocks;
 }
