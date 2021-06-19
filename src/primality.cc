@@ -92,7 +92,7 @@ struct MillerRabinFactors {
     }
 };
 
-enum class number_type {
+enum class NumberType {
     ProbablePrime,
     Composite,
 };
@@ -101,20 +101,20 @@ static Integer miller_rabin_formula(const Integer& a, const Integer& exp, const 
     return a.pow_mod(exp, n);
 }
 
-static number_type do_miller_rabin_test(
+static NumberType do_miller_rabin_test(
         const Integer& a, const Integer& n, const Integer& minus_one,
         const MillerRabinFactors& factors) {
     Integer exp(factors.d);
     const Integer v0 = miller_rabin_formula(a, exp, n);
     if (v0 == constant::One || v0 == minus_one)
-        return number_type::ProbablePrime;
+        return NumberType::ProbablePrime;
 
     for (std::size_t r = 1; r < factors.s; r++) {
         exp <<= 1;
         if (miller_rabin_formula(a, exp, n) == minus_one)
-            return number_type::ProbablePrime;
+            return NumberType::ProbablePrime;
     }
-    return number_type::Composite;
+    return NumberType::Composite;
 }
 
 bool primality::miller_rabin_test(const Integer& n) {
@@ -123,7 +123,7 @@ bool primality::miller_rabin_test(const Integer& n) {
     for (const auto& a: miller_rabin_test_bases) {
         if (a >= n)
             break;
-        if (do_miller_rabin_test(a, n, minus_one, factors) == number_type::Composite)
+        if (do_miller_rabin_test(a, n, minus_one, factors) == NumberType::Composite)
             return false;
     }
     return true;
