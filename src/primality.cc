@@ -78,12 +78,12 @@ bool primality::fermat_test(const Integer& n) {
 //
 static const auto& miller_rabin_test_bases = fermat_test_data;
 
-struct miller_rabin_factors {
+struct MillerRabinFactors {
     // n - 1 = (2^s) * d, where n is an odd primary
     std::size_t s = 0;
     Integer d;
 
-    miller_rabin_factors(const Integer& n)
+    MillerRabinFactors(const Integer& n)
     : d(n) {
         while (d.is_even()) {
             s++;
@@ -103,7 +103,7 @@ static Integer miller_rabin_formula(const Integer& a, const Integer& exp, const 
 
 static number_type do_miller_rabin_test(
         const Integer& a, const Integer& n, const Integer& minus_one,
-        const miller_rabin_factors& factors) {
+        const MillerRabinFactors& factors) {
     Integer exp(factors.d);
     const Integer v0 = miller_rabin_formula(a, exp, n);
     if (v0 == constant::One || v0 == minus_one)
@@ -119,7 +119,7 @@ static number_type do_miller_rabin_test(
 
 bool primality::miller_rabin_test(const Integer& n) {
     const Integer minus_one = n - constant::One; // n-1 is congruent to -1 (mod n)
-    const miller_rabin_factors factors(minus_one);
+    const MillerRabinFactors factors(minus_one);
     for (const auto& a: miller_rabin_test_bases) {
         if (a >= n)
             break;

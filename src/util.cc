@@ -5,8 +5,8 @@
 
 namespace grill {
 
-struct Integer_generator : public Integer {
-    Integer_generator(const std::size_t n_blk, const block_t* const src)
+struct IntegerGenerator : public Integer {
+    IntegerGenerator(const std::size_t n_blk, const block_t* const src)
     : Integer(n_blk, src) {
     }
 };
@@ -68,7 +68,7 @@ static Integer hex_str_to_Integer(const std::string& hex_str) {
     for (std::size_t i = 1; i < num_blocks; i++)
         fill_block(i, str_len_per_block);
 
-    return Integer_generator(num_blocks, blocks);
+    return IntegerGenerator(num_blocks, blocks);
 }
 
 static Integer hex_str_with_prefix_to_Integer(const std::string& s) {

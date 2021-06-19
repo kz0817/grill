@@ -251,18 +251,18 @@ Integer Integer::operator*(const Integer& rhs) const {
     return n;
 }
 
-struct div_solution {
+struct DivSolution {
     Integer q; // quotient
     Integer r; // remainder
 };
 
-static div_solution div(const Integer& lhs, const Integer& rhs) {
+static DivSolution div(const Integer& lhs, const Integer& rhs) {
     const int lhs_msb = lhs.most_significant_active_bit();
     const int rhs_msb = rhs.most_significant_active_bit();
     if (rhs_msb == 0)
         throw std::out_of_range("Divided by zero");
 
-    div_solution sol {
+    DivSolution sol {
         Integer(lhs.get_num_blocks(), {}),
         Integer(lhs),
     };
