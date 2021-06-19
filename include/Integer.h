@@ -147,7 +147,7 @@ public:
      * @param e An exponent.
      * @return The value of 2 to the power of e.
      */
-    static Integer pow2(const int e);
+    static const Integer& pow2(const int e);
 
     /**
      * Returns whether the value is odd.

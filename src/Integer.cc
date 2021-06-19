@@ -4,6 +4,7 @@
 #include <sstream>
 #include "Integer.h"
 #include "BlockAllocator.h"
+#include "ExpandableArray.h"
 #include "constant.h"
 
 namespace grill {
@@ -436,17 +437,28 @@ Integer Integer::pow_mod(const Integer& e, const Integer& mod) const {
     return pow_template<true>(*this, e, mod);
 }
 
-Integer Integer::pow2(const int e) {
-    const int num_blocks = e / BlockBits + 1;
-    Integer n(num_blocks);
+// TODO: Be thread safe
+static ExpandableArray<Integer*> pow2_array;
 
-    block_t* blocks = n.get_blocks();
-    const int idx = e % BlockBits;
+static void fill_pow2(Integer::block_t* blocks, const std::size_t num_blocks, const int e) {
+    const int idx = e % Integer::BlockBits;
     blocks[num_blocks-1] = BitMask[idx];
-
     internal_impl::fill_zero(blocks, num_blocks - 1);
+}
 
-    return n;
+const Integer& Integer::pow2(const int e) {
+    const std::size_t required_size = e + 1;
+    const std::size_t curr_size = pow2_array.get_size();
+    if (curr_size < required_size) {
+        pow2_array.resize(required_size);
+        for (std::size_t i = curr_size; i < required_size; i++) {
+            const std::size_t num_blocks = e / Integer::BlockBits + 1;
+            Integer* n_ptr = new Integer(num_blocks);
+            fill_pow2(n_ptr->get_blocks(), num_blocks, i);
+            pow2_array.set(i, n_ptr);
+        }
+    }
+    return *pow2_array.get(e);
 }
 
 } // namespace grill
