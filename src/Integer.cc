@@ -363,9 +363,9 @@ static int get_most_significant_active_bit(const Integer::block_t blk) {
     int idx = 0;
     while (width > 0) {
         width >>= 1;
-        idx += width;
-        if (blk < BitMask[idx])
-            idx -= width;
+        const int trial_idx = idx + width;
+        if (blk >= BitMask[trial_idx])
+            idx = trial_idx;
     }
     return idx + 1;
 }
