@@ -2,12 +2,12 @@
 #include "Integer.h"
 
 namespace grill {
+namespace constant {
 
-struct constant {
-    static const WideInt<64> Zero;
-    static const WideInt<64> One;
-    static const WideInt<64> Two;
-    static const WideInt<64> Three;
-};
+extern const WideInt<64> Zero;
+extern const WideInt<64> One;
+extern const WideInt<64> Two;
+extern const WideInt<64> Three;
 
+} // namespace constant
 } // namespace grill
