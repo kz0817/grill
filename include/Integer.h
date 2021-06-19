@@ -106,8 +106,8 @@ private:
 
 template<std::size_t N>
 class WideInt : public Integer {
-    static_assert((N % 64) == 0, "N must be a multiple of 64");
-    static constexpr std::size_t B = (N / 64);
+    static_assert((N % Integer::BlockBits) == 0, "N must be a multiple of Integer::BlockBits");
+    static constexpr std::size_t B = (N / Integer::BlockBits);
 
 public:
     WideInt(const Integer::block_t init_value)
