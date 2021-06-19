@@ -78,6 +78,7 @@ static string_to_Integer_sample_t to_Integer_samples[] {
     {"0x0", constant::Zero},
     {"0x1", constant::One},
     {"0x123", WideInt<64>(0x123)},
+    {"0xA5", WideInt<64>(0xa5)},
     {"0xffffffffffffffff", WideInt<64>(0xffff'ffff'ffff'ffff)},
     {"0x1ffffeeeeddddcccc", WideInt<128>({1, 0xffff'eeee'dddd'cccc})},
     {"0x123456789abcdef0ffffeeeeddddcccc",

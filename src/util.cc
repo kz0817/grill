@@ -37,7 +37,9 @@ static bool has_hex_prefix(const std::string& s) {
 
 static bool is_valid_hex_number(const std::string& s) {
     const auto found_pos = std::find_if(s.begin(), s.end(), [](const char c) {
-        return !(c >= '0' && c <= '9') && !(c >= 'a' && c <= 'f');
+        return !(c >= '0' && c <= '9') &&
+               !(c >= 'a' && c <= 'f') &&
+               !(c >= 'A' && c <= 'F');
     });
     return found_pos == s.end();
 }
