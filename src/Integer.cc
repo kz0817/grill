@@ -359,11 +359,11 @@ Integer& Integer::operator++() {
 }
 
 static int get_most_significant_active_bit(const Integer::block_t blk) {
-    int width = Integer::BlockBits;
+    constexpr int WidthVector[] = {32, 16, 8, 4, 2, 1};
+    constexpr int NumLoops = sizeof(WidthVector) / sizeof(int);
     int idx = 0;
-    while (width > 0) {
-        width >>= 1;
-        const int trial_idx = idx + width;
+    for (int i = 0; i < NumLoops; i++) {
+        const int trial_idx = idx + WidthVector[i];
         if (blk >= BitMask[trial_idx])
             idx = trial_idx;
     }
