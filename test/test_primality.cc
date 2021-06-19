@@ -2,6 +2,7 @@
 #include <boost/test/data/test_case.hpp>
 #include <iostream>
 #include "primality.h"
+#include "util.h"
 
 using namespace grill;
 

@@ -1,5 +1,6 @@
 #include <vector>
 #include "primality.h"
+#include "constant.h"
 
 namespace grill {
 
