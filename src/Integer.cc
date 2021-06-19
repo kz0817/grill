@@ -410,9 +410,6 @@ Integer& Integer::set_bit_value(const int b, const bool v) {
 
 template<bool MODULO>
 Integer pow_template(const Integer& base, const Integer& e, const Integer& mod) {
-    if (base.get_num_blocks() != 1)
-        THROW_ERROR("Not implmented yet: pow()");
-
     const int most_significant_active_bit = e.most_significant_active_bit();
     Integer n(base.get_num_blocks(), {1});
     Integer x = base;
