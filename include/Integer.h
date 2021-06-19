@@ -8,6 +8,17 @@
 
 namespace grill {
 
+namespace internal_impl {
+template<typename T>
+bool is_all_zero(const T* blocks, const int num) {
+    for (int i = 0; i < num; i++) {
+        if (blocks[i] != 0)
+            return false;
+    }
+    return true;
+}
+} // namespace internal_impl
+
 class Integer {
 public:
     using block_t = uint64_t;
@@ -64,8 +75,23 @@ public:
             this->allocator->free(this->blocks);
     }
 
-    std::size_t get_num_blocks() const;
-    const block_t* ref_blocks() const;
+    /**
+     * Returns the number of internal blocks.
+     *
+     * @return The number of internal blocks.
+     */
+    std::size_t get_num_blocks() const {
+        return this->num_blocks;
+    }
+
+    /**
+     * Returns the internal blocks.
+     *
+     * @return The const pointer of internal blocks.
+     */
+    const block_t* ref_blocks() const {
+        return get_blocks();
+    }
 
     operator std::string() const;
     friend std::ostream& operator<<(std::ostream& os, const Integer& data);
@@ -111,15 +137,32 @@ public:
      */
     static Integer pow2(const int e);
 
-    bool is_odd() const;
-    bool is_even() const;
+    /**
+     * Returns whether the value is odd.
+     *
+     * @return true if the value is odd. Otherwise false.
+     */
+    bool is_odd() const {
+        return this->blocks[0] & 1;
+    }
+
+    /**
+     * Returns whether the value is even.
+     *
+     * @return true if the value is even. Otherwise false.
+     */
+    bool is_even() const {
+        return !is_odd();
+    }
 
     /**
      * Returns whether the value is zero.
      *
      * @return true if the value is zero. Otherwise false.
      */
-    bool is_zero() const;
+    bool is_zero() const {
+        return internal_impl::is_all_zero(this->blocks, this->num_blocks);
+    }
 
 protected:
     /**
@@ -151,7 +194,14 @@ protected:
         }
     }
 
-    block_t* get_blocks() const;
+    /**
+     * Returns the internal blocks.
+     *
+     * @return The pointer of internal blocks.
+     */
+    block_t* get_blocks() const {
+        return this->blocks;
+    }
 
 private:
     // C++11's local_thread has a run-time penalty. So we use the GCC's __thread feature.

@@ -57,23 +57,8 @@ static Integer::block_t lower_half_block(const Integer::block_t n) {
 }
 
 //
-// protected methods
-//
-Integer::block_t* Integer::get_blocks() const {
-    return this->blocks;
-}
-
-//
 // public methods
 //
-std::size_t Integer::get_num_blocks() const {
-    return this->num_blocks;
-}
-
-const Integer::block_t* Integer::ref_blocks() const {
-    return get_blocks();
-}
-
 Integer::operator std::string() const {
     std::stringstream ss;
     const int buf_size = sizeof(block_t) * 2 + 1;
@@ -249,14 +234,6 @@ Integer Integer::operator%(const Integer& rhs) const {
     return div(*this, rhs).r;
 }
 
-bool static is_all_zero(const Integer::block_t* blocks, const int num) {
-    for (int i = 0; i < num; i++) {
-        if (blocks[i] != 0)
-            return false;
-    }
-    return true;
-}
-
 struct compare_param {
     bool wider_blocks_is_non_zero;
     bool lhs_is_greater;
@@ -275,7 +252,7 @@ static bool compare(const Integer& lhs, const Integer& rhs, const compare_param&
     const Integer::block_t* rhs_blocks = rhs.ref_blocks();
 
     const int num_wider_blocks = lhs_num_blocks - num_common_blocks;
-    if (!is_all_zero(&lhs_blocks[num_common_blocks], num_wider_blocks))
+    if (!internal_impl::is_all_zero(&lhs_blocks[num_common_blocks], num_wider_blocks))
         return param.wider_blocks_is_non_zero;
 
     for (int i = 0; i < num_common_blocks; i++) {
@@ -471,18 +448,6 @@ Integer Integer::pow2(const int e) {
     std::memset(blocks, 0, zero_fill_size);
 
     return n;
-}
-
-bool Integer::is_odd() const {
-    return this->blocks[0] & 1;
-}
-
-bool Integer::is_even() const {
-    return !is_odd();
-}
-
-bool Integer::is_zero() const {
-    return is_all_zero(this->blocks, this->num_blocks);
 }
 
 } // namespace grill
