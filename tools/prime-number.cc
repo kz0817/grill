@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <unordered_map>
 #include "ArgParser.h"
-#include "integer.h"
+#include "Integer.h"
 #include "primality.h"
 #include "util.h"
 
@@ -50,15 +50,15 @@ static algorithm parse_algorithm(const std::string& name) {
 
 static const std::unordered_map<algorithm, std::function<bool(const options_def&)>> proc_map = {
     {algorithm::trivial_division, [](const options_def& options) {
-        std::cout << "Type type: " << (options.primitive ? "primitive" : "integer") << std::endl;
+        std::cout << "Type type: " << (options.primitive ? "primitive" : "Integer") << std::endl;
         return options.primitive ? primality::trivial_division(options.num)
-                                 : primality::trivial_division(wide_int<64>(options.num));
+                                 : primality::trivial_division(WideInt<64>(options.num));
     }},
     {algorithm::fermat_test, [](const options_def& options) {
-        return primality::fermat_test(wide_int<64>(options.num));
+        return primality::fermat_test(WideInt<64>(options.num));
     }},
     {algorithm::miller_rabin_test, [](const options_def& options) {
-        return primality::miller_rabin_test(wide_int<64>(options.num));
+        return primality::miller_rabin_test(WideInt<64>(options.num));
     }},
 };
 
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
     parser.add({"-p", "--primitive"}, [](options_def& opt, ...) {
         opt.primitive = true;
-    }, "", "Use the primitive number type instead of the integer class.");
+    }, "", "Use the primitive number type instead of the Integer class.");
 
     parser.add({"-a", "--algorithm"}, [](options_def& opt, ArgParser<options_def>& parser) {
         if (!parser.hasNext()) {

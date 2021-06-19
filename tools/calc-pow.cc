@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "integer.h"
+#include "Integer.h"
 #include "ArgParser.h"
 
 using namespace grill;
@@ -13,9 +13,9 @@ struct options_def {
 
 static void run(const std::size_t num) {
     for (std::size_t i = 0; i < num; i++) {
-        wide_int<64> b(i);
-        wide_int<64> e(i);
-        integer n = b.pow(e);
+        WideInt<64> b(i);
+        WideInt<64> e(i);
+        Integer n = b.pow(e);
     }
 }
 

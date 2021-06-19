@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "integer.h"
+#include "Integer.h"
 #include "ArgParser.h"
 
 using namespace grill;
@@ -13,13 +13,13 @@ struct options_def {
 
 static void run(const std::size_t num) {
     for (std::size_t i = 0; i < num; i++) {
-        wide_int<64> n(i);
+        WideInt<64> n(i);
     }
 }
 
 int main(int argc, char *argv[]) {
-    ArgParser<options_def> parser("create-integers", "creates integer objects many times",
-                                  "create-integers -n N");
+    ArgParser<options_def> parser("create-Integers", "creates Integer objects many times",
+                                  "create-Integers -n N");
     parser.add({"-h", "--help"}, [](options_def& opt, ...) {
         opt.show_help = true;
     }, "", "Show this help message.");
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
             return;
         }
         opt.num = std::stol(parser.getNext());
-    }, "N", "Number of integer objects to be created" );
+    }, "N", "Number of Integer objects to be created" );
 
     if (!parser.parse(argc, argv)) {
         std::cout << parser.getErrorMessage() << std::endl;
