@@ -5,6 +5,7 @@
 #include "Integer.h"
 #include "primality.h"
 #include "util.h"
+#include "constant.h"
 
 using namespace grill;
 using namespace Leaf;
@@ -32,7 +33,7 @@ struct options_def {
     bool show_help = false;
     bool primitive = false;
     algorithm test_algorithm = algorithm::trivial_division;
-    std::size_t num = 2;
+    Integer num = constant::Two;
 };
 
 static const std::unordered_map<std::string, algorithm> algorithm_map = {
@@ -50,15 +51,15 @@ static algorithm parse_algorithm(const std::string& name) {
 
 static const std::unordered_map<algorithm, std::function<bool(const options_def&)>> proc_map = {
     {algorithm::trivial_division, [](const options_def& options) {
-        std::cout << "Type type: " << (options.primitive ? "primitive" : "Integer") << std::endl;
-        return options.primitive ? primality::trivial_division(options.num)
-                                 : primality::trivial_division(WideInt<64>(options.num));
+        std::cout << "Type type: " << (options.primitive ? "primitive" : "integer") << std::endl;
+        return options.primitive ? primality::trivial_division(util::to_uint(options.num))
+                                 : primality::trivial_division(options.num);
     }},
     {algorithm::fermat_test, [](const options_def& options) {
-        return primality::fermat_test(WideInt<64>(options.num));
+        return primality::fermat_test(options.num);
     }},
     {algorithm::miller_rabin_test, [](const options_def& options) {
-        return primality::miller_rabin_test(WideInt<64>(options.num));
+        return primality::miller_rabin_test(options.num);
     }},
 };
 
@@ -104,7 +105,7 @@ int main(int argc, char *argv[]) {
             parser.error("-n: parameter is required");
             return;
         }
-        opt.num = std::stol(parser.getNext());
+        opt.num = util::to_Integer(parser.getNext());
     }, "N", "Number of execution times" );
 
     if (!parser.parse(argc, argv)) {
