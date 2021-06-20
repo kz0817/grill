@@ -217,6 +217,11 @@ Integer Integer::operator*(const Integer& rhs) const {
 struct DivSolution {
     Integer q; // quotient
     Integer r; // remainder
+
+    friend std::ostream& operator<<(std::ostream& os, const DivSolution& ds) {
+        os << "q: " << ds.q << ", r: " << ds.r;
+        return os;
+    }
 };
 
 static Integer mul_auto_size(const Integer& lhs, const Integer& rhs) {
