@@ -110,12 +110,34 @@ Integer& Integer::operator+=(const Integer& n) {
     return *this = (*this) + n;
 }
 
-Integer& Integer::operator-=(const Integer& n) {
-    if (get_num_blocks() != 1)
-        throw std::logic_error("Not implmented yet");
+static bool sub_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
+                          const bool borrow_flag) {
+    const Integer::block_t prev_lhs = lhs;
+    lhs -= rhs;
+    bool overflow = (lhs > prev_lhs);
 
-    get_blocks()[0] -= n.ref_blocks()[0];
-    return *this;
+    if (borrow_flag) {
+        lhs--;
+        if (lhs == static_cast<Integer::block_t>(-1))
+            overflow = true;
+    }
+    return overflow;
+}
+
+static void sub(Integer::block_t* dest, const std::size_t num_dest_blocks,
+                const Integer::block_t* src, const std::size_t num_src_blocks) {
+    bool borrow_flag = false;
+    for (std::size_t i = 0; i < num_dest_blocks; i++) {
+        const bool src_is_valid = (i < num_src_blocks);
+        if (!borrow_flag && !src_is_valid)
+            break;
+        const Integer::block_t src_val = src_is_valid ? src[i] : 0;
+        borrow_flag = sub_one_block(dest[i], src_val, borrow_flag);
+    }
+}
+
+Integer& Integer::operator-=(const Integer& n) {
+    return *this = (*this) - n ;
 }
 
 Integer& Integer::operator*=(const Integer& n) {
@@ -148,7 +170,7 @@ Integer Integer::operator+(const Integer& r) const {
 
 Integer Integer::operator-(const Integer& r) const {
     Integer n(*this);
-    n -= r;
+    sub(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
     return n;
 }
 

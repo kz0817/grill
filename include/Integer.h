@@ -109,7 +109,15 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Integer& data);
 
     Integer& operator+=(const Integer& n);
+
+    /**
+     * Subtracts the given Integer value from this.
+     *
+     * @param r A right-hand side Integer value.
+     * @return This Integer value which is a subtraction result.
+     */
     Integer& operator-=(const Integer& n);
+
     Integer& operator*=(const Integer& n);
     Integer& operator/=(const Integer& n);
     Integer& operator%=(const Integer& n);
@@ -117,7 +125,17 @@ public:
     Integer& operator=(Integer&& n);
 
     Integer operator+(const Integer& r) const;
+
+    /**
+     * Subtracts the given Integer value from this.
+     *
+     * The digits of the result is the same as this Integer (left-hand side).
+     *
+     * @param r A right-hand side Integer value.
+     * @return The subtraction result as a newly created Integer.
+     */
     Integer operator-(const Integer& r) const;
+
     Integer operator*(const Integer& r) const;
     Integer operator/(const Integer& r) const;
     Integer operator%(const Integer& r) const;

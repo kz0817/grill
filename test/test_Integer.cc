@@ -3,11 +3,10 @@
 #include <vector>
 #include "Integer.h"
 #include "constant.h"
+#include "sample_types.h"
 #include "util.h"
 
 using namespace grill;
-
-const Integer::block_t MaxBlockValue = 0xffff'ffff'ffff'ffff;
 
 struct cmp_sample_t {
     const Integer& lhs;
@@ -27,17 +26,6 @@ struct unary_op_sample_t {
 
     friend std::ostream& operator<<(std::ostream& os, const unary_op_sample_t& s) {
         os << "lhs: " << ", expected: " << s.expected;
-        return os;
-    }
-};
-
-struct binary_op_sample_t {
-    const Integer& lhs;
-    const Integer& rhs;
-    const Integer& expected;
-
-    friend std::ostream& operator<<(std::ostream& os, const binary_op_sample_t& s) {
-        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
         return os;
     }
 };
@@ -241,27 +229,6 @@ BOOST_DATA_TEST_CASE(add_unary_operator, add_operator_samples)
 BOOST_DATA_TEST_CASE(add_binary_operator, add_operator_samples)
 {
     BOOST_TEST((sample.lhs + sample.rhs) == sample.expected);
-}
-
-BOOST_AUTO_TEST_CASE(sub)
-{
-    WideInt<64> n1 = 10;
-    WideInt<64> n2 = 3;
-
-    n1 -= n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 7);
-    BOOST_TEST(n2.ref_blocks()[0] == 3);
-}
-
-BOOST_AUTO_TEST_CASE(sub_binary_opreator)
-{
-    WideInt<64> n1 = 10;
-    WideInt<64> n2 = 3;
-
-    const auto n = n1 - n2;
-    BOOST_TEST(n1.ref_blocks()[0] == 10);
-    BOOST_TEST(n2.ref_blocks()[0] == 3);
-    BOOST_TEST(n.ref_blocks()[0] == 7);
 }
 
 static binary_op_sample_t mul_operator_samples[] {

@@ -2,6 +2,19 @@
 #include <string>
 #include "Integer.h"
 
+static constexpr grill::Integer::block_t MaxBlockValue = 0xffff'ffff'ffff'ffff;
+
+struct binary_op_sample_t {
+    const grill::Integer& lhs;
+    const grill::Integer& rhs;
+    const grill::Integer& expected;
+
+    friend std::ostream& operator<<(std::ostream& os, const binary_op_sample_t& s) {
+        os << "lhs: " << s.lhs << ", rhs: " << s.rhs << ", expected: " << s.expected;
+        return os;
+    }
+};
+
 struct Integer_to_uint_sample_t {
     const grill::Integer& n;
     const unsigned long expected;
