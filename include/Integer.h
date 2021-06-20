@@ -9,8 +9,8 @@ namespace grill {
 
 namespace internal_impl {
 template<typename T>
-bool is_all_zero(const T* blocks, const int num) {
-    for (int i = 0; i < num; i++) {
+bool is_all_zero(const T* blocks, const std::size_t n) {
+    for (std::size_t i = 0; i < n; i++) {
         if (blocks[i] != 0)
             return false;
     }
