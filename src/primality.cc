@@ -1,3 +1,4 @@
+#include <ostream>
 #include <vector>
 #include "primality.h"
 #include "constant.h"
@@ -89,6 +90,11 @@ struct MillerRabinFactors {
             s++;
             d >>= 1;
         }
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const MillerRabinFactors& f) {
+        os << "s: " << f.s << ", d: " << f.d;
+        return os;
     }
 };
 
