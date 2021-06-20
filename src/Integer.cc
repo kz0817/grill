@@ -235,7 +235,7 @@ Integer Integer::operator%(const Integer& rhs) const {
     return div(*this, rhs).r;
 }
 
-struct compare_param {
+struct CompareParam {
     bool wider_blocks_is_non_zero;
     bool lhs_is_greater;
     bool rhs_is_greater;
@@ -243,7 +243,7 @@ struct compare_param {
 };
 
 // lhs should be wider or equals to rhs
-static bool compare(const Integer& lhs, const Integer& rhs, const compare_param& param) {
+static bool compare(const Integer& lhs, const Integer& rhs, const CompareParam& param) {
     const int lhs_num_blocks = lhs.get_num_blocks();
     const int rhs_num_blocks = rhs.get_num_blocks();
     const int num_common_blocks = rhs_num_blocks;
@@ -266,7 +266,7 @@ static bool compare(const Integer& lhs, const Integer& rhs, const compare_param&
     return param.lhs_equals_to_rhs;
 }
 
-static compare_param cmp_param_eq = {false, false, false, true};
+static const CompareParam cmp_param_eq = {false, false, false, true};
 
 bool static is_equal(const Integer& lhs, const Integer& rhs) {
     return compare(lhs, rhs, cmp_param_eq);
@@ -280,13 +280,13 @@ bool Integer::operator!=(const Integer& r) const {
     return !((*this) == r);
 }
 
-static compare_param cmp_param_gt_eq = {true, true, false, true};
+static const CompareParam cmp_param_gt_eq = {true, true, false, true};
 
 static bool is_gt_eq(const Integer& lhs, const Integer& rhs) {
     return compare(lhs, rhs, cmp_param_gt_eq);
 }
 
-static compare_param cmp_param_lt_eq = {false, false, true, true};
+static const CompareParam cmp_param_lt_eq = {false, false, true, true};
 
 static bool is_lt_eq(const Integer& lhs, const Integer& rhs) {
     return compare(lhs, rhs, cmp_param_lt_eq);
