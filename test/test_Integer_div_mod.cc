@@ -35,11 +35,14 @@ BOOST_DATA_TEST_CASE(div_unary_operator, div_operator_samples)
     Integer n = sample.lhs;
     BOOST_TEST((n /= sample.rhs) == sample.expected);
     BOOST_TEST(n == sample.expected);
+    BOOST_TEST(n.get_num_blocks() == sample.expected.get_num_blocks());
 }
 
 BOOST_DATA_TEST_CASE(div_binary_opreator, div_operator_samples)
 {
-    BOOST_TEST((sample.lhs / sample.rhs) == sample.expected);
+    const Integer n = sample.lhs / sample.rhs;
+    BOOST_TEST(n == sample.expected);
+    BOOST_TEST(n.get_num_blocks() == sample.expected.get_num_blocks());
 }
 
 BOOST_AUTO_TEST_CASE(div_by_zero)
@@ -74,11 +77,14 @@ BOOST_DATA_TEST_CASE(mod_unary_operator, mod_operator_samples)
     Integer n = sample.lhs;
     BOOST_TEST((n %= sample.rhs) == sample.expected);
     BOOST_TEST(n == sample.expected);
+    BOOST_TEST(n.get_num_blocks() == sample.expected.get_num_blocks());
 }
 
 BOOST_DATA_TEST_CASE(mod_binary_opreator, mod_operator_samples)
 {
-    BOOST_TEST((sample.lhs % sample.rhs) == sample.expected);
+    const Integer n = sample.lhs % sample.rhs;
+    BOOST_TEST(n == sample.expected);
+    BOOST_TEST(n.get_num_blocks() == sample.expected.get_num_blocks());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
