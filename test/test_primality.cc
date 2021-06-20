@@ -51,6 +51,7 @@ static struct sample_t {
     {WideInt<64>(524'287), true, true},     // M19 (2^19-1)
     {WideInt<64>(670'0417), true, true},    // (2^32+1)/641
     {WideInt<64>(2'147'483'647), true, true}, // M31 (2^31-1)
+    {WideInt<64>(9'999'999'967), true, true}, // Over 2^32
 };
 
 BOOST_DATA_TEST_CASE(test_trivial_division_for_native, samples)

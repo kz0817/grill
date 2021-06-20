@@ -436,8 +436,10 @@ Integer& Integer::set_bit_value(const int b, const bool v) {
 template<bool MODULO>
 Integer pow_template(const Integer& base, const Integer& e, const Integer& mod) {
     const int most_significant_active_bit = e.most_significant_active_bit();
-    Integer n(base.get_num_blocks(), {1});
-    Integer x = base;
+    // TODO: consider the appropriate num_blk if MODULO is false.
+    const std::size_t num_blk = std::max(base.get_num_blocks(), 2 * mod.get_num_blocks());
+    Integer n(num_blk, {1});
+    Integer x(num_blk, base); // the power of base
     for (int b = 0; b < most_significant_active_bit; b++) {
         if (e.get_bit_value(b)) {
             n *= x;
