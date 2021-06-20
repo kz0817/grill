@@ -80,6 +80,26 @@ public:
     }
 
     /**
+     * Copy constructor with the given number of blocks.
+     *
+     * If the number of blocks of the source Integer is less than that of n_blk,
+     * the lower n_blk blocks are copied.
+     *
+     * @param n_blk The number of blocks of the Integer to create.
+     * @param src A source Integer.
+     */
+    Integer(const std::size_t n_blk, const Integer& src)
+    : Integer(n_blk) {
+        const std::size_t n_src_blk = src.get_num_blocks();
+
+        const std::size_t num_copy_blocks = (n_blk >= n_src_blk) ? n_src_blk : n_blk;
+        internal_impl::copy(this->blocks, src.blocks, num_copy_blocks);
+
+        const std::size_t num_zero_blocks = this->num_blocks - num_copy_blocks;
+        internal_impl::fill_zero(&blocks[num_copy_blocks], num_zero_blocks);
+    }
+
+    /**
      * Destructor
      */
     virtual ~Integer() {

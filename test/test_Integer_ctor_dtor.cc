@@ -62,4 +62,22 @@ BOOST_AUTO_TEST_CASE(move_constructor)
     BOOST_TEST(n1.ref_blocks() == nullptr);
 }
 
+BOOST_AUTO_TEST_CASE(copy_constructor_with_specified_num_blocks)
+{
+    const WideInt<128> src({123, 0xabc});
+    const Integer n(4, src);
+
+    const Integer::block_t expected[] = {0xabc, 123, 0, 0};
+    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
+}
+
+BOOST_AUTO_TEST_CASE(copy_constructor_with_specified_num_blocks_src_has_greater_blocks)
+{
+    const WideInt<256> src({0, 0xffff, 123, 0xabc});
+    const Integer n(2, src);
+
+    const Integer::block_t expected[] = {0xabc, 123};
+    BOOST_TEST(create_block_vector(n) == expected, boost::test_tools::per_element());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
