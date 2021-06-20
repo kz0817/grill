@@ -80,60 +80,8 @@ std::ostream& operator<<(std::ostream& os, const Integer& data) {
     return os;
 }
 
-static bool add_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
-                          const bool carry_flag) {
-    const Integer::block_t prev_lhs = lhs;
-    lhs += rhs;
-    bool overflow = (lhs < prev_lhs);
-
-    if (carry_flag) {
-        lhs++;
-        if (lhs == 0)
-            overflow = true;
-    }
-    return overflow;
-}
-
-static void add(Integer::block_t* dest, const std::size_t num_dest_blocks,
-                const Integer::block_t* src, const std::size_t num_src_blocks) {
-    bool carry_flag = false;
-    for (std::size_t i = 0; i < num_dest_blocks; i++) {
-        const bool src_is_valid = (i < num_src_blocks);
-        if (!carry_flag && !src_is_valid)
-            break;
-        const Integer::block_t src_val = src_is_valid ? src[i] : 0;
-        carry_flag = add_one_block(dest[i], src_val, carry_flag);
-    }
-}
-
 Integer& Integer::operator+=(const Integer& n) {
     return *this = (*this) + n;
-}
-
-static bool sub_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
-                          const bool borrow_flag) {
-    const Integer::block_t prev_lhs = lhs;
-    lhs -= rhs;
-    bool overflow = (lhs > prev_lhs);
-
-    if (borrow_flag) {
-        lhs--;
-        if (lhs == static_cast<Integer::block_t>(-1))
-            overflow = true;
-    }
-    return overflow;
-}
-
-static void sub(Integer::block_t* dest, const std::size_t num_dest_blocks,
-                const Integer::block_t* src, const std::size_t num_src_blocks) {
-    bool borrow_flag = false;
-    for (std::size_t i = 0; i < num_dest_blocks; i++) {
-        const bool src_is_valid = (i < num_src_blocks);
-        if (!borrow_flag && !src_is_valid)
-            break;
-        const Integer::block_t src_val = src_is_valid ? src[i] : 0;
-        borrow_flag = sub_one_block(dest[i], src_val, borrow_flag);
-    }
 }
 
 Integer& Integer::operator-=(const Integer& n) {
@@ -162,15 +110,60 @@ Integer& Integer::operator=(Integer&& n) {
     return *this;
 }
 
+template <typename T>
+static void add_sub(Integer::block_t* dest, const std::size_t num_dest_blocks,
+                    const Integer::block_t* src, const std::size_t num_src_blocks) {
+    bool carry_flag = false;
+    for (std::size_t i = 0; i < num_dest_blocks; i++) {
+        const bool src_is_valid = (i < num_src_blocks);
+        if (!carry_flag && !src_is_valid)
+            break;
+        const Integer::block_t src_val = src_is_valid ? src[i] : 0;
+        carry_flag = T::calc_one_block(dest[i], src_val, carry_flag);
+    }
+}
+
+struct AddOp {
+    static bool calc_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
+                               const bool carry_flag) {
+        const Integer::block_t prev_lhs = lhs;
+        lhs += rhs;
+        bool overflow = (lhs < prev_lhs);
+
+        if (carry_flag) {
+            lhs++;
+            if (lhs == 0)
+                overflow = true;
+        }
+        return overflow;
+    }
+};
+
+struct SubOp {
+    static bool calc_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
+                               const bool borrow_flag) {
+        const Integer::block_t prev_lhs = lhs;
+        lhs -= rhs;
+        bool overflow = (lhs > prev_lhs);
+
+        if (borrow_flag) {
+            lhs--;
+            if (lhs == static_cast<Integer::block_t>(-1))
+                overflow = true;
+        }
+        return overflow;
+    }
+};
+
 Integer Integer::operator+(const Integer& r) const {
     Integer n(*this);
-    add(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
+    add_sub<AddOp>(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
     return n;
 }
 
 Integer Integer::operator-(const Integer& r) const {
     Integer n(*this);
-    sub(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
+    add_sub<SubOp>(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
     return n;
 }
 
@@ -185,11 +178,11 @@ static void mul_blocks(const Integer::block_t lhs, const Integer::block_t rhs,
 
     const Integer::block_t x0 = lhs_upper_half * rhs_lower_half;
     const Integer::block_t src0[2] = {x0 << (Integer::BlockBits/2), upper_half_block(x0)};
-    add(dest, 2, src0, 2);
+    add_sub<AddOp>(dest, 2, src0, 2);
 
     const Integer::block_t x1 = rhs_upper_half * lhs_lower_half;
     const Integer::block_t src1[2] = {x1 << (Integer::BlockBits/2), upper_half_block(x1)};
-    add(dest, 2, src1, 2);
+    add_sub<AddOp>(dest, 2, src1, 2);
 }
 
 static void mul(const Integer& lhs, const Integer& rhs,
@@ -210,7 +203,7 @@ static void mul(const Integer& lhs, const Integer& rhs,
             // create a partially multiplied number and accumulate it
             Integer::block_t x[2];
             mul_blocks(l_blocks[l_idx], r_blocks[r_idx], x);
-            add(&blocks[idx], num_blocks - idx, x, 2);
+            add_sub<AddOp>(&blocks[idx], num_blocks - idx, x, 2);
         }
     }
 }
