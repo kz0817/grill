@@ -139,7 +139,21 @@ public:
     Integer& operator-=(const Integer& n);
 
     Integer& operator*=(const Integer& n);
+
+    /**
+     * Divide this Integer by the givin Integer.
+     *
+     * @param r A right-hand side Integer value.
+     * @return This Integer which is a quotient of the division.
+     */
     Integer& operator/=(const Integer& n);
+
+    /**
+     * Calculates the quotient of division.
+     *
+     * @param r A right-hand side Integer value.
+     * @return This Integer which is a quotient of the division.
+     */
     Integer& operator%=(const Integer& n);
 
     Integer& operator=(Integer&& n);
@@ -157,7 +171,25 @@ public:
     Integer operator-(const Integer& r) const;
 
     Integer operator*(const Integer& r) const;
+
+    /**
+     * Calculates the quotient of division.
+     *
+     * The digits of the result is the same as this Integer (left-hand side).
+     *
+     * @param r A right-hand side Integer value.
+     * @return The quotient.
+     */
     Integer operator/(const Integer& r) const;
+
+    /**
+     * Calculates the remainder of division.
+     *
+     * The digits of the result is the same as this Integer (left-hand side).
+     *
+     * @param r A right-hand side Integer value.
+     * @return The remainder.
+     */
     Integer operator%(const Integer& r) const;
 
     bool operator==(const Integer& r) const;
