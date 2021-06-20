@@ -464,7 +464,7 @@ const Integer& Integer::pow2(const int e) {
     if (curr_size < required_size) {
         pow2_array.resize(required_size);
         for (std::size_t i = curr_size; i < required_size; i++) {
-            const std::size_t num_blocks = e / Integer::BlockBits + 1;
+            const std::size_t num_blocks = i / Integer::BlockBits + 1;
             Integer* n_ptr = new Integer(num_blocks);
             fill_pow2(n_ptr->get_blocks(), num_blocks, i);
             pow2_array.set(i, n_ptr);
