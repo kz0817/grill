@@ -155,9 +155,14 @@ struct SubOp {
     }
 };
 
+static void add(Integer::block_t* dest, const std::size_t num_dest_blocks,
+                const  Integer::block_t* src, const std::size_t num_src_blocks) {
+    iterate<AddOp>(dest, num_dest_blocks, src, num_src_blocks);
+}
+
 Integer Integer::operator+(const Integer& r) const {
     Integer n(*this);
-    iterate<AddOp>(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
+    add(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
     return n;
 }
 
@@ -178,11 +183,11 @@ static void mul_blocks(const Integer::block_t lhs, const Integer::block_t rhs,
 
     const Integer::block_t x0 = lhs_upper_half * rhs_lower_half;
     const Integer::block_t src0[2] = {x0 << (Integer::BlockBits/2), upper_half_block(x0)};
-    iterate<AddOp>(dest, 2, src0, 2);
+    add(dest, 2, src0, 2);
 
     const Integer::block_t x1 = rhs_upper_half * lhs_lower_half;
     const Integer::block_t src1[2] = {x1 << (Integer::BlockBits/2), upper_half_block(x1)};
-    iterate<AddOp>(dest, 2, src1, 2);
+    add(dest, 2, src1, 2);
 }
 
 static void mul(const Integer& lhs, const Integer& rhs,
@@ -203,7 +208,7 @@ static void mul(const Integer& lhs, const Integer& rhs,
             // create a partially multiplied number and accumulate it
             Integer::block_t x[2];
             mul_blocks(l_blocks[l_idx], r_blocks[r_idx], x);
-            iterate<AddOp>(&blocks[idx], num_blocks - idx, x, 2);
+            add(&blocks[idx], num_blocks - idx, x, 2);
         }
     }
 }
