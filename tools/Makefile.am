@@ -1,7 +1,8 @@
 bin_PROGRAMS = \
   create-integers \
   calc-pow \
-  prime-number
+  prime-number \
+  rsa
 
 AM_CXXFLAGS = -I $(top_builddir)/Leaf/include
 AM_LDFLAGS = $(top_builddir)/src/libgrill.la
@@ -14,4 +15,7 @@ calc_pow_SOURCES = \
 
 prime_number_SOURCES = \
   prime-number.cc
+
+rsa_SOURCES = \
+  rsa.cc
 
