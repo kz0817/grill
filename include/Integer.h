@@ -220,6 +220,14 @@ public:
     static const Integer& pow2(const int e);
 
     /**
+     * Calculates the inverse number.
+     *
+     * @param mod A modulo number.
+     * @return The inverse number modulo mod.
+     */
+    Integer inverse(const Integer& mod) const;
+
+    /**
      * Returns whether the value is odd.
      *
      * @return true if the value is odd. Otherwise false.

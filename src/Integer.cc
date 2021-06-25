@@ -490,4 +490,47 @@ const Integer& Integer::pow2(const int e) {
     return *pow2_array.get(e);
 }
 
+static Integer minus(const Integer& n, const Integer& mod) {
+    return mod - (n % mod);
+}
+
+Integer Integer::inverse(const Integer& mod) const {
+    // We calculates x, y of ax + by = 1,
+    // where a >= b, x = *this (or mod), y = mod (or *this).
+    const bool this_is_greater = *this >= mod;
+    Integer a = this_is_greater ? *this : mod;
+    Integer b = this_is_greater ? mod : *this;
+
+    Integer prev_x = constant::One;
+    Integer prev_y = constant::Zero;
+    Integer x = constant::Zero;
+    Integer y = constant::One;
+    while (true) {
+        if (b == constant::One)
+            break;
+
+        const DivSolution sol = div(a, b);
+        if (sol.r.is_zero()) {
+            std::stringstream ss;
+            ss << "No inverse number: " << *this << ", mod: " << mod << std::endl;
+            throw std::range_error(ss.str());
+        }
+
+        Integer prev2_x = prev_x;
+        Integer prev2_y = prev_y;
+
+        prev_x = Integer(x);
+        prev_y = Integer(y);
+
+        // TODO: consider appropriate digits of the following sum and the product.
+        x = prev2_x + minus(prev_x * sol.q, mod);
+        y = prev2_y + minus(prev_y * sol.q, mod);
+
+        a = Integer(b);
+        b = Integer(sol.r);
+    }
+
+    return (this_is_greater ? x : y) % mod;
+}
+
 } // namespace grill
