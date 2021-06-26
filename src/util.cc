@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <stdexcept>
+#include <random>
 #include "constant.h"
 #include "util.h"
+#include "primality.h"
 
 namespace grill {
 
@@ -90,6 +92,42 @@ Integer util::to_Integer(const std::string& s) {
         return hex_str_with_prefix_to_Integer(s);
 
     return dec_str_to_Integer(s);
+}
+
+Integer util::get_random(const std::size_t bit_length) {
+    std::random_device seed_gen;
+    std::mt19937_64 engine(seed_gen());
+    constexpr int RANDOM_ENGINE_SIZE = 64;
+    static_assert(RANDOM_ENGINE_SIZE == Integer::BlockBits);
+
+    const std::size_t remaining_bits = bit_length % Integer::BlockBits;
+    const std::size_t quotient = bit_length / Integer::BlockBits;
+    const std::size_t num_blocks = remaining_bits == 0 ? quotient : quotient + 1;
+    Integer::block_t buf[num_blocks];
+
+    for (std::size_t i = 0; i < num_blocks; i++)
+        buf[i] = engine();
+
+    if (remaining_bits > 0) {
+        const std::size_t shift_bits = Integer::BlockBits - remaining_bits;
+        buf[0] >>= shift_bits;
+    }
+    return IntegerGenerator(num_blocks, buf);
+}
+
+Integer util::get_random_prime(const std::size_t bit_length) {
+    if (bit_length <= 2)
+        throw std::invalid_argument("bit_length must be greater than 2");
+
+    Integer n = constant::Zero;
+    while (true) {
+        n = get_random(bit_length);
+        if (n <= constant::Two)
+            continue;
+        if (primality::miller_rabin_test(n))
+            break;
+    }
+    return n;
 }
 
 } // namespace grill

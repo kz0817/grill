@@ -92,4 +92,40 @@ BOOST_DATA_TEST_CASE(to_Integer, to_Integer_samples)
     BOOST_TEST(util::to_Integer(sample.s) == sample.expected);
 }
 
+struct get_random_sample_t {
+    const std::size_t bit_length;
+    const std::size_t expected_num_blocks;
+    const std::size_t most_significant_bit_boundary;
+
+    friend std::ostream& operator<<(std::ostream& os, const get_random_sample_t& s) {
+        os << "bit_length: " << s.bit_length <<
+            ", expected_num_blocks: " << s.expected_num_blocks <<
+            ", most_significant_bit_boundary: " << s.most_significant_bit_boundary;
+        return os;
+    }
+};
+
+static get_random_sample_t get_random_samples[] {
+    {3,   1, 3},
+    {63,  1, 63},
+    {64,  1, 64},
+    {65,  2, 65},
+    {128, 2, 128},
+    {129, 3, 129},
+};
+
+BOOST_DATA_TEST_CASE(get_random, get_random_samples)
+{
+    const Integer n = util::get_random(sample.bit_length);
+    BOOST_TEST(n.get_num_blocks() == sample.expected_num_blocks);
+    BOOST_TEST(n.most_significant_active_bit() <= sample.most_significant_bit_boundary);
+}
+
+BOOST_AUTO_TEST_CASE(get_random_prime)
+{
+    const Integer n = util::get_random_prime(32);
+    BOOST_TEST(n.get_num_blocks() == 1);
+    BOOST_TEST(n.most_significant_active_bit() <= 32);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

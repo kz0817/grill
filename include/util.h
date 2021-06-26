@@ -40,5 +40,21 @@ unsigned long to_uint(const Integer& n);
  */
 Integer to_Integer(const std::string& s);
 
+/**
+ * Return a random number.
+ *
+ * @param bit_length A bit length of the created number.
+ * @return The random number.
+ */
+Integer get_random(const std::size_t bit_length);
+
+/**
+ * Return a random prime number.
+ *
+ * @param bit_length A bit length of the created prime number. It must be greater than 2.
+ * @return The random prime number.
+ */
+Integer get_random_prime(const std::size_t bit_length);
+
 } // namespace util
 } // namespace grill
