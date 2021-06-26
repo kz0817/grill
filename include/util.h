@@ -4,6 +4,13 @@
 namespace grill {
 namespace util {
 
+/**
+ * Return the gratest common divisor.
+ *
+ * @param a One Integer.
+ * @param b Other Integer.
+ * @return The greatest common divisor of a and b.
+ */
 Integer gcd(const Integer& a, const Integer& b);
 
 /**
