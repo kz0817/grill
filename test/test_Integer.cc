@@ -31,19 +31,6 @@ struct unary_op_sample_t {
     }
 };
 
-struct binary_mod_op_sample_t {
-    const Integer& lhs;
-    const Integer& rhs;
-    const Integer& mod;
-    const Integer& expected;
-
-    friend std::ostream& operator<<(std::ostream& os, const binary_mod_op_sample_t& s) {
-        os << "lhs: " << s.lhs << ", rhs: " << s.rhs
-           << ", mod: " << s.mod << ", expected: " << s.expected;
-        return os;
-    }
-};
-
 struct Integer_and_int_sample_t {
     const Integer& lhs;
     int rhs;
