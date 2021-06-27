@@ -505,10 +505,7 @@ Integer Integer::inverse(const Integer& mod) const {
     Integer prev_y = constant::Zero;
     Integer x = constant::Zero;
     Integer y = constant::One;
-    while (true) {
-        if (b == constant::One)
-            break;
-
+    while (b != constant::One) {
         const DivSolution sol = div(a, b);
         if (sol.r.is_zero()) {
             std::stringstream ss;
