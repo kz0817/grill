@@ -107,53 +107,6 @@ BOOST_DATA_TEST_CASE(cast_string, cast_string_samples)
     BOOST_TEST(static_cast<std::string>(sample.n) == sample.expected);
 }
 
-//
-// += and + operator
-//
-static binary_op_sample_t add_operator_samples[] = {
-    {
-        WideInt<64>(10),
-        WideInt<64>(3),
-        WideInt<64>(13)
-    }, {
-        WideInt<64>(MaxBlockValue),
-        WideInt<64>(1),
-        constant::Zero
-    },
-
-    {
-        WideInt<256>({1, 2, 3, 4}),
-        WideInt<128>({10, 20}),
-        WideInt<256>({1, 2, 13, 24})
-    }, {
-        WideInt<256>({1, MaxBlockValue, MaxBlockValue, MaxBlockValue}),
-        WideInt<128>({1, 2}),
-        WideInt<256>({2, 0, 1, 1})
-    },
-
-    {
-        WideInt<128>({1, 2}),
-        WideInt<256>({10, 20, 30, 40}),
-        WideInt<128>({31, 42})
-    }, {
-        WideInt<128>({1, MaxBlockValue}),
-        WideInt<256>({1, 2, 3, 4}),
-        WideInt<128>({5, 3})
-    },
-};
-
-BOOST_DATA_TEST_CASE(add_unary_operator, add_operator_samples)
-{
-    Integer n = sample.lhs;
-    BOOST_TEST((n += sample.rhs) == sample.expected);
-    BOOST_TEST(n == sample.expected);
-}
-
-BOOST_DATA_TEST_CASE(add_binary_operator, add_operator_samples)
-{
-    BOOST_TEST((sample.lhs + sample.rhs) == sample.expected);
-}
-
 static binary_op_sample_t mul_operator_samples[] {
     {WideInt<64>(0), WideInt<64>(1),  WideInt<64>(0)},
     {WideInt<64>(1), WideInt<64>(1),  WideInt<64>(1)},
