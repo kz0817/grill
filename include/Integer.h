@@ -128,6 +128,12 @@ public:
     operator std::string() const;
     friend std::ostream& operator<<(std::ostream& os, const Integer& data);
 
+    /**
+     * Adds the given Integer value to this.
+     *
+     * @param n A right-hand side Integer value.
+     * @return This Integer value which is a sum result.
+     */
     Integer& operator+=(const Integer& n);
 
     /**
@@ -158,6 +164,12 @@ public:
 
     Integer& operator=(Integer&& n);
 
+    /**
+     * Adds the given Inger value and this.
+     *
+     * @param r A right-hand side Integer value.
+     * @return The sum.
+     */
     Integer operator+(const Integer& r) const;
 
     /**

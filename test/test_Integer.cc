@@ -284,7 +284,7 @@ BOOST_DATA_TEST_CASE(right_shift, right_shift_samples)
 static unary_op_sample_t prefix_increment_samples[] {
     {WideInt<64>(0), WideInt<64>(1)},
     {WideInt<64>(1), WideInt<64>(2)},
-    {WideInt<64>(0xffff'ffff'ffff'ffff), WideInt<64>(0)},
+    {WideInt<64>(0xffff'ffff'ffff'ffff), WideInt<128>({1, 0})},
 };
 
 BOOST_DATA_TEST_CASE(prefix_increment, prefix_increment_samples)

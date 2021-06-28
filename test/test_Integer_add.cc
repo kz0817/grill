@@ -16,10 +16,8 @@ static binary_op_sample_t add_operator_samples[] = {
     }, {
         WideInt<64>(MaxBlockValue),
         WideInt<64>(1),
-        constant::Zero
-    },
-
-    {
+        WideInt<128>({1, 0}),
+    }, {
         WideInt<256>({1, 2, 3, 4}),
         WideInt<128>({10, 20}),
         WideInt<256>({1, 2, 13, 24})
@@ -27,16 +25,14 @@ static binary_op_sample_t add_operator_samples[] = {
         WideInt<256>({1, MaxBlockValue, MaxBlockValue, MaxBlockValue}),
         WideInt<128>({1, 2}),
         WideInt<256>({2, 0, 1, 1})
-    },
-
-    {
+    }, {
         WideInt<128>({1, 2}),
         WideInt<256>({10, 20, 30, 40}),
-        WideInt<128>({31, 42})
+        WideInt<256>({10, 20, 31, 42})
     }, {
         WideInt<128>({1, MaxBlockValue}),
         WideInt<256>({1, 2, 3, 4}),
-        WideInt<128>({5, 3})
+        WideInt<256>({1, 2, 5, 3})
     },
 };
 

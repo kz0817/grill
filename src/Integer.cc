@@ -111,7 +111,7 @@ Integer& Integer::operator=(Integer&& n) {
 }
 
 template <typename T>
-static void iterate(Integer::block_t* dest, const std::size_t num_dest_blocks,
+static bool iterate(Integer::block_t* dest, const std::size_t num_dest_blocks,
                     const  Integer::block_t* src, const std::size_t num_src_blocks) {
     bool carry_flag = false;
     for (std::size_t i = 0; i < num_dest_blocks; i++) {
@@ -121,18 +121,34 @@ static void iterate(Integer::block_t* dest, const std::size_t num_dest_blocks,
         const Integer::block_t src_val = src_is_valid ? src[i] : 0;
         carry_flag = T::calc_one_block(dest[i], src_val, carry_flag);
     }
+    return carry_flag;
+}
+
+template <typename T>
+static bool iterate(Integer::block_t* result, const std::size_t num_result_blocks,
+                    const Integer::block_t* lhs_blocks, const std::size_t num_lhs_blocks,
+                    const Integer::block_t* rhs_blocks, const std::size_t num_rhs_blocks) {
+    bool carry_flag = false;
+    for (std::size_t i = 0; i < num_result_blocks; i++) {
+        const bool lhs_is_valid = (i < num_lhs_blocks);
+        const bool rhs_is_valid = (i < num_rhs_blocks);
+        const Integer::block_t lhs_val = lhs_is_valid ? lhs_blocks[i] : 0;
+        const Integer::block_t rhs_val = rhs_is_valid ? rhs_blocks[i] : 0;
+        carry_flag = T::calc_one_block(result[i], lhs_val, rhs_val, carry_flag);
+    }
+    return carry_flag;
 }
 
 struct AddOp {
-    static bool calc_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
+    static bool calc_one_block(Integer::block_t& sum,
+                               const Integer::block_t lhs, const Integer::block_t rhs,
                                const bool carry_flag) {
-        const Integer::block_t prev_lhs = lhs;
-        lhs += rhs;
-        bool overflow = (lhs < prev_lhs);
+        sum = lhs + rhs;
+        bool overflow = (sum < lhs);
 
         if (carry_flag) {
-            lhs++;
-            if (lhs == 0)
+            sum++;
+            if (sum == 0)
                 overflow = true;
         }
         return overflow;
@@ -155,14 +171,35 @@ struct SubOp {
     }
 };
 
-static void add(Integer::block_t* dest, const std::size_t num_dest_blocks,
-                const  Integer::block_t* src, const std::size_t num_src_blocks) {
-    iterate<AddOp>(dest, num_dest_blocks, src, num_src_blocks);
+static void add(Integer::block_t* result, const std::size_t num_result_blocks,
+                const Integer::block_t* lhs_blocks, const std::size_t num_lhs_blocks,
+                const Integer::block_t* rhs_blocks, const std::size_t num_rhs_blocks) {
+    iterate<AddOp>(result, num_result_blocks,
+                   lhs_blocks, num_lhs_blocks, rhs_blocks, num_rhs_blocks);
 }
 
-Integer Integer::operator+(const Integer& r) const {
-    Integer n(*this);
-    add(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
+static void add(Integer::block_t* dest, const std::size_t num_dest_blocks,
+                const  Integer::block_t* src, const std::size_t num_src_blocks) {
+    Integer::block_t lhs[num_dest_blocks];
+    internal_impl::copy(lhs, dest, num_dest_blocks);
+    add(dest, num_dest_blocks, lhs, num_dest_blocks, src, num_src_blocks);
+}
+
+Integer Integer::operator+(const Integer& rhs) const {
+    const Integer& lhs = *this;
+    const std::size_t num_lhs_blocks = lhs.get_num_blocks();
+    const std::size_t num_rhs_blocks = rhs.get_num_blocks();
+    const std::size_t num_result_blocks = std::max(num_lhs_blocks, num_rhs_blocks) + 1;
+    Integer::block_t result[num_result_blocks];
+    add(result, num_result_blocks,
+        lhs.ref_blocks(), num_lhs_blocks, rhs.ref_blocks(), num_rhs_blocks);
+
+    // TODO: have the constructor do this optimization.
+    const std::size_t final_num_blocks = result[num_result_blocks-1] == 0
+                                         ? num_result_blocks - 1
+                                         : num_result_blocks;
+    Integer n(final_num_blocks);
+    internal_impl::copy(n.get_blocks(), result, final_num_blocks);
     return n;
 }
 
