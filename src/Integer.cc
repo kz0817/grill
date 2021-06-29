@@ -57,6 +57,17 @@ static Integer::block_t lower_half_block(const Integer::block_t n) {
     return mask & n;
 }
 
+static std::size_t get_num_compact_blocks(Integer::block_t* blocks, std::size_t num_blocks) {
+    size_t idx = num_blocks;
+    while (idx >= 2) {
+        if (blocks[idx-1] != 0)
+            break;
+        idx--;
+    }
+    return idx;
+}
+
+
 //
 // public methods
 //
@@ -251,8 +262,16 @@ static void mul(const Integer& lhs, const Integer& rhs,
 }
 
 Integer Integer::operator*(const Integer& rhs) const {
-    Integer n(this->get_num_blocks(), {});
-    mul(*this, rhs, n.get_blocks(), n.get_num_blocks());
+    const Integer& lhs = *this;
+    const std::size_t num_result_blocks = lhs.get_num_blocks() + rhs.get_num_blocks();
+    Integer::block_t result[num_result_blocks];
+    internal_impl::fill_zero(result, num_result_blocks);
+    mul(lhs, rhs, result, num_result_blocks);
+
+    // TODO: have the constructor do this optimization.
+    const std::size_t num_compact_blocks = get_num_compact_blocks(result, num_result_blocks);
+    Integer n(num_compact_blocks);
+    internal_impl::copy(n.get_blocks(), result, num_compact_blocks);
     return n;
 }
 
@@ -556,7 +575,6 @@ Integer Integer::inverse(const Integer& mod) const {
         prev_x = Integer(x);
         prev_y = Integer(y);
 
-        // TODO: consider appropriate digits of the following sum and the product.
         x = prev2_x + minus(prev_x * sol.q, mod);
         y = prev2_y + minus(prev_y * sol.q, mod);
 
