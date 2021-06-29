@@ -206,11 +206,9 @@ Integer Integer::operator+(const Integer& rhs) const {
         lhs.ref_blocks(), num_lhs_blocks, rhs.ref_blocks(), num_rhs_blocks);
 
     // TODO: have the constructor do this optimization.
-    const std::size_t final_num_blocks = result[num_result_blocks-1] == 0
-                                         ? num_result_blocks - 1
-                                         : num_result_blocks;
-    Integer n(final_num_blocks);
-    internal_impl::copy(n.get_blocks(), result, final_num_blocks);
+    const std::size_t num_compact_blocks = get_num_compact_blocks(result, num_result_blocks);
+    Integer n(num_compact_blocks);
+    internal_impl::copy(n.get_blocks(), result, num_compact_blocks);
     return n;
 }
 
