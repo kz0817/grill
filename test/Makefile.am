@@ -10,6 +10,7 @@ test_runner_SOURCES = \
   test_Integer_ctor_dtor.cc \
   test_Integer_add.cc \
   test_Integer_sub.cc \
+  test_Integer_mul.cc \
   test_Integer_div_mod.cc \
   test_Integer_inverse.cc \
   test_util.cc \
