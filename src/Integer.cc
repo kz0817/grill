@@ -283,12 +283,6 @@ struct DivSolution {
     }
 };
 
-static Integer mul_auto_size(const Integer& lhs, const Integer& rhs) {
-    const std::size_t n_blk = lhs.get_num_blocks() + rhs.get_num_blocks();
-    Integer n(n_blk, lhs);
-    return n *= rhs;
-}
-
 static DivSolution div(const Integer& lhs, const Integer& rhs) {
     const int lhs_msb = lhs.most_significant_active_bit();
     const int rhs_msb = rhs.most_significant_active_bit();
@@ -300,7 +294,7 @@ static DivSolution div(const Integer& lhs, const Integer& rhs) {
         Integer(lhs),
     };
     for (int b = lhs_msb - rhs_msb; b >= 0; b--) {
-        Integer x = mul_auto_size(rhs, Integer::pow2(b));
+        Integer x = rhs * Integer::pow2(b);
         if (sol.r >= x) {
             sol.q.set_bit_value(b, true);
             sol.r -= x;
