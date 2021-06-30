@@ -192,7 +192,7 @@ static void add(Integer::block_t* result, const std::size_t num_result_blocks,
 static void add(Integer::block_t* dest, const std::size_t num_dest_blocks,
                 const  Integer::block_t* src, const std::size_t num_src_blocks) {
     Integer::block_t lhs[num_dest_blocks];
-    internal_impl::copy(lhs, dest, num_dest_blocks);
+    gear::copy(lhs, dest, num_dest_blocks);
     add(dest, num_dest_blocks, lhs, num_dest_blocks, src, num_src_blocks);
 }
 
@@ -208,7 +208,7 @@ Integer Integer::operator+(const Integer& rhs) const {
     // TODO: have the constructor do this optimization.
     const std::size_t num_compact_blocks = get_num_compact_blocks(result, num_result_blocks);
     Integer n(num_compact_blocks);
-    internal_impl::copy(n.get_blocks(), result, num_compact_blocks);
+    gear::copy(n.get_blocks(), result, num_compact_blocks);
     return n;
 }
 
@@ -263,13 +263,13 @@ Integer Integer::operator*(const Integer& rhs) const {
     const Integer& lhs = *this;
     const std::size_t num_result_blocks = lhs.get_num_blocks() + rhs.get_num_blocks();
     Integer::block_t result[num_result_blocks];
-    internal_impl::fill_zero(result, num_result_blocks);
+    gear::fill_zero(result, num_result_blocks);
     mul(lhs, rhs, result, num_result_blocks);
 
     // TODO: have the constructor do this optimization.
     const std::size_t num_compact_blocks = get_num_compact_blocks(result, num_result_blocks);
     Integer n(num_compact_blocks);
-    internal_impl::copy(n.get_blocks(), result, num_compact_blocks);
+    gear::copy(n.get_blocks(), result, num_compact_blocks);
     return n;
 }
 
@@ -331,7 +331,7 @@ static bool compare(const Integer& lhs, const Integer& rhs, const CompareParam& 
     const Integer::block_t* rhs_blocks = rhs.ref_blocks();
 
     const int num_wider_blocks = lhs_num_blocks - num_common_blocks;
-    if (!internal_impl::is_all_zero(&lhs_blocks[num_common_blocks], num_wider_blocks))
+    if (!gear::is_all_zero(&lhs_blocks[num_common_blocks], num_wider_blocks))
         return param.wider_blocks_is_non_zero;
 
     for (int i = 0; i < num_common_blocks; i++) {
@@ -520,7 +520,7 @@ static ExpandableArray<Integer*> pow2_array;
 static void fill_pow2(Integer::block_t* blocks, const std::size_t num_blocks, const int e) {
     const int idx = e % Integer::BlockBits;
     blocks[num_blocks-1] = BitMask[idx];
-    internal_impl::fill_zero(blocks, num_blocks - 1);
+    gear::fill_zero(blocks, num_blocks - 1);
 }
 
 const Integer& Integer::pow2(const int e) {

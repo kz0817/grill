@@ -4,32 +4,9 @@
 #include <string>
 #include <cassert>
 #include "BlockAllocator.h"
+#include "gear.h"
 
 namespace grill {
-
-namespace internal_impl {
-template<typename T>
-bool is_all_zero(const T* blocks, const std::size_t n) {
-    for (std::size_t i = 0; i < n; i++) {
-        if (blocks[i] != 0)
-            return false;
-    }
-    return true;
-}
-
-template<typename T>
-void copy(T* dest, const T* src, std::size_t n) {
-    for (std::size_t i = 0; i < n; i++)
-        dest[i] = src[i];
-}
-
-template<typename T>
-void fill_zero(T* dest, std::size_t n) {
-    for (std::size_t i = 0; i < n; i++)
-        dest[i] = 0;
-}
-
-} // namespace internal_impl
 
 class Integer {
 public:
@@ -43,7 +20,7 @@ public:
      */
     Integer(const Integer& n)
     : Integer(n.num_blocks) {
-        internal_impl::copy(this->blocks, n.blocks, this->num_blocks);
+        gear::copy(this->blocks, n.blocks, this->num_blocks);
     }
 
     /**
@@ -76,7 +53,7 @@ public:
 
         const std::size_t num_zero_blocks = this->num_blocks - num_args;
         if (num_zero_blocks > 0)
-            internal_impl::fill_zero(&blocks[num_args], num_zero_blocks);
+            gear::fill_zero(&blocks[num_args], num_zero_blocks);
     }
 
     /**
@@ -93,10 +70,10 @@ public:
         const std::size_t n_src_blk = src.get_num_blocks();
 
         const std::size_t num_copy_blocks = (n_blk >= n_src_blk) ? n_src_blk : n_blk;
-        internal_impl::copy(this->blocks, src.blocks, num_copy_blocks);
+        gear::copy(this->blocks, src.blocks, num_copy_blocks);
 
         const std::size_t num_zero_blocks = this->num_blocks - num_copy_blocks;
-        internal_impl::fill_zero(&blocks[num_copy_blocks], num_zero_blocks);
+        gear::fill_zero(&blocks[num_copy_blocks], num_zero_blocks);
     }
 
     /**
@@ -263,7 +240,7 @@ public:
      * @return true if the value is zero. Otherwise false.
      */
     bool is_zero() const {
-        return internal_impl::is_all_zero(this->blocks, this->num_blocks);
+        return gear::is_all_zero(this->blocks, this->num_blocks);
     }
 
 protected:
