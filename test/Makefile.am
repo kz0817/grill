@@ -8,6 +8,7 @@ test_runner_SOURCES = \
   test_BlockAllocator.cc \
   test_Integer.cc \
   test_Integer_ctor_dtor.cc \
+  test_Integer_set_get_bitvalue.cc \
   test_Integer_add.cc \
   test_Integer_sub.cc \
   test_Integer_mul.cc \
