@@ -194,7 +194,16 @@ public:
 
     int most_significant_active_bit() const;
     bool get_bit_value(const int b) const;
+
+    /**
+     * Set a bit value at the specified position.
+     *
+     * @param b The bit position to set. The LSB bit is 0.
+     * @param v true or false.
+     * @return This instance after the bit is set.
+     */
     Integer& set_bit_value(const int b, const bool v);
+
     Integer pow(const Integer& e) const;
     Integer pow_mod(const Integer& e, const Integer& mod) const;
 

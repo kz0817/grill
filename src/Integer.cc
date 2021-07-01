@@ -475,9 +475,17 @@ Integer& Integer::set_bit_value(const int b, const bool v) {
     const size_t block_idx = b / BlockBits;
     const size_t mask_idx = b % BlockBits;
     if (block_idx >= get_num_blocks()) {
-        std::stringstream ss;
-        ss << "Out of range: bit: " << b << ", blocks: " << get_num_blocks();
-        THROW_ERROR(ss.str().c_str());
+        if (!v)
+            return *this;
+        const std::size_t num_new_blocks = block_idx + 1;
+        const std::size_t num_old_blocks = get_num_blocks();
+        Integer n(num_new_blocks);
+
+        const std::size_t num_zero_blocks = num_new_blocks - num_old_blocks;
+        block_t* new_blocks = n.get_blocks();
+        gear::copy(new_blocks, ref_blocks(), num_old_blocks);
+        gear::fill_zero(&new_blocks[num_old_blocks], num_zero_blocks);
+        *this = std::move(n);
     }
     if (v)
         this->blocks[block_idx] |= BitMask[mask_idx];

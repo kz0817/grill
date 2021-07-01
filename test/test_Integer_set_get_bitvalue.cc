@@ -80,6 +80,10 @@ static set_bit_value_sample_t set_bit_value_samples[] {
 
     {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 127, false,
      WideInt<128>({0x2000'0000'0000'0001, 0x5000'0000'0000'0000})},
+
+    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 64, true, WideInt<128>({1, 0xa5a5'5a5a'ffff'0001})},
+    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 64, false, WideInt<64>(0xa5a5'5a5a'ffff'0001)},
+    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 128, true, WideInt<192>({1, 0, 0xa5a5'5a5a'ffff'0001})},
 };
 
 BOOST_DATA_TEST_CASE(set_bit_value, set_bit_value_samples)
