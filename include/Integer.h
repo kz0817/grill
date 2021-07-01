@@ -37,23 +37,13 @@ public:
     /**
      * Constructor with the initial value.
      *
-     * The number of blocks of the created Integer is n_blk.
-     *
-     * @param n_blk The number of src.
      * @param src An initial value. The most siginificant block first.
      */
-    Integer(const std::size_t n_blk, const std::initializer_list<block_t>& src)
-    : Integer(n_blk) {
-        const std::size_t num_args = src.size();
-        assert(num_args <= this->num_blocks);
-
-        int idx = num_args - 1;
+    Integer(const std::initializer_list<block_t>& src)
+    : Integer(src.size()) {
+        int idx = this->num_blocks - 1;
         for (const block_t& v: src)
             blocks[idx--] = v;
-
-        const std::size_t num_zero_blocks = this->num_blocks - num_args;
-        if (num_zero_blocks > 0)
-            gear::fill_zero(&blocks[num_args], num_zero_blocks);
     }
 
     /**

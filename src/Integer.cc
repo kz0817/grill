@@ -290,7 +290,7 @@ static DivSolution div(const Integer& lhs, const Integer& rhs) {
         throw std::out_of_range("Divided by zero");
 
     DivSolution sol {
-        Integer(lhs.get_num_blocks(), {}),
+        constant::Zero,
         Integer(lhs),
     };
     for (int b = lhs_msb - rhs_msb; b >= 0; b--) {
@@ -390,7 +390,7 @@ Integer Integer::operator&(const Integer& r) const {
     const bool this_is_wider = (get_num_blocks() >= r.get_num_blocks());
     const Integer& wider = this_is_wider ? *this : r;
     const Integer& other = this_is_wider ? r : *this;
-    Integer n(wider.get_num_blocks(), {0});
+    Integer n(wider);
     Integer::block_t* blocks = n.get_blocks();
     bitwise_and(wider, other, blocks);
     return n;
