@@ -10,33 +10,30 @@ BOOST_AUTO_TEST_SUITE(test_suite_Integer_sub)
 
 static binary_op_sample_t sub_operator_samples[] = {
     {
-        WideInt<64>(10),
-        WideInt<64>(3),
-        WideInt<64>(7),
+        Integer({10}),
+        Integer({3}),
+        Integer({7}),
     }, {
         constant::Zero,
-        WideInt<64>(1),
-        WideInt<64>(MaxBlockValue),
-    },
-
-    {
-        WideInt<256>({1, 2, 13, 24}),
-        WideInt<256>({1, 2, 3, 4}),
-        WideInt<256>({10, 20}),
+        Integer({1}),
+        Integer({MaxBlockValue}),
     }, {
-        WideInt<256>({2, 0, 1, 1}),
-        WideInt<128>({1, 2}),
-        WideInt<256>({1, MaxBlockValue, MaxBlockValue, MaxBlockValue}),
-    },
-
-    {
-        WideInt<128>({31, 42}),
-        WideInt<256>({10, 20, 30, 40}),
-        WideInt<128>({1, 2}),
+        Integer({1, 2, 13, 24}),
+        Integer({1, 2, 3, 4}),
+        // TODO: remove leading 0s
+        Integer({0, 0, 10, 20}),
     }, {
-        WideInt<128>({5, 3}),
-        WideInt<256>({1, 2, 3, 4}),
-        WideInt<128>({1, MaxBlockValue}),
+        Integer({2, 0, 1, 1}),
+        Integer({1, 2}),
+        Integer({1, MaxBlockValue, MaxBlockValue, MaxBlockValue}),
+    }, {
+        Integer({31, 42}),
+        Integer({10, 20, 30, 40}),
+        Integer({1, 2}),
+    }, {
+        Integer({5, 3}),
+        Integer({1, 2, 3, 4}),
+        Integer({1, MaxBlockValue}),
     },
 };
 

@@ -4,10 +4,10 @@
 namespace grill {
 namespace constant {
 
-extern const WideInt<64> Zero;
-extern const WideInt<64> One;
-extern const WideInt<64> Two;
-extern const WideInt<64> Three;
+extern const Integer Zero;
+extern const Integer One;
+extern const Integer Two;
+extern const Integer Three;
 
 } // namespace constant
 } // namespace grill

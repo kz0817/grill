@@ -298,19 +298,4 @@ private:
     }
 };
 
-template<std::size_t N>
-class WideInt : public Integer {
-    static_assert((N % Integer::BlockBits) == 0, "N must be a multiple of Integer::BlockBits");
-    static constexpr std::size_t B = (N / Integer::BlockBits);
-
-public:
-    WideInt(const Integer::block_t init_value)
-    : Integer(B, {init_value}) {
-    }
-
-    WideInt(const std::initializer_list<Integer::block_t>& src)
-    : Integer(B, src) {
-    }
-};
-
 } // namespace grill

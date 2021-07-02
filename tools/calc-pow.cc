@@ -13,8 +13,8 @@ struct options_def {
 
 static void run(const std::size_t num) {
     for (std::size_t i = 0; i < num; i++) {
-        WideInt<64> b(i);
-        WideInt<64> e(i);
+        Integer b({i});
+        Integer e({i});
         Integer n = b.pow(e);
     }
 }

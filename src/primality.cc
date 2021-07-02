@@ -51,17 +51,17 @@ static bool pass_fermat_little_theorem(const Integer& n, const Integer& a) {
     return (a.pow_mod(n - constant::One, n) == constant::One);
 }
 
-static const WideInt<64> fermat_test_data[] = {
-    WideInt<64>(2),
-    WideInt<64>(3),
-    WideInt<64>(5),
-    WideInt<64>(7),
-    WideInt<64>(11),
-    WideInt<64>(13),
-    WideInt<64>(17),
-    WideInt<64>(19),
-    WideInt<64>(23),
-    WideInt<64>(29),
+static const Integer fermat_test_data[] = {
+    Integer({2}),
+    Integer({3}),
+    Integer({5}),
+    Integer({7}),
+    Integer({11}),
+    Integer({13}),
+    Integer({17}),
+    Integer({19}),
+    Integer({23}),
+    Integer({29}),
 };
 
 bool primality::fermat_test(const Integer& n) {

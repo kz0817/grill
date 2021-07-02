@@ -10,29 +10,29 @@ BOOST_AUTO_TEST_SUITE(test_suite_Integer_add)
 
 static binary_op_sample_t add_operator_samples[] = {
     {
-        WideInt<64>(10),
-        WideInt<64>(3),
-        WideInt<64>(13)
+        Integer({10}),
+        Integer({3}),
+        Integer({13})
     }, {
-        WideInt<64>(MaxBlockValue),
-        WideInt<64>(1),
-        WideInt<128>({1, 0}),
+        Integer({MaxBlockValue}),
+        Integer({1}),
+        Integer({1, 0}),
     }, {
-        WideInt<256>({1, 2, 3, 4}),
-        WideInt<128>({10, 20}),
-        WideInt<256>({1, 2, 13, 24})
+        Integer({1, 2, 3, 4}),
+        Integer({10, 20}),
+        Integer({1, 2, 13, 24})
     }, {
-        WideInt<256>({1, MaxBlockValue, MaxBlockValue, MaxBlockValue}),
-        WideInt<128>({1, 2}),
-        WideInt<256>({2, 0, 1, 1})
+        Integer({1, MaxBlockValue, MaxBlockValue, MaxBlockValue}),
+        Integer({1, 2}),
+        Integer({2, 0, 1, 1})
     }, {
-        WideInt<128>({1, 2}),
-        WideInt<256>({10, 20, 30, 40}),
-        WideInt<256>({10, 20, 31, 42})
+        Integer({1, 2}),
+        Integer({10, 20, 30, 40}),
+        Integer({10, 20, 31, 42})
     }, {
-        WideInt<128>({1, MaxBlockValue}),
-        WideInt<256>({1, 2, 3, 4}),
-        WideInt<256>({1, 2, 5, 3})
+        Integer({1, MaxBlockValue}),
+        Integer({1, 2, 3, 4}),
+        Integer({1, 2, 5, 3})
     },
 };
 

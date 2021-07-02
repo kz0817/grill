@@ -20,22 +20,22 @@ struct gcd_sample_t {
 };
 
 static gcd_sample_t gcd_samples[] {
-    {WideInt<64>(1),  WideInt<64>(1),  WideInt<64>(1)},
-    {WideInt<64>(1),  WideInt<64>(2),  WideInt<64>(1)},
+    {Integer({1}),  Integer({1}),  Integer({1})},
+    {Integer({1}),  Integer({2}),  Integer({1})},
 
-    {WideInt<64>(2),  WideInt<64>(1),  WideInt<64>(1)},
-    {WideInt<64>(2),  WideInt<64>(2),  WideInt<64>(2)},
-    {WideInt<64>(2),  WideInt<64>(3),  WideInt<64>(1)},
-    {WideInt<64>(2),  WideInt<64>(4),  WideInt<64>(2)},
+    {Integer({2}),  Integer({1}),  Integer({1})},
+    {Integer({2}),  Integer({2}),  Integer({2})},
+    {Integer({2}),  Integer({3}),  Integer({1})},
+    {Integer({2}),  Integer({4}),  Integer({2})},
 
-    {WideInt<64>(3),  WideInt<64>(1),  WideInt<64>(1)},
-    {WideInt<64>(3),  WideInt<64>(2),  WideInt<64>(1)},
-    {WideInt<64>(3),  WideInt<64>(3),  WideInt<64>(3)},
-    {WideInt<64>(3),  WideInt<64>(4),  WideInt<64>(1)},
-    {WideInt<64>(3),  WideInt<64>(5),  WideInt<64>(1)},
-    {WideInt<64>(3),  WideInt<64>(6),  WideInt<64>(3)},
+    {Integer({3}),  Integer({1}),  Integer({1})},
+    {Integer({3}),  Integer({2}),  Integer({1})},
+    {Integer({3}),  Integer({3}),  Integer({3})},
+    {Integer({3}),  Integer({4}),  Integer({1})},
+    {Integer({3}),  Integer({5}),  Integer({1})},
+    {Integer({3}),  Integer({6}),  Integer({3})},
 
-    {WideInt<64>(10),  WideInt<64>(15),  WideInt<64>(5)},
+    {Integer({10}),  Integer({15}),  Integer({5})},
 };
 
 BOOST_DATA_TEST_CASE(equal, gcd_samples)
@@ -56,10 +56,10 @@ BOOST_AUTO_TEST_CASE(to_string_of_false)
 static Integer_to_uint_sample_t to_uint_samples[] {
     {constant::Zero, 0},
     {constant::One,  1},
-    {WideInt<64>(123), 123},
-    {WideInt<64>(0x7fff'ffff'ffff'ffff), 0x7fff'ffff'ffff'ffff},
-    {WideInt<64>(0x8000'0000'0000'0000), 0x8000'0000'0000'0000},
-    {WideInt<64>(0xffff'ffff'ffff'ffff), 0xffff'ffff'ffff'ffff},
+    {Integer({123}), 123},
+    {Integer({0x7fff'ffff'ffff'ffff}), 0x7fff'ffff'ffff'ffff},
+    {Integer({0x8000'0000'0000'0000}), 0x8000'0000'0000'0000},
+    {Integer({0xffff'ffff'ffff'ffff}), 0xffff'ffff'ffff'ffff},
 };
 
 BOOST_DATA_TEST_CASE(to_uint, to_uint_samples)
@@ -70,21 +70,21 @@ BOOST_DATA_TEST_CASE(to_uint, to_uint_samples)
 static string_to_Integer_sample_t to_Integer_samples[] {
     {"0", constant::Zero},
     {"1", constant::One},
-    {"123", WideInt<64>(123)},
-    {"9223372036854775807", WideInt<64>(0x7fff'ffff'ffff'ffff)},
-    {"9223372036854775808", WideInt<64>(0x8000'0000'0000'0000)},
-    {"18446744073709551615", WideInt<64>(0xffff'ffff'ffff'ffff)},
+    {"123", Integer({123})},
+    {"9223372036854775807", Integer({0x7fff'ffff'ffff'ffff})},
+    {"9223372036854775808", Integer({0x8000'0000'0000'0000})},
+    {"18446744073709551615", Integer({0xffff'ffff'ffff'ffff})},
 
     {"0x0", constant::Zero},
     {"0x1", constant::One},
-    {"0x123", WideInt<64>(0x123)},
-    {"0xA5", WideInt<64>(0xa5)},
-    {"0xffffffffffffffff", WideInt<64>(0xffff'ffff'ffff'ffff)},
-    {"0x1ffffeeeeddddcccc", WideInt<128>({1, 0xffff'eeee'dddd'cccc})},
+    {"0x123", Integer({0x123})},
+    {"0xA5", Integer({0xa5})},
+    {"0xffffffffffffffff", Integer({0xffff'ffff'ffff'ffff})},
+    {"0x1ffffeeeeddddcccc", Integer({1, 0xffff'eeee'dddd'cccc})},
     {"0x123456789abcdef0ffffeeeeddddcccc",
-     WideInt<128>({0x1234'5678'9abc'def0, 0xffff'eeee'dddd'cccc})},
+     Integer({0x1234'5678'9abc'def0, 0xffff'eeee'dddd'cccc})},
     {"0x1230000111122223333123456789abcdef0ffffeeeeddddcccc",
-     WideInt<256>({0x123, 0x1111'2222'3333, 0x1234'5678'9abc'def0, 0xffff'eeee'dddd'cccc})},
+     Integer({0x123, 0x1111'2222'3333, 0x1234'5678'9abc'def0, 0xffff'eeee'dddd'cccc})},
 };
 
 BOOST_DATA_TEST_CASE(to_Integer, to_Integer_samples)

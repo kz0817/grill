@@ -22,16 +22,16 @@ struct Integer_int_to_bool_sample_t {
 };
 
 static Integer_int_to_bool_sample_t get_bit_value_samples[] {
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001),  0, true},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001),  1, false},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 62, false},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 63, true},
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  0,  false},
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  63, false},
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  64, true},
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  65, false},
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 126, false},
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 127, true},
+    {Integer({0xa5a5'5a5a'ffff'0001}),  0, true},
+    {Integer({0xa5a5'5a5a'ffff'0001}),  1, false},
+    {Integer({0xa5a5'5a5a'ffff'0001}), 62, false},
+    {Integer({0xa5a5'5a5a'ffff'0001}), 63, true},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  0,  false},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  63, false},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  64, true},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  65, false},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 126, false},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 127, true},
 };
 
 BOOST_DATA_TEST_CASE(get_bit_value, get_bit_value_samples)
@@ -53,37 +53,37 @@ struct set_bit_value_sample_t {
 };
 
 static set_bit_value_sample_t set_bit_value_samples[] {
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001),  0, false, WideInt<64>(0xa5a5'5a5a'ffff'0000)},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001),  0, true,  WideInt<64>(0xa5a5'5a5a'ffff'0001)},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001),  1, false, WideInt<64>(0xa5a5'5a5a'ffff'0001)},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001),  1, true,  WideInt<64>(0xa5a5'5a5a'ffff'0003)},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 62, true,  WideInt<64>(0xe5a5'5a5a'ffff'0001)},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 63, false, WideInt<64>(0x25a5'5a5a'ffff'0001)},
+    {Integer({0xa5a5'5a5a'ffff'0001}),  0, false, Integer({0xa5a5'5a5a'ffff'0000})},
+    {Integer({0xa5a5'5a5a'ffff'0001}),  0, true,  Integer({0xa5a5'5a5a'ffff'0001})},
+    {Integer({0xa5a5'5a5a'ffff'0001}),  1, false, Integer({0xa5a5'5a5a'ffff'0001})},
+    {Integer({0xa5a5'5a5a'ffff'0001}),  1, true,  Integer({0xa5a5'5a5a'ffff'0003})},
+    {Integer({0xa5a5'5a5a'ffff'0001}), 62, true,  Integer({0xe5a5'5a5a'ffff'0001})},
+    {Integer({0xa5a5'5a5a'ffff'0001}), 63, false, Integer({0x25a5'5a5a'ffff'0001})},
 
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  0,  false,
-     WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000})},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  0,  false,
+     Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000})},
 
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  1,  true,
-     WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0002})},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  1,  true,
+     Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0002})},
 
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  63, true,
-     WideInt<128>({0xa000'0000'0000'0001, 0xd000'0000'0000'0000})},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  63, true,
+     Integer({0xa000'0000'0000'0001, 0xd000'0000'0000'0000})},
 
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  64, false,
-     WideInt<128>({0xa000'0000'0000'0000, 0x5000'0000'0000'0000})},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  64, false,
+     Integer({0xa000'0000'0000'0000, 0x5000'0000'0000'0000})},
 
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  65, true,
-     WideInt<128>({0xa000'0000'0000'0003, 0x5000'0000'0000'0000})},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}),  65, true,
+     Integer({0xa000'0000'0000'0003, 0x5000'0000'0000'0000})},
 
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 126, true,
-     WideInt<128>({0xe000'0000'0000'0001, 0x5000'0000'0000'0000})},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 126, true,
+     Integer({0xe000'0000'0000'0001, 0x5000'0000'0000'0000})},
 
-    {WideInt<128>({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 127, false,
-     WideInt<128>({0x2000'0000'0000'0001, 0x5000'0000'0000'0000})},
+    {Integer({0xa000'0000'0000'0001, 0x5000'0000'0000'0000}), 127, false,
+     Integer({0x2000'0000'0000'0001, 0x5000'0000'0000'0000})},
 
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 64, true, WideInt<128>({1, 0xa5a5'5a5a'ffff'0001})},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 64, false, WideInt<64>(0xa5a5'5a5a'ffff'0001)},
-    {WideInt<64>(0xa5a5'5a5a'ffff'0001), 128, true, WideInt<192>({1, 0, 0xa5a5'5a5a'ffff'0001})},
+    {Integer({0xa5a5'5a5a'ffff'0001}), 64, true, Integer({1, 0xa5a5'5a5a'ffff'0001})},
+    {Integer({0xa5a5'5a5a'ffff'0001}), 64, false, Integer({0xa5a5'5a5a'ffff'0001})},
+    {Integer({0xa5a5'5a5a'ffff'0001}), 128, true, Integer({1, 0, 0xa5a5'5a5a'ffff'0001})},
 };
 
 BOOST_DATA_TEST_CASE(set_bit_value, set_bit_value_samples)

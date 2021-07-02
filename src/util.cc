@@ -84,7 +84,7 @@ static Integer dec_str_to_Integer(const std::string& s) {
     if (!is_valid_dec_number(s))
         throw std::invalid_argument(s);
     // TODO: support more digit
-    return WideInt<64>(std::stoul(s));
+    return Integer({std::stoul(s)});
 }
 
 Integer util::to_Integer(const std::string& s) {

@@ -13,7 +13,7 @@ using namespace Leaf;
 struct Options {
     bool show_help = false;
     bool generate_key = false;
-    Integer exponent = WideInt<64>(0x10001);
+    Integer exponent = Integer({0x10001});
     Integer modulus = constant::Two;
     Integer num = constant::Zero;
     std::size_t bit_length = 0;

@@ -10,7 +10,7 @@ Keys generate_keys(const std::size_t bit_length) {
     Integer prime2 = util::get_random_prime(bit_length/2);
     Integer modulus = prime1 * prime2;
     Integer phi = (prime1 - constant::One) * (prime2 - constant::One);
-    Integer pub_key = WideInt<64>(0x10001);
+    Integer pub_key = {0x10001};
     Integer priv_key = pub_key.inverse(phi);
 
     return Keys {

@@ -13,7 +13,7 @@ struct options_def {
 
 static void run(const std::size_t num) {
     for (std::size_t i = 0; i < num; i++) {
-        WideInt<64> n(i);
+        Integer n({i});
     }
 }
 
