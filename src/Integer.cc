@@ -389,10 +389,10 @@ static void bitwise_and(const Integer& lhs, const Integer& rhs, Integer::block_t
 Integer Integer::operator&(const Integer& r) const {
     const bool this_is_wider = (get_num_blocks() >= r.get_num_blocks());
     const Integer& wider = this_is_wider ? *this : r;
-    const Integer& other = this_is_wider ? r : *this;
-    Integer n(wider);
+    const Integer& shorter = this_is_wider ? r : *this;
+    Integer n(shorter);
     Integer::block_t* blocks = n.get_blocks();
-    bitwise_and(wider, other, blocks);
+    bitwise_and(wider, shorter, blocks);
     return n;
 }
 

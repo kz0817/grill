@@ -183,8 +183,8 @@ BOOST_DATA_TEST_CASE(lt_eq, lt_eq_samples)
 
 static binary_op_sample_t bitwise_and_samples[] {
     {WideInt<64>(0xea),  WideInt<64>(0xcc),  WideInt<64>(0xc8)},
-    {WideInt<256>(0xea), WideInt<64>(0xcc),  WideInt<256>(0xc8)},
-    {WideInt<64>(0xea),  WideInt<256>(0xcc), WideInt<256>(0xc8)},
+    {WideInt<256>(0xea), WideInt<64>(0xcc),  WideInt<64>(0xc8)},
+    {WideInt<64>(0xea),  WideInt<256>({1,2,3,0xcc}), WideInt<64>(0xc8)},
 };
 
 BOOST_DATA_TEST_CASE(bitwise_and, bitwise_and_samples)
