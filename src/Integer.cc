@@ -67,6 +67,12 @@ static std::size_t get_num_compact_blocks(Integer::block_t* blocks, std::size_t 
     return idx;
 }
 
+struct CompactedInteger : public Integer {
+    CompactedInteger(Integer::block_t* data, std::size_t num_blocks)
+    : Integer(get_num_compact_blocks(data, num_blocks)) {
+        gear::copy(get_blocks(), data, get_num_blocks());
+    }
+};
 
 //
 // public methods
@@ -204,12 +210,7 @@ Integer Integer::operator+(const Integer& rhs) const {
     Integer::block_t result[num_result_blocks];
     add(result, num_result_blocks,
         lhs.ref_blocks(), num_lhs_blocks, rhs.ref_blocks(), num_rhs_blocks);
-
-    // TODO: have the constructor do this optimization.
-    const std::size_t num_compact_blocks = get_num_compact_blocks(result, num_result_blocks);
-    Integer n(num_compact_blocks);
-    gear::copy(n.get_blocks(), result, num_compact_blocks);
-    return n;
+    return CompactedInteger(result, num_result_blocks);
 }
 
 Integer Integer::operator-(const Integer& r) const {
@@ -265,12 +266,7 @@ Integer Integer::operator*(const Integer& rhs) const {
     Integer::block_t result[num_result_blocks];
     gear::fill_zero(result, num_result_blocks);
     mul(lhs, rhs, result, num_result_blocks);
-
-    // TODO: have the constructor do this optimization.
-    const std::size_t num_compact_blocks = get_num_compact_blocks(result, num_result_blocks);
-    Integer n(num_compact_blocks);
-    gear::copy(n.get_blocks(), result, num_compact_blocks);
-    return n;
+    return CompactedInteger(result, num_result_blocks);
 }
 
 struct DivSolution {
