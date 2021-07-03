@@ -37,7 +37,7 @@ public:
     /**
      * Constructor with the initial value.
      *
-     * @param src An initial value. The most siginificant block first.
+     * @param src An initial value. The most significant block first.
      */
     Integer(const std::initializer_list<block_t>& src)
     : Integer(src.size()) {
