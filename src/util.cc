@@ -9,7 +9,8 @@ namespace grill {
 
 struct IntegerGenerator : public Integer {
     IntegerGenerator(const std::size_t n_blk, const block_t* const src)
-    : Integer(n_blk, src) {
+    : Integer(n_blk) {
+        gear::copy(this->get_blocks(), src, n_blk);
     }
 };
 
@@ -62,7 +63,8 @@ static Integer hex_str_to_Integer(const std::string& hex_str) {
     std::size_t pos = 0;
     const auto fill_block = [&](const int str_chunk_idx, const std::size_t len) {
         const std::string blk = hex_str.substr(pos, len);
-        blocks[str_chunk_idx] = std::stoul(blk, nullptr, 16);
+        const std::size_t blk_idx = num_blocks - str_chunk_idx - 1;
+        blocks[blk_idx] = std::stoul(blk, nullptr, 16);
         pos += len;
     };
 
@@ -110,7 +112,7 @@ Integer util::get_random(const std::size_t bit_length) {
 
     if (remaining_bits > 0) {
         const std::size_t shift_bits = Integer::BlockBits - remaining_bits;
-        buf[0] >>= shift_bits;
+        buf[num_blocks-1] >>= shift_bits;
     }
     return IntegerGenerator(num_blocks, buf);
 }

@@ -237,22 +237,6 @@ protected:
     }
 
     /**
-     * Constructor with the initial value.
-     *
-     * The number of blocks of the created Integer is n_blk.
-     *
-     * @param n_blk The number of src.
-     * @param src An initial value array. The most siginificant block first.
-     */
-    Integer(const std::size_t n_blk, const block_t* const src)
-    : Integer(n_blk) {
-        for (std::size_t i = 0; i < n_blk; i++) {
-            int idx = n_blk - i - 1;
-            this->blocks[idx] = src[i];
-        }
-    }
-
-    /**
      * Returns the internal blocks.
      *
      * @return The pointer of internal blocks.
