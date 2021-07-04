@@ -229,7 +229,7 @@ protected:
      * The number of blocks of the created Integer is n_blk.
      * The value of the created Integer is undefined.
      *
-     * @param n_blk The number of blocks the craeted Integer instance has.
+     * @param n_blk The number of blocks the created Integer instance has.
      */
     Integer(const std::size_t n_blk)
     : num_blocks(n_blk),
