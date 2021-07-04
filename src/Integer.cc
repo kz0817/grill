@@ -97,26 +97,6 @@ std::ostream& operator<<(std::ostream& os, const Integer& data) {
     return os;
 }
 
-Integer& Integer::operator+=(const Integer& n) {
-    return *this = (*this) + n;
-}
-
-Integer& Integer::operator-=(const Integer& n) {
-    return *this = (*this) - n ;
-}
-
-Integer& Integer::operator*=(const Integer& n) {
-    return *this = (*this) * n;
-}
-
-Integer& Integer::operator/=(const Integer& n) {
-    return *this = (*this) / n;
-}
-
-Integer& Integer::operator%=(const Integer& n) {
-    return *this = (*this) % n;
-}
-
 Integer& Integer::operator=(Integer&& n) {
     get_allocator()->free(this->blocks);
 
@@ -202,6 +182,31 @@ static void add(Integer::block_t* dest, const std::size_t num_dest_blocks,
     add(dest, num_dest_blocks, lhs, num_dest_blocks, src, num_src_blocks);
 }
 
+Integer& Integer::operator+=(const Integer& n) {
+    return *this = (*this) + n;
+}
+
+Integer& Integer::operator-=(const Integer& n) {
+    const std::size_t num_blocks = get_num_blocks();
+    Integer::block_t* blocks = get_blocks();
+    iterate<SubOp>(blocks, num_blocks, n.ref_blocks(), n.get_num_blocks());
+    if (blocks[num_blocks-1] == 0)
+        *this = CompactedInteger(blocks, num_blocks);
+    return *this;
+}
+
+Integer& Integer::operator*=(const Integer& n) {
+    return *this = (*this) * n;
+}
+
+Integer& Integer::operator/=(const Integer& n) {
+    return *this = (*this) / n;
+}
+
+Integer& Integer::operator%=(const Integer& n) {
+    return *this = (*this) % n;
+}
+
 Integer Integer::operator+(const Integer& rhs) const {
     const Integer& lhs = *this;
     const std::size_t num_lhs_blocks = lhs.get_num_blocks();
@@ -214,9 +219,11 @@ Integer Integer::operator+(const Integer& rhs) const {
 }
 
 Integer Integer::operator-(const Integer& r) const {
-    Integer n(*this);
-    iterate<SubOp>(n.get_blocks(), n.get_num_blocks(), r.ref_blocks(), r.get_num_blocks());
-    return n;
+    const std::size_t num_blocks = get_num_blocks();
+    Integer::block_t buf[num_blocks];
+    gear::copy(buf, ref_blocks(), get_num_blocks());
+    iterate<SubOp>(buf, num_blocks, r.ref_blocks(), r.get_num_blocks());
+    return CompactedInteger(buf, num_blocks);
 }
 
 static void mul_blocks(const Integer::block_t lhs, const Integer::block_t rhs,

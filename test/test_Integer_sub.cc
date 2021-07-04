@@ -20,8 +20,7 @@ static binary_op_sample_t sub_operator_samples[] = {
     }, {
         Integer({1, 2, 13, 24}),
         Integer({1, 2, 3, 4}),
-        // TODO: remove leading 0s
-        Integer({0, 0, 10, 20}),
+        Integer({10, 20}),
     }, {
         Integer({2, 0, 1, 1}),
         Integer({1, 2}),

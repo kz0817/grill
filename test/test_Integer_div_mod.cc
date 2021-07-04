@@ -71,10 +71,9 @@ static binary_op_sample_t mod_operator_samples[] {
     {Integer({11}),  Integer({4}),  Integer({3})},
     {Integer({0x1234'5678'9abc'def0}),  Integer({0xfedc'ba98}),  Integer({0x5145'1440})},
     {Integer({0x1234'5678'9abc'def0}),  Integer({0xfedc}),  Integer({0xf1e0})},
-    // TODO: remove leading 0s
-    {Integer({1,0}), Integer({1}), Integer({0, 0})},
-    {Integer({1,0}), Integer({2}), Integer({0, 0})},
-    {Integer({1,0}), Integer({0x0000'0002'540b'e3df}), Integer({0, 0x1'1137'590d})},
+    {Integer({1,0}), Integer({1}), Integer({0})},
+    {Integer({1,0}), Integer({2}), Integer({0})},
+    {Integer({1,0}), Integer({0x0000'0002'540b'e3df}), Integer({0x1'1137'590d})},
 };
 
 BOOST_DATA_TEST_CASE(mod_unary_operator, mod_operator_samples)
