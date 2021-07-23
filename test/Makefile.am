@@ -16,4 +16,5 @@ test_runner_SOURCES = \
   test_Integer_inverse.cc \
   test_util.cc \
   test_primality.cc \
-  test_rsa.cc
+  test_rsa.cc \
+  test_ntt.cc

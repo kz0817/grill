@@ -5,4 +5,5 @@ libgrill_la_SOURCES = \
   constant.cc \
   util.cc \
   primality.cc \
-  rsa.cc
+  rsa.cc \
+  ntt.cc
