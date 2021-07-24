@@ -22,5 +22,8 @@ void inverse_transform(const std::uint64_t* in, std::uint64_t *out, const std::s
 void split(const uint64_t* in, const std::size_t num_in,
            uint64_t* out, const std::size_t num_out, const std::size_t out_unit_bits);
 
+void ssa(const uint64_t* a, const std::size_t num_a, const uint64_t* b, const std::size_t num_b,
+         uint64_t* out, const std::size_t num_out);
+
 } // namespace ntt
 } // namespace grill

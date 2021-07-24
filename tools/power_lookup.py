@@ -7,12 +7,18 @@ class Context(object):
         self.order_pow2 = None
         self.powers = {}
 
+def show_pow_line(i, w, sign=''):
+    print('    %20s, // %s2^%s' % (w, sign, i))
+
 
 def calc_inverse(args, ctx):
     w = 1
+    val_list = []
     for i in range(ctx.order_pow2-1, -1, -1):
         w = (w * ctx.powers[i]) % args.modulo
-        print('exp: -2^%s: %s' % (i, w))
+        val_list.append((i, w))
+    for i, w in reversed(val_list):
+        show_pow_line(i, w, '-')
 
 
 def run(args, ctx):
@@ -21,7 +27,7 @@ def run(args, ctx):
 
     w = args.primitive_root
     for i in range(0, args.max_calculations):
-        print('exp: 2^%s: %s' % (i, w))
+        show_pow_line(i, w)
         if w == 1:
             ctx.order_pow2 = i
             break

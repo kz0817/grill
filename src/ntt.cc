@@ -14,8 +14,6 @@ static const uint64_t MODULUS = 0x20'0000 * 11 + 1; // 2^21 * 11 + 1
 static const uint64_t PRIMITIVE_ROOT = 38;
 static const int ORDER = 21;
 
-static const int UNIT_BITS = 16;
-
 static const uint64_t ROOT_TABLE[] = {
 // r^e (mod m) : e
           38, // 2^0
@@ -68,6 +66,139 @@ static const uint64_t INV_ROOT_TABLE[] = {
            1, // -2^21
 };
 
+/*
+static const uint64_t MODULUS = 0x800'0000'0000'0000U * 27 + 1; // 2^59*27+1: 15564440312192434177
+static const uint64_t PRIMITIVE_ROOT = 87;
+static const int ORDER = 59;
+
+static const uint64_t ROOT_TABLE[] = {
+    // r^e (mod m)         : e
+                      87U, // 2^0
+                    7569U, // 2^1
+                57289761U, // 2^2
+        3282116715437121U, // 2^3
+    10093553279963407856U, // 2^4
+     1994084194780145653U, // 2^5
+    14028619022995606082U, // 2^6
+     6630828874703823212U, // 2^7
+     2477752322490941142U, // 2^8
+     7907271948013485307U, // 2^9
+     4472873790025783369U, // 2^10
+    11115903221786963521U, // 2^11
+     7101079488874849310U, // 2^12
+     5682335183700442283U, // 2^13
+     1119327803051554775U, // 2^14
+    15452219361402202056U, // 2^15
+     3135807197843159979U, // 2^16
+    10723109893440082949U, // 2^17
+    10569390037813307340U, // 2^18
+     1890133508368732361U, // 2^19
+      966962774615814743U, // 2^20
+     5954517297845620564U, // 2^21
+     8043278894636977031U, // 2^22
+     8485039502361251003U, // 2^23
+     2279141123621614095U, // 2^24
+     5275720713159064809U, // 2^25
+     8528300646765873160U, // 2^26
+    12781863047691101214U, // 2^27
+     3156702840509993101U, // 2^28
+    14526520336704913996U, // 2^29
+    12370042940689613531U, // 2^30
+    15037172391455575739U, // 2^31
+     5152762943101517840U, // 2^32
+    14267428130110767911U, // 2^33
+     9052528890973701818U, // 2^34
+     1830607681964475405U, // 2^35
+     8310606749300430442U, // 2^36
+     8269468845083192875U, // 2^37
+     9825720096538230403U, // 2^38
+    10834364846433086683U, // 2^39
+     6792070351570028255U, // 2^40
+     3819089417439352861U, // 2^41
+     4390957979878043040U, // 2^42
+    11979615012754436250U, // 2^43
+    15305516984157571441U, // 2^44
+     2108998473838523117U, // 2^45
+    13991296814422584829U, // 2^46
+    12656301420442092006U, // 2^47
+     5654933032523267815U, // 2^48
+    15473330159159966663U, // 2^49
+     5730679993935071698U, // 2^50
+      100453665647080338U, // 2^51
+     2115396561376177932U, // 2^52
+     5109550604670743770U, // 2^53
+     6030432246195064732U, // 2^54
+     7968489627199021790U, // 2^55
+    12524856987467000562U, // 2^56
+     3715411305552231911U, // 2^57
+    15564440312192434176U, // 2^58
+                       1U, // 2^59
+};
+
+static const uint64_t INV_ROOT_TABLE[] = {
+    // r^e (mod m)         : e
+      357803225567642165U, // -2^0
+    11453815898918200339U, // -2^1
+     5224617810657643151U, // -2^2
+     5523195318753714300U, // -2^3
+    14416046505481355311U, // -2^4
+     5316227185385513897U, // -2^5
+    13773142746542143548U, // -2^6
+    10918757301821281306U, // -2^7
+     3768860457724656403U, // -2^8
+    10242299535026185659U, // -2^9
+     3175998022239886172U, // -2^10
+    12204322350453039511U, // -2^11
+     2951355326505959160U, // -2^12
+     1676244810351723134U, // -2^13
+    12509924528787886329U, // -2^14
+     8679738984455966015U, // -2^15
+     9374329227696088593U, // -2^16
+    10810696300510029990U, // -2^17
+     2095983964414828138U, // -2^18
+     6300904594583707429U, // -2^19
+    10713841557613443617U, // -2^20
+      716309965903036386U, // -2^21
+     6553287220839574306U, // -2^22
+    13812938437475245472U, // -2^23
+     2581275856849589443U, // -2^24
+     4990644593330687648U, // -2^25
+     5634867318216433456U, // -2^26
+     8990397509566884907U, // -2^27
+     6432122340133646878U, // -2^28
+     6000519835338856985U, // -2^29
+     7698467797357785873U, // -2^30
+     4671705075865322920U, // -2^31
+     9038266518130815606U, // -2^32
+    10385497386094843746U, // -2^33
+     3542735939041636320U, // -2^34
+     6165454689288042275U, // -2^35
+     5106518268733442292U, // -2^36
+     9439112926876911698U, // -2^37
+    15427556212679308118U, // -2^38
+     6815557009364130187U, // -2^39
+     1023877765680230505U, // -2^40
+      172841284469166925U, // -2^41
+     2811093555529596091U, // -2^42
+    12607429259809898757U, // -2^43
+     8783772477078040214U, // -2^44
+     2139630916373442990U, // -2^45
+    13349994642638966371U, // -2^46
+     7198760646362846624U, // -2^47
+     2500452663950087775U, // -2^48
+    14269006104837937169U, // -2^49
+     3126668561346852814U, // -2^50
+     2067855665450705115U, // -2^51
+     4075772857834174958U, // -2^52
+     4812639727135055064U, // -2^53
+    11408305421766424622U, // -2^54
+     2778433759182993981U, // -2^55
+    11588404663907816919U, // -2^56
+    11849029006640202266U, // -2^57
+    15564440312192434176U, // -2^58
+};
+*/
+
 static void assert_even(const std::size_t n) {
     if (n % 2 != 0) {
         std::ostringstream oss;
@@ -114,7 +245,10 @@ static void butterfly(const std::uint64_t* in_even, const std::uint64_t* in_odd,
     for (std::size_t k = 0; k < size_half; k++) {
         const uint64_t w = root_table[get_root_table_index(size_log2)];
         const uint64_t w_k = pow(w, k, MODULUS);
-        out[k] = (in_even[k] + w_k * in_odd[k]) % MODULUS;
+        std::cout << std::hex << "k: " << k << ", w: " << w << ", w_k: " << w_k
+            << ", in_even[k]: " <<  in_even[k] << ", in_odd[k]: " << in_odd[k] << std::endl;
+        //out[k] = (in_even[k] + w_k * in_odd[k]) % MODULUS;
+        out[k] = in_even[k] + w_k * in_odd[k];
         out[k+size_half] = minus(in_even[k], w_k * in_odd[k], MODULUS);
     }
 }
@@ -196,6 +330,107 @@ void split(const uint64_t* in, const std::size_t num_in,
         if (lead_bit == 0)
             out++;
     }
+}
+
+static void element_wise_product(const uint64_t* in_a, const uint64_t* in_b, const std::size_t n,
+                                 uint64_t* out) {
+    for (std::size_t i = 0; i < n; i++)
+        out[i] = (in_a[i] * in_b[i]) % MODULUS;
+}
+
+static uint64_t extract(const uint64_t a, const std::size_t offset, const std::size_t length) {
+    const uint64_t n = (a >> offset);
+    const uint64_t mask = ((length >= sizeof(uint64_t)*8) ? 0 : (1 << length)) - 1;
+    return n & mask;
+}
+
+static void add(uint64_t* buf, const std::size_t n_buf, const uint64_t a) {
+    const uint64_t prev_val = buf[0];
+    std::cout << "prev_val: " << prev_val << ", a: " << a << std::endl;
+    buf[0] += a;
+    if (n_buf > 1 && (buf[0] < prev_val))
+        add(&buf[1], n_buf-1, 1);
+}
+
+static std::string to_string(const uint64_t *buf, const std::size_t n) {
+    std::ostringstream oss;
+    oss << "[";
+    for (std::size_t i = 0; i < n; i++) {
+        oss << std::hex << buf[i];
+        if (i != n-1)
+            oss << ", ";
+    }
+    oss << "]";
+    return oss.str();
+}
+
+static void add(uint64_t* buf, const std::size_t n_buf, const uint64_t a,
+                const std::size_t offset_bit) {
+    constexpr std::size_t BUF_UNIT_BITS = sizeof(decltype(*buf)) * 8;
+    const std::size_t idx = offset_bit / BUF_UNIT_BITS;
+    const std::size_t bits_upper = offset_bit % BUF_UNIT_BITS;
+    const std::size_t bits_lower = BUF_UNIT_BITS - bits_upper;
+    const std::size_t offset_lower = bits_upper;
+
+    std::cout << "idx: " << idx << ", bits_upper: " << bits_upper << ", bits_lower: " <<
+        bits_lower << ", a: " << a << std::endl;
+    const uint64_t a_lower = extract(a, 0, bits_lower);
+    add(&buf[idx], n_buf-idx, (a_lower << offset_lower));
+
+    const std::size_t next_idx = idx + 1;
+    if (next_idx == n_buf || bits_upper == 0)
+        return;
+
+    const uint64_t a_upper = extract(a, bits_lower, bits_upper);
+    add(&buf[next_idx], n_buf - next_idx, a_upper);
+}
+
+
+static void ssa_assemble(const uint64_t* in, const std::size_t num_in,
+                         uint64_t* out, const std::size_t num_out, const std::size_t unit_bits) {
+    std::cout << "num_in: " <<  num_in << ", num_out: " << num_out << std::endl;
+    for (std::size_t i = 0; i < num_out; i++)
+        out[i] = 0;
+
+    std::size_t offset_bit = 0;
+    for (std::size_t i = 0; i < num_in; i++) {
+        add(out, num_out, in[i], offset_bit);
+        std::cout << "i: " << i << ", in[i]: " << in[i] << ", out: " <<
+            to_string(out, num_out) << std::endl;
+        offset_bit += unit_bits;
+    }
+}
+
+void ssa(const uint64_t* a, const std::size_t num_a, const uint64_t* b, const std::size_t num_b,
+         uint64_t* out, const std::size_t num_out) {
+    constexpr int UNIT_BITS = 16;
+    const std::size_t n_units_a = calc_num_units(num_a, UNIT_BITS);
+    const std::size_t n_units_b = calc_num_units(num_b, UNIT_BITS);
+    const std::size_t n_units = (n_units_a > n_units_b) ? n_units_a : n_units_b;
+    uint64_t units_a[n_units_a];
+    uint64_t units_b[n_units_b];
+    split(a, num_a, units_a, n_units_a, UNIT_BITS);
+    split(b, num_b, units_b, n_units_b, UNIT_BITS);
+
+    std::cout << "a: " << to_string(a, num_a) << ", b: " << to_string(a, num_a) << std::endl;
+    std::cout << "units_a: " << to_string(units_a, n_units_a) <<
+        ", units_b: " << to_string(units_b, n_units_b) << std::endl;
+
+    uint64_t ntt_a[n_units_a];
+    uint64_t ntt_b[n_units_b];
+    transform(units_a, ntt_a, n_units_a);
+    transform(units_b, ntt_b, n_units_b);
+    std::cout << "ntt_a: " << to_string(ntt_a, n_units_a) <<
+                 ", ntt_b: " << to_string(ntt_a, n_units_b) << std::endl;
+
+    uint64_t x[n_units]; // result of the product
+    element_wise_product(ntt_a, ntt_b, n_units, x);
+
+    uint64_t y[n_units]; // result of the inverse transform
+    inverse_transform(x, y, n_units);
+    std::cout << "x: " << to_string(x, n_units) << ", y: " << to_string(y, n_units) << std::endl;
+
+    ssa_assemble(y, n_units, out, num_out, UNIT_BITS);
 }
 
 } // namespace ntt
