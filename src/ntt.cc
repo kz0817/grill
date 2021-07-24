@@ -14,6 +14,8 @@ static const uint64_t MODULUS = 0x20'0000 * 11 + 1; // 2^21 * 11 + 1
 static const uint64_t PRIMITIVE_ROOT = 38;
 static const int ORDER = 21;
 
+static const int UNIT_BITS = 16;
+
 static const uint64_t ROOT_TABLE[] = {
 // r^e (mod m) : e
           38, // 2^0
@@ -152,6 +154,48 @@ void inverse_transform(const std::uint64_t* in, std::uint64_t *out, const std::s
     fft(in, out, size, INV_ROOT_TABLE, log2(size));
     for (std::size_t i = 0; i < size; i++)
         out[i] /= size;
+}
+
+static std::size_t calc_num_units(const std::size_t num, const std::size_t unit_bits) {
+    const std::size_t data_bits = num * sizeof(uint64_t) * 8;
+    const std::size_t n_units = data_bits / unit_bits;
+    return (data_bits % unit_bits == 0) ? n_units : (n_units + 1);
+}
+
+void split(const uint64_t* in, const std::size_t num_in,
+           uint64_t* out, const std::size_t num_out, const std::size_t out_unit_bits) {
+    constexpr std::size_t IN_UNIT_BITS = sizeof(decltype(*in)) * 8;
+    const uint64_t mask = (1 << out_unit_bits) - 1;
+    std::size_t lead_bit = 0;
+
+    if (calc_num_units(num_in, out_unit_bits) < num_out) {
+        std::ostringstream oss;
+        oss << "The array for the output is too small.";
+        throw std::length_error(oss.str());
+    }
+
+    for (std::size_t i = 0; i < num_in; i++) {
+        uint64_t n = in[i];
+        if (lead_bit != 0) {
+            // This branch is executed when there are remaining bits in the previous iteration.
+            const uint64_t _mask = (1 << lead_bit) - 1;
+            *out |= ((n & _mask) << (out_unit_bits - lead_bit));
+            out++;
+            n >>= lead_bit;
+        }
+
+        while (true) {
+            *out = (mask & n);
+            lead_bit += out_unit_bits;
+            n >>= out_unit_bits;
+            if (lead_bit >= IN_UNIT_BITS)
+                break;
+            out++;
+        }
+        lead_bit %= IN_UNIT_BITS;
+        if (lead_bit == 0)
+            out++;
+    }
 }
 
 } // namespace ntt
