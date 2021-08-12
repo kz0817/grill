@@ -1,3 +1,4 @@
+#include <cassert>
 #include "gear.h"
 
 namespace grill {
@@ -29,11 +30,11 @@ void gear::mul(uint64_t out[2], const uint64_t in0, const uint64_t in1) {
     out[1] = x2;
 
     const uint64_t x1a = in0l * in1u;
-    add(out, (x1a << 32));
+    grill::add(out, (x1a << 32));
     out[1] += upper(x1a);
 
     const uint64_t x1b = in0u * in1l;
-    add(out, (x1b << 32));
+    grill::add(out, (x1b << 32));
     out[1] += upper(x1b);
 }
 
