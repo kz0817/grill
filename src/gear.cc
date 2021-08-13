@@ -81,8 +81,9 @@ static void karatsuba_calc_x1(uint64_t* x1, const std::size_t num_x1,
                               const uint64_t* x0, const std::size_t num_x0,
                               const uint64_t* x2, const std::size_t num_x2,
                               const KaratubaInput& a, const KaratubaInput& b) {
-    gear::fill_zero(x1, num_x1);
-    gear::add(x1, num_x1, x0, num_x0);
+    assert(num_x1 >= num_x0);
+    gear::fill_zero(&x1[num_x0], num_x1 - num_x0);
+    gear::copy(x1, x0, num_x0);
     gear::add(x1, num_x1, x2, num_x2);
 
     // x1 = x0 + x2 - dx, where dx = da * db
