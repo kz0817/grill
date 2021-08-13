@@ -127,22 +127,6 @@ static bool iterate(Integer::block_t* result, const std::size_t num_result_block
     return carry_flag;
 }
 
-struct AddOp {
-    static bool calc_one_block(Integer::block_t& sum,
-                               const Integer::block_t lhs, const Integer::block_t rhs,
-                               const bool carry_flag) {
-        sum = lhs + rhs;
-        bool overflow = (sum < lhs);
-
-        if (carry_flag) {
-            sum++;
-            if (sum == 0)
-                overflow = true;
-        }
-        return overflow;
-    }
-};
-
 struct SubOp {
     static bool calc_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
                                const bool borrow_flag) {
@@ -158,13 +142,6 @@ struct SubOp {
         return overflow;
     }
 };
-
-static void add(Integer::block_t* result, const std::size_t num_result_blocks,
-                const Integer::block_t* lhs_blocks, const std::size_t num_lhs_blocks,
-                const Integer::block_t* rhs_blocks, const std::size_t num_rhs_blocks) {
-    iterate<AddOp>(result, num_result_blocks,
-                   lhs_blocks, num_lhs_blocks, rhs_blocks, num_rhs_blocks);
-}
 
 Integer& Integer::operator+=(const Integer& n) {
     return *this = (*this) + n;
@@ -197,8 +174,9 @@ Integer Integer::operator+(const Integer& rhs) const {
     const std::size_t num_rhs_blocks = rhs.get_num_blocks();
     const std::size_t num_result_blocks = std::max(num_lhs_blocks, num_rhs_blocks) + 1;
     Integer::block_t result[num_result_blocks];
-    add(result, num_result_blocks,
-        lhs.ref_blocks(), num_lhs_blocks, rhs.ref_blocks(), num_rhs_blocks);
+    gear::copy(result, lhs.get_blocks(), num_lhs_blocks);
+    gear::fill_zero(&result[num_lhs_blocks], num_result_blocks - num_lhs_blocks);
+    gear::add(result, num_result_blocks, rhs.ref_blocks(), num_rhs_blocks);
     return CompactedInteger(result, num_result_blocks);
 }
 
