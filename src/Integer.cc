@@ -48,15 +48,6 @@ static bool is_valid_index(const std::size_t num_blocks, const int idx) {
     return static_cast<std::size_t>(idx) < num_blocks;
 }
 
-static Integer::block_t upper_half_block(const Integer::block_t n) {
-    return (n >> (Integer::BlockBits/2));
-}
-
-static Integer::block_t lower_half_block(const Integer::block_t n) {
-    constexpr Integer::block_t mask = ~(-BitMask[Integer::BlockBits/2]);
-    return mask & n;
-}
-
 static std::size_t get_num_compact_blocks(Integer::block_t* blocks, std::size_t num_blocks) {
     std::size_t idx = num_blocks;
     while (idx >= 2) {
@@ -175,13 +166,6 @@ static void add(Integer::block_t* result, const std::size_t num_result_blocks,
                    lhs_blocks, num_lhs_blocks, rhs_blocks, num_rhs_blocks);
 }
 
-static void add(Integer::block_t* dest, const std::size_t num_dest_blocks,
-                const  Integer::block_t* src, const std::size_t num_src_blocks) {
-    Integer::block_t lhs[num_dest_blocks];
-    gear::copy(lhs, dest, num_dest_blocks);
-    add(dest, num_dest_blocks, lhs, num_dest_blocks, src, num_src_blocks);
-}
-
 Integer& Integer::operator+=(const Integer& n) {
     return *this = (*this) + n;
 }
@@ -226,53 +210,13 @@ Integer Integer::operator-(const Integer& r) const {
     return CompactedInteger(buf, num_blocks);
 }
 
-static void mul_blocks(const Integer::block_t lhs, const Integer::block_t rhs,
-                       Integer::block_t dest[2]) {
-    const Integer::block_t lhs_upper_half = upper_half_block(lhs);
-    const Integer::block_t lhs_lower_half = lower_half_block(lhs);
-    const Integer::block_t rhs_upper_half = upper_half_block(rhs);
-    const Integer::block_t rhs_lower_half = lower_half_block(rhs);
-    dest[0] = lhs_lower_half * rhs_lower_half;
-    dest[1] = lhs_upper_half * rhs_upper_half;
-
-    const Integer::block_t x0 = lhs_upper_half * rhs_lower_half;
-    const Integer::block_t src0[2] = {x0 << (Integer::BlockBits/2), upper_half_block(x0)};
-    add(dest, 2, src0, 2);
-
-    const Integer::block_t x1 = rhs_upper_half * lhs_lower_half;
-    const Integer::block_t src1[2] = {x1 << (Integer::BlockBits/2), upper_half_block(x1)};
-    add(dest, 2, src1, 2);
-}
-
-static void mul(const Integer& lhs, const Integer& rhs,
-                Integer::block_t* blocks, const std::size_t num_blocks) {
-    const std::size_t l_num_blocks = lhs.get_num_blocks();
-    const std::size_t r_num_blocks = rhs.get_num_blocks();
-
-    const Integer::block_t* l_blocks = lhs.ref_blocks();
-    const Integer::block_t* r_blocks = rhs.ref_blocks();
-
-    for (std::size_t l_idx = 0; l_idx < l_num_blocks; l_idx++) {
-        for (std::size_t r_idx = 0; r_idx < r_num_blocks; r_idx++) {
-            // skip calculation for the block beyond the output value range
-            const std::size_t idx = l_idx + r_idx;
-            if (idx >= num_blocks)
-                continue;
-
-            // create a partially multiplied number and accumulate it
-            Integer::block_t x[2];
-            mul_blocks(l_blocks[l_idx], r_blocks[r_idx], x);
-            add(&blocks[idx], num_blocks - idx, x, 2);
-        }
-    }
-}
-
 Integer Integer::operator*(const Integer& rhs) const {
     const Integer& lhs = *this;
     const std::size_t num_result_blocks = lhs.get_num_blocks() + rhs.get_num_blocks();
     Integer::block_t result[num_result_blocks];
-    gear::fill_zero(result, num_result_blocks);
-    mul(lhs, rhs, result, num_result_blocks);
+    gear::karatsuba(result, num_result_blocks,
+                    lhs.get_blocks(), lhs.get_num_blocks(),
+                    rhs.get_blocks(), rhs.get_num_blocks());
     return CompactedInteger(result, num_result_blocks);
 }
 

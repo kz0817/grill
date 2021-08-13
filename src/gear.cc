@@ -103,14 +103,7 @@ static void karatsuba_calc_x1(uint64_t* x1, const std::size_t num_x1,
         gear::add(x1, num_x1, dx, num_dx);
 }
 
-static void karatsuba_init(uint64_t* out, const std::size_t n_out,
-                           const uint64_t* x, const std::size_t num_x) {
-    const std::size_t num_zero = n_out - num_x;
-    gear::copy(out, x, num_x);
-    gear::fill_zero(&out[num_x], num_zero);
-}
-
-static void karatsuba_normalize(uint64_t* out, const std::size_t n_out,
+static void karatsuba_add(uint64_t* out, const std::size_t n_out,
                                 const uint64_t* x, const std::size_t num_x,
                                 const std::size_t offset) {
     gear::add(&out[offset], n_out - offset, x, num_x);
@@ -141,19 +134,16 @@ void gear::karatsuba(uint64_t* out, const std::size_t n_out,
     // out = x0 + x1*R + x2*R^2, where R=2^(64*num_lower_half).
     const std::size_t num_x0 = 2 * num_lower_half;
     const std::size_t num_x1 = num_lower_half + num_upper_half + 1;
-    const std::size_t num_x2 = 2 * num_upper_half;
-    uint64_t x0[num_x0];
-    uint64_t x1[num_x1];
-    uint64_t x2[num_x2];
+    const std::size_t num_x2 = n_out - num_x0;
+    uint64_t* x0 = out;
+    uint64_t* x2 = &out[num_x0];
 
     karatsuba(x0, num_x0, a.lower, a.num_lower, b.lower, b.num_lower);
     karatsuba(x2, num_x2, a.upper, a.num_upper, b.upper, b.num_upper);
-    karatsuba_calc_x1(x1, num_x1, x0, num_x0, x2, num_x2, a, b);
 
-    // normalize
-    karatsuba_init(out, n_out, x0, num_x0);
-    karatsuba_normalize(out, n_out, x1, num_x1, num_lower_half);
-    karatsuba_normalize(out, n_out, x2, num_x2, 2*num_lower_half);
+    uint64_t x1[num_x1];
+    karatsuba_calc_x1(x1, num_x1, x0, num_x0, x2, num_x2, a, b);
+    karatsuba_add(out, n_out, x1, num_x1, num_lower_half);
 }
 
 } // namespace grill
