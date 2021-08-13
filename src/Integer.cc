@@ -98,51 +98,6 @@ Integer& Integer::operator=(Integer&& n) {
     return *this;
 }
 
-template <typename T>
-static bool iterate(Integer::block_t* dest, const std::size_t num_dest_blocks,
-                    const  Integer::block_t* src, const std::size_t num_src_blocks) {
-    bool carry_flag = false;
-    for (std::size_t i = 0; i < num_dest_blocks; i++) {
-        const bool src_is_valid = (i < num_src_blocks);
-        if (!carry_flag && !src_is_valid)
-            break;
-        const Integer::block_t src_val = src_is_valid ? src[i] : 0;
-        carry_flag = T::calc_one_block(dest[i], src_val, carry_flag);
-    }
-    return carry_flag;
-}
-
-template <typename T>
-static bool iterate(Integer::block_t* result, const std::size_t num_result_blocks,
-                    const Integer::block_t* lhs_blocks, const std::size_t num_lhs_blocks,
-                    const Integer::block_t* rhs_blocks, const std::size_t num_rhs_blocks) {
-    bool carry_flag = false;
-    for (std::size_t i = 0; i < num_result_blocks; i++) {
-        const bool lhs_is_valid = (i < num_lhs_blocks);
-        const bool rhs_is_valid = (i < num_rhs_blocks);
-        const Integer::block_t lhs_val = lhs_is_valid ? lhs_blocks[i] : 0;
-        const Integer::block_t rhs_val = rhs_is_valid ? rhs_blocks[i] : 0;
-        carry_flag = T::calc_one_block(result[i], lhs_val, rhs_val, carry_flag);
-    }
-    return carry_flag;
-}
-
-struct SubOp {
-    static bool calc_one_block(Integer::block_t& lhs, const Integer::block_t rhs,
-                               const bool borrow_flag) {
-        const Integer::block_t prev_lhs = lhs;
-        lhs -= rhs;
-        bool overflow = (lhs > prev_lhs);
-
-        if (borrow_flag) {
-            lhs--;
-            if (lhs == static_cast<Integer::block_t>(-1))
-                overflow = true;
-        }
-        return overflow;
-    }
-};
-
 Integer& Integer::operator+=(const Integer& n) {
     return *this = (*this) + n;
 }
@@ -150,7 +105,7 @@ Integer& Integer::operator+=(const Integer& n) {
 Integer& Integer::operator-=(const Integer& n) {
     const std::size_t num_blocks = get_num_blocks();
     Integer::block_t* blocks = get_blocks();
-    iterate<SubOp>(blocks, num_blocks, n.ref_blocks(), n.get_num_blocks());
+    gear::sub(blocks, num_blocks, n.ref_blocks(), n.get_num_blocks());
     if (blocks[num_blocks-1] == 0)
         *this = CompactedInteger(blocks, num_blocks);
     return *this;
@@ -183,8 +138,8 @@ Integer Integer::operator+(const Integer& rhs) const {
 Integer Integer::operator-(const Integer& r) const {
     const std::size_t num_blocks = get_num_blocks();
     Integer::block_t buf[num_blocks];
-    gear::copy(buf, ref_blocks(), get_num_blocks());
-    iterate<SubOp>(buf, num_blocks, r.ref_blocks(), r.get_num_blocks());
+    gear::copy(buf, ref_blocks(), num_blocks);
+    gear::sub(buf, num_blocks, r.ref_blocks(), r.get_num_blocks());
     return CompactedInteger(buf, num_blocks);
 }
 
