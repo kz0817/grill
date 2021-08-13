@@ -123,6 +123,14 @@ bool sub(T* dest, const std::size_t num_dest, const T* in, const std::size_t num
  */
 void mul(uint64_t out[2], const uint64_t in0, const uint64_t in1);
 
+/**
+ * Calculate two's complement.
+ *
+ * @param buf The blocks to be calculated. Least significant block first.
+ * @param num The number of blocks of `buf`.
+ */
+void twos_complement(uint64_t* buf, const std::size_t num);
+
 } // namespace gear
 } // namespace grill
 

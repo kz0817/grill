@@ -3,6 +3,8 @@
 
 namespace grill {
 
+static constexpr uint64_t One = 1;
+
 static uint32_t upper(const uint64_t a) {
     return a >> 32;
 }
@@ -36,6 +38,12 @@ void gear::mul(uint64_t out[2], const uint64_t in0, const uint64_t in1) {
     const uint64_t x1b = in0u * in1l;
     grill::add(out, (x1b << 32));
     out[1] += upper(x1b);
+}
+
+void gear::twos_complement(uint64_t* buf, const std::size_t n) {
+    for (std::size_t i = 0; i < n; i++)
+        buf[i] = ~buf[i];
+    gear::add(buf, n, &One, 1);
 }
 
 } // namespace grill

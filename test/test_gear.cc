@@ -89,4 +89,33 @@ BOOST_DATA_TEST_CASE(sub, sub_samples)
     BOOST_TEST(carry == sample.expected_carry);
 }
 
+struct twos_complement_sample_t {
+    const std::vector<uint64_t> buf;
+    const std::vector<uint64_t> expected;
+    friend std::ostream& operator<<(std::ostream& os, const twos_complement_sample_t& s) {
+        os << std::hex << "buf: " << gear::to_string(s.buf) <<
+             ", expected: " << gear::to_string(s.expected) << std::endl;
+        return os;
+    }
+};
+
+static twos_complement_sample_t twos_complement_samples[] {
+    {{1}, {0xffff'ffff'ffff'ffff}},
+    {{0xffff'ffff'ffff'ffff}, {1}},
+    {{0xffff'ffff'ffff'ffff, 0xffff'ffff'ffff'ffff}, {1, 0}},
+
+    {{0x0000'0000'0000'0001, 0x8000'0000'0000'0000},
+     {0xffff'ffff'ffff'ffff, 0x7fff'ffff'ffff'ffff}},
+
+    {{0xffff'ffff'ffff'ffff, 0x7fff'ffff'ffff'ffff},
+     {0x0000'0000'0000'0001, 0x8000'0000'0000'0000}},
+};
+
+BOOST_DATA_TEST_CASE(twos_complement, twos_complement_samples)
+{
+    std::vector<uint64_t> buf = sample.buf;
+    gear::twos_complement(buf.data(), buf.size());
+    BOOST_TEST(buf == sample.expected);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
