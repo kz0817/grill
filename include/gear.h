@@ -131,6 +131,20 @@ void mul(uint64_t out[2], const uint64_t in0, const uint64_t in1);
  */
 void twos_complement(uint64_t* buf, const std::size_t num);
 
+/**
+ * Calculate multiplication by Karatsuba method.
+ *
+ * @param out The output buffer. Least significant block first.
+ * @param n_out The number of blocks of `out`.
+ * @param in0 The blocks to be multiplied. Least significant block first.
+ * @param num_in0 The number of blocks of `in0`.
+ * @param in1 The blocks to be multiplied. Least significant block first.
+ * @param num_in1 The number of blocks of `in1`.
+ */
+void karatsuba(uint64_t* out, const std::size_t n_out,
+               const uint64_t* in0, const std::size_t num_in0,
+               const uint64_t* in1, const std::size_t num_in1);
+
 } // namespace gear
 } // namespace grill
 
