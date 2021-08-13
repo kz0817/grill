@@ -48,7 +48,8 @@ static bool is_valid_index(const std::size_t num_blocks, const int idx) {
     return static_cast<std::size_t>(idx) < num_blocks;
 }
 
-static std::size_t get_num_compact_blocks(Integer::block_t* blocks, std::size_t num_blocks) {
+static std::size_t get_num_compact_blocks(const Integer::block_t* blocks,
+                                          const std::size_t num_blocks) {
     std::size_t idx = num_blocks;
     while (idx >= 2) {
         if (blocks[idx-1] != 0)
@@ -59,7 +60,7 @@ static std::size_t get_num_compact_blocks(Integer::block_t* blocks, std::size_t 
 }
 
 struct CompactedInteger : public Integer {
-    CompactedInteger(Integer::block_t* data, std::size_t num_blocks)
+    CompactedInteger(const Integer::block_t* data, const std::size_t num_blocks)
     : Integer(get_num_compact_blocks(data, num_blocks)) {
         gear::copy(get_blocks(), data, get_num_blocks());
     }
