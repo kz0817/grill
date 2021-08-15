@@ -2,6 +2,7 @@
 #include "gear.h"
 #include "gear-internal.h"
 #include "util.h"
+#include <stdexcept>
 
 namespace grill {
 
@@ -212,6 +213,126 @@ gear::initial_inverse_struct gear::calc_initial_inverse(const std::uint64_t* n,
     init_inv.value = 0x8000'0000'0000'0000 >> (most_significant_bit - shift_adj);
     init_inv.scale = head_idx + ((head == 1 && first_bit_is_only_active) ? 0 : 1);
     return init_inv;
+}
+
+static std::size_t calc_inverse(uint64_t* out, const std::size_t n_out,
+                                const uint64_t* n, const std::size_t num_n,
+                                const uint64_t* init, const std::size_t num_init,
+                                const std::size_t in_scale) {
+    // z = out * S = init * (2*S - n * init) = init * (t - u)
+    // Note: init: multiplied by S = 2^(64*in_scale)
+
+    // t: 2 * S
+    const std::size_t num_t = 1 + in_scale;
+    uint64_t t[num_t];
+    t[num_t-1] = 2;
+    gear::fill_zero(t, num_t-1);
+
+    // u: n * init
+    const std::size_t num_u = num_n + num_init;
+    uint64_t u[num_u];
+    gear::karatsuba(u, num_u, n, num_n, init, num_init);
+
+    // 2*S - n*init
+    assert(num_t >= num_u);
+    gear::sub(t, num_t, u, num_u);
+
+    // z: out * S
+    const std::size_t num_z = num_init + num_t;
+    uint64_t z[num_z];
+    gear::karatsuba(z, num_z, init, num_init, t, num_t);
+
+    // copy to the output buffer
+    const std::size_t out_scale = in_scale;
+    assert(num_z - out_scale >= n_out);
+    gear::copy(out, &z[out_scale], n_out);
+
+    return out_scale;
+}
+
+static void validate_inverse_out_bits(const std::size_t n_out, const std::size_t significant_bits) {
+    const std::size_t max_out_bits = n_out * Uint64Bits;
+    if (significant_bits > max_out_bits)
+        throw std::invalid_argument("n_out: too short.");
+}
+
+struct identical_bits_struct {
+    std::size_t bits;
+    bool fully;
+};
+
+static identical_bits_struct count_identical_bits(const uint64_t* a, const std::size_t num_a,
+                                                  const uint64_t* b, const std::size_t num_b) {
+    const std::size_t num = std::min(num_a, num_b);
+    std::size_t cnt = 0;
+    int idx = num - 1;
+    bool is_different = false;
+    for (; idx >= 0; idx--) {
+        is_different = (a[idx] != b[idx]);
+        if (is_different)
+            break;
+        else
+            cnt += Uint64Bits;
+    }
+
+    if (is_different) {
+        const uint64_t ai = a[idx];
+        const uint64_t bi = b[idx];
+        for (std::size_t bit = 0; bit < Uint64Bits; bit++) {
+            // TODO: use more efficient way.
+            const uint64_t a_lsb = ai >> (Uint64Bits - bit - 1);
+            const uint64_t b_lsb = bi >> (Uint64Bits - bit - 1);
+            if (a_lsb != b_lsb)
+                break;
+            cnt++;
+        }
+    }
+
+    identical_bits_struct result;
+    result.bits = cnt;
+    result.fully = !is_different;
+    return result;
+}
+
+static std::size_t get_first_one_position(const uint64_t* n, const std::size_t num_n) {
+    const std::size_t first_idx = gear::get_first_non_zero_index(n, num_n);
+    assert(first_idx != gear::NotFound);
+
+    std::size_t pos = (num_n-1) - first_idx;
+    const uint64_t first_block = n[first_idx];
+    if (first_block > 0)
+        pos += gear::get_most_significant_active_bit(first_block) + 1;
+    return pos;
+}
+
+std::size_t gear::inverse(uint64_t* out, const std::size_t n_out,
+                          const uint64_t* in, const std::size_t num_in,
+                          const std::size_t significant_bits) {
+    validate_inverse_out_bits(n_out, significant_bits);
+    const initial_inverse_struct initial_val = calc_initial_inverse(in, num_in);
+
+    const std::size_t num_init = 1; // tentative
+    uint64_t init[num_init] = {initial_val.value};
+    std::size_t in_scale = initial_val.scale;
+    std::size_t out_scale = 0;
+    std::size_t prev_first_one_position = get_first_one_position(init, num_init);
+    while (true) {
+        out_scale = calc_inverse(out, n_out, in, num_in, init, num_init, in_scale);
+        const identical_bits_struct identical = count_identical_bits(init, num_init, out, n_out);
+        if (identical.fully)
+            break;
+
+        const std::size_t first_one_position = get_first_one_position(out, n_out);
+        const bool enough_significant_bits =
+            identical.bits >= significant_bits + first_one_position;
+        if ((first_one_position == prev_first_one_position) && enough_significant_bits)
+            break;
+
+        prev_first_one_position = first_one_position;
+        gear::copy(init, out, num_init); // TODO: Is this correnct
+        in_scale = out_scale;
+    }
+    return out_scale;
 }
 
 } // namespace grill

@@ -240,4 +240,88 @@ BOOST_DATA_TEST_CASE(get_leading_identical_bits, get_leading_identical_bits_samp
     BOOST_TEST(result == sample.expected);
 }
 
+struct inverse_sample_t {
+    const std::vector<uint64_t> in;
+    const std::size_t significant_bits;
+    const std::vector<uint64_t> expected;
+    const std::size_t expected_out_scale;
+    friend std::ostream& operator<<(std::ostream& os, const inverse_sample_t& s) {
+        os << std::hex << "n0: " << gear::to_string(s.in) <<
+            ", significant_bits: " << s.significant_bits <<
+            ", expected: " << gear::to_string(s.expected) <<
+            ", expected_out_scale: " << s.expected_out_scale << std::endl;
+        return os;
+    }
+};
+
+static inverse_sample_t inverse_samples[] {
+    {{2}, 1, {0x8000'0000'0000'0000}, 1},
+    {{2}, 2, {0x8000'0000'0000'0000}, 1},
+    {{2}, 8, {0x8000'0000'0000'0000}, 1},
+    {{2}, 32, {0x8000'0000'0000'0000}, 1},
+    {{2}, 64, {0x8000'0000'0000'0000}, 1},
+
+    // 1/3 -> 0x5555'5555'5555'5555 * 2^64
+    {{3}, 1, {0x4000'0000'0000'0000}, 1},
+    {{3}, 2, {0x4000'0000'0000'0000}, 1},
+    {{3}, 3, {0x5000'0000'0000'0000}, 1},
+    {{3}, 8, {0x5500'0000'0000'0000}, 1},
+    {{3}, 63, {0x5555'5555'5555'5555}, 1},
+
+    {{4}, 1, {0x4000'0000'0000'0000}, 1},
+    {{4}, 63, {0x4000'0000'0000'0000}, 1},
+};
+
+static void clear_under_significant_bits(std::uint64_t* out, const std::uint64_t* in,
+                                         const std::size_t n, const std::size_t significant_bits) {
+    constexpr std::size_t Uint64Bits = 64;
+    assert(significant_bits > 0);
+    const std::size_t num_significant_block = ((significant_bits-1) / Uint64Bits);
+    assert(num_significant_block < n);
+    const std::size_t significant_block_idx = (n - 1) - num_significant_block;
+
+    // calculate the mask
+    const std::size_t mask_bits = (significant_bits-1) % Uint64Bits;
+    const std::size_t mask_shift_bits = (Uint64Bits-1) - mask_bits;
+    const std::uint64_t raw_mask = -(static_cast<std::uint64_t>(1) << mask_shift_bits);
+
+    // shift the mask to make the start position be the first active bit
+    const std::size_t target_idx = gear::get_first_non_zero_index(in, n);
+    assert(target_idx != gear::NotFound);
+    const std::size_t num_mask_offset =
+        (Uint64Bits-1) - gear::get_most_significant_active_bit(in[target_idx]);
+    assert(num_mask_offset + significant_bits <= Uint64Bits);
+    const std::uint64_t mask = raw_mask >> num_mask_offset;
+
+    for (std::size_t i = 0; i < n; i++) {
+        if (i < significant_block_idx)
+            out[i] = 0;
+        else if (i > significant_block_idx)
+            out[i] = in[i];
+        else
+            out[i] = in[i] & mask;
+    }
+}
+
+static std::vector<std::uint64_t>
+create_inverse_expected_value(const std::vector<std::uint64_t>& in,
+                              const std::size_t significant_bits) {
+    std::uint64_t buf[in.size()];
+    clear_under_significant_bits(buf, in.data(), in.size(), significant_bits);
+    return std::vector(buf, buf + in.size());
+}
+
+BOOST_DATA_TEST_CASE(inverse, inverse_samples)
+{
+    std::vector<std::uint64_t> raw_out(sample.expected.size());
+    const std::size_t out_scale = gear::inverse(raw_out.data(), raw_out.size(),
+                                                sample.in.data(), sample.in.size(),
+                                                sample.significant_bits);
+    const std::vector<std::uint64_t> fixed_out =
+        create_inverse_expected_value(raw_out, sample.significant_bits);
+
+    BOOST_TEST(fixed_out == sample.expected);
+    BOOST_TEST(out_scale == sample.expected_out_scale);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

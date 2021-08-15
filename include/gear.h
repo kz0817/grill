@@ -189,6 +189,21 @@ void karatsuba(uint64_t* out, const std::size_t n_out,
                const uint64_t* in0, const std::size_t num_in0,
                const uint64_t* in1, const std::size_t num_in1);
 
+/**
+ * Calculate the inverse number.
+ *
+ * @param out The output buffer. Least significant block first.
+ * @param n_out The number of blocks of `out`.
+ * @param in The blocks to be multiplied. Least significant block first.
+ * @param num_in The number of blocks of `in`.
+ * @param significant_bits The number of the significant bits.
+ * @return The scale factor for `out`.
+ *         `out` is being multiplied by 2^(64*scale), where `scale` is the return value.
+ */
+std::size_t inverse(uint64_t* out, const std::size_t n_out,
+                    const uint64_t* in, const std::size_t num_in,
+                    const std::size_t significant_bits);
+
 } // namespace gear
 } // namespace grill
 
