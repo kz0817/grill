@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
+#include <iostream>
 #include "util.h"
 #include "gear.h"
 #include "test-funcs.h"
@@ -159,6 +160,86 @@ BOOST_DATA_TEST_CASE(karatsuba, karatsuba_samples)
     gear::karatsuba(out.data(), out.size(),
                     sample.in0.data(), sample.in0.size(), sample.in1.data(), sample.in1.size());
     BOOST_TEST(out == sample.expected);
+}
+
+struct inverse_sample_t {
+    const std::vector<uint64_t> in;
+    const std::size_t significant_bits;
+    const std::vector<uint64_t> expected;
+    const std::size_t expected_out_scale;
+    friend std::ostream& operator<<(std::ostream& os, const inverse_sample_t& s) {
+        os << std::hex << "n0: " << gear::to_string(s.in) <<
+            ", significant_bits: " << s.significant_bits <<
+            ", expected: " << gear::to_string(s.expected) <<
+            ", expected_out_scale: " << s.expected_out_scale << std::endl;
+        return os;
+    }
+};
+
+static inverse_sample_t inverse_samples[] {
+    {{2}, 1, {0x8000'0000'0000'0000}, 1},
+    {{2}, 2, {0x8000'0000'0000'0000}, 1},
+    {{2}, 8, {0x8000'0000'0000'0000}, 1},
+    {{2}, 32, {0x8000'0000'0000'0000}, 1},
+    {{2}, 64, {0x8000'0000'0000'0000}, 1},
+};
+
+static void clear_under_significant_bits(uint64_t* out, const uint64_t* in , const std::size_t n,
+                                         const std::size_t significant_bits) {
+    constexpr std::size_t Uint64Bits = 64;
+    assert(significant_bits > 0);
+    const std::size_t num_significant_block = ((significant_bits-1) / Uint64Bits);
+    assert(num_significant_block < n);
+    const std::size_t significant_block_idx = (n - 1) - num_significant_block;
+
+    const std::size_t mask_bits = (significant_bits-1) % Uint64Bits;
+    const uint64_t mask = -(0x8000'0000'0000'000 >> mask_bits);
+
+    for (std::size_t i = 0; i < n; i++) {
+        if (i < significant_block_idx)
+            out[i] = 0;
+        else if (i > significant_block_idx)
+            out[i] = in[i];
+        else
+            out[i] = in[i] & mask;
+    }
+}
+
+static std::vector<uint64_t> create_inverse_expected_value(const std::vector<uint64_t>& in,
+                                                           const std::size_t significant_bits) {
+    uint64_t buf[in.size()];
+    clear_under_significant_bits(buf, in.data(), in.size(), significant_bits);
+    return std::vector(buf, buf + in.size());
+}
+
+static std::vector<uint64_t> create_minus1_expected_value(const std::vector<uint64_t>& in,
+                                                          const std::size_t significant_bits) {
+    uint64_t buf[in.size()];
+    const uint64_t One = 1;
+    gear::copy(buf, in.data(), in.size());
+    gear::sub(buf, in.size(), &One, 1);
+    return create_inverse_expected_value(std::vector(buf, buf + in.size()), significant_bits);
+}
+
+BOOST_DATA_TEST_CASE(inverse, inverse_samples)
+{
+    std::vector<uint64_t> raw_out(sample.expected.size());
+    const std::size_t out_scale = gear::inverse(raw_out.data(), raw_out.size(),
+                                                sample.in.data(), sample.in.size(),
+                                                sample.significant_bits);
+    const std::vector<uint64_t> expected_minus1 =
+        create_minus1_expected_value(sample.expected, sample.significant_bits);
+
+    const std::vector<uint64_t> fixed_out =
+        create_inverse_expected_value(raw_out, sample.significant_bits);
+
+    if (is_verbose()) {
+        std::cerr << "fixed_out: " << gear::to_string(fixed_out) <<
+            ", expected_minus1: " << gear::to_string(expected_minus1) << std::endl;
+    }
+
+    BOOST_CHECK((fixed_out == sample.expected) || (fixed_out == expected_minus1));
+    BOOST_TEST(out_scale == sample.expected_out_scale);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
