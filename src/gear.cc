@@ -1,5 +1,6 @@
 #include <cassert>
 #include "gear.h"
+#include "gear-internal.h"
 #include "util.h"
 
 namespace grill {
@@ -145,6 +146,72 @@ void gear::karatsuba(uint64_t* out, const std::size_t n_out,
     uint64_t x1[num_x1];
     karatsuba_calc_x1(x1, num_x1, x0, num_x0, x2, num_x2, a, b);
     karatsuba_add(out, n_out, x1, num_x1, num_lower_half);
+}
+
+static constexpr std::uint64_t BitMask[] = {
+    0x0000'0000'0000'0001, 0x0000'0000'0000'0002, 0x0000'0000'0000'0004, 0x0000'0000'0000'0008,
+    0x0000'0000'0000'0010, 0x0000'0000'0000'0020, 0x0000'0000'0000'0040, 0x0000'0000'0000'0080,
+    0x0000'0000'0000'0100, 0x0000'0000'0000'0200, 0x0000'0000'0000'0400, 0x0000'0000'0000'0800,
+    0x0000'0000'0000'1000, 0x0000'0000'0000'2000, 0x0000'0000'0000'4000, 0x0000'0000'0000'8000,
+
+    0x0000'0000'0001'0000, 0x0000'0000'0002'0000, 0x0000'0000'0004'0000, 0x0000'0000'0008'0000,
+    0x0000'0000'0010'0000, 0x0000'0000'0020'0000, 0x0000'0000'0040'0000, 0x0000'0000'0080'0000,
+    0x0000'0000'0100'0000, 0x0000'0000'0200'0000, 0x0000'0000'0400'0000, 0x0000'0000'0800'0000,
+    0x0000'0000'1000'0000, 0x0000'0000'2000'0000, 0x0000'0000'4000'0000, 0x0000'0000'8000'0000,
+
+    0x0000'0001'0000'0000, 0x0000'0002'0000'0000, 0x0000'0004'0000'0000, 0x0000'0008'0000'0000,
+    0x0000'0010'0000'0000, 0x0000'0020'0000'0000, 0x0000'0040'0000'0000, 0x0000'0080'0000'0000,
+    0x0000'0100'0000'0000, 0x0000'0200'0000'0000, 0x0000'0400'0000'0000, 0x0000'0800'0000'0000,
+    0x0000'1000'0000'0000, 0x0000'2000'0000'0000, 0x0000'4000'0000'0000, 0x0000'8000'0000'0000,
+
+    0x0001'0000'0000'0000, 0x0002'0000'0000'0000, 0x0004'0000'0000'0000, 0x0008'0000'0000'0000,
+    0x0010'0000'0000'0000, 0x0020'0000'0000'0000, 0x0040'0000'0000'0000, 0x0080'0000'0000'0000,
+    0x0100'0000'0000'0000, 0x0200'0000'0000'0000, 0x0400'0000'0000'0000, 0x0800'0000'0000'0000,
+    0x1000'0000'0000'0000, 0x2000'0000'0000'0000, 0x4000'0000'0000'0000, 0x8000'0000'0000'0000,
+};
+
+static std::size_t get_most_significant_active_bit(const std::uint64_t blk) {
+    constexpr int WidthVector[] = {32, 16, 8, 4, 2, 1};
+    constexpr int NumLoops = sizeof(WidthVector) / sizeof(int);
+    int idx = 0;
+    for (int i = 0; i < NumLoops; i++) {
+        const int trial_idx = idx + WidthVector[i];
+        if (blk >= BitMask[trial_idx])
+            idx = trial_idx;
+    }
+    return idx;
+}
+
+static constexpr std::size_t NOT_FOUND = -1;
+
+static std::size_t get_first_non_zero_index(const std::uint64_t* n, const std::size_t num_n) {
+    for (std::size_t i = 0; i < num_n; i++) {
+        const std::size_t idx = num_n - i - 1;
+        if (n[idx] != 0)
+            return idx;
+    }
+    return NOT_FOUND;
+}
+
+gear::initial_inverse_struct gear::calc_initial_inverse(const std::uint64_t* n,
+                                                        const std::size_t num_n) {
+    assert(num_n >= 1);
+
+    const std::size_t head_idx = get_first_non_zero_index(n, num_n);
+    if (head_idx == NOT_FOUND)
+        throw std::invalid_argument("Zero is given for calc_initial_inverse().");
+
+    const uint64_t head = n[head_idx];
+    const std::size_t most_significant_bit = get_most_significant_active_bit(head);
+    const bool remaining_is_zero = get_first_non_zero_index(n, head_idx) == NOT_FOUND;
+    const bool first_bit_is_only_active = ((~BitMask[most_significant_bit] & head) == 0)
+                                          && remaining_is_zero;
+    const std::size_t shift_adj = first_bit_is_only_active ? 1 : 0;
+
+    gear::initial_inverse_struct init_inv;
+    init_inv.value = 0x8000'0000'0000'0000 >> (most_significant_bit - shift_adj);
+    init_inv.scale = head_idx + ((head == 1 && first_bit_is_only_active) ? 0 : 1);
+    return init_inv;
 }
 
 } // namespace grill
