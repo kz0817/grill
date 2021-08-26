@@ -1,5 +1,6 @@
 #include <cassert>
 #include "gear.h"
+#include "gear-internal.h"
 #include "util.h"
 
 namespace grill {
@@ -181,6 +182,27 @@ std::size_t gear::get_most_significant_active_bit(const std::uint64_t n) {
             idx = trial_idx;
     }
     return idx;
+}
+
+gear::initial_inverse_struct gear::calc_initial_inverse(const std::uint64_t* n,
+                                                        const std::size_t num_n) {
+    assert(num_n >= 1);
+
+    const std::size_t head_idx = get_first_non_zero_index(n, num_n);
+    if (head_idx == NotFound)
+        throw std::invalid_argument("Zero is given for calc_initial_inverse().");
+
+    const uint64_t head = n[head_idx];
+    const std::size_t most_significant_bit = get_most_significant_active_bit(head);
+    const bool remaining_is_zero = get_first_non_zero_index(n, head_idx) == NotFound;
+    const bool first_bit_is_only_active = ((~BitMask[most_significant_bit] & head) == 0)
+                                          && remaining_is_zero;
+    const std::size_t shift_adj = first_bit_is_only_active ? 1 : 0;
+
+    gear::initial_inverse_struct init_inv;
+    init_inv.value = 0x8000'0000'0000'0000 >> (most_significant_bit - shift_adj);
+    init_inv.scale = head_idx + ((head == 1 && first_bit_is_only_active) ? 0 : 1);
+    return init_inv;
 }
 
 } // namespace grill
