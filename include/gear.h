@@ -134,6 +134,23 @@ void mul(uint64_t out[2], const uint64_t in0, const uint64_t in1);
 void twos_complement(uint64_t* buf, const std::size_t num);
 
 /**
+ * Calculate the first non zero index.
+ *
+ * @param n The blocks to be calculated. Least significant block first.
+ * @param num The number of blocks of `n`.
+ * @return The most significant active bit position or NotFound.
+ */
+template<typename T>
+std::size_t get_first_non_zero_index(const T* n, const std::size_t num) {
+    for (std::size_t i = 0; i < num; i++) {
+        const std::size_t idx = num - i - 1;
+        if (n[idx] != 0)
+            return idx;
+    }
+    return gear::NotFound;
+}
+
+/**
  * Calculate the most significant active bit.
  *
  * Example: n -> return

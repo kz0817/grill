@@ -161,6 +161,31 @@ BOOST_DATA_TEST_CASE(karatsuba, karatsuba_samples)
     BOOST_TEST(out == sample.expected);
 }
 
+struct get_first_non_zero_index_sample_t {
+    const std::vector<std::uint64_t> n;
+    const std::size_t expected;
+    friend std::ostream& operator<<(std::ostream& os, const get_first_non_zero_index_sample_t& s) {
+        os << std::hex << "n: " << gear::to_string(s.n) <<
+            ", expected: " << s.expected << std::endl;
+        return os;
+    }
+};
+
+static get_first_non_zero_index_sample_t get_first_non_zero_index_samples[] {
+    {{0}, gear::NotFound},
+    {{0, 0}, gear::NotFound},
+    {{1}, 0},
+    {{0, 1}, 1},
+    {{0, 1, 0}, 1},
+    {{0, 0, 3}, 2},
+};
+
+BOOST_DATA_TEST_CASE(get_first_non_zero_index, get_first_non_zero_index_samples)
+{
+    const std::uint64_t result = gear::get_first_non_zero_index(sample.n.data(), sample.n.size());
+    BOOST_TEST(result == sample.expected);
+}
+
 struct get_most_significant_active_bit_sample_t {
     const std::uint64_t n;
     const std::uint64_t expected;
