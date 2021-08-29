@@ -167,6 +167,15 @@ std::size_t get_first_non_zero_index(const T* n, const std::size_t num) {
 std::size_t get_most_significant_active_bit(const std::uint64_t n);
 
 /**
+ * Calculate the number of the identical bits from the msb.
+ *
+ * @param a One number.
+ * @param b Another number.
+ * @return The nubmer of the identical bits.
+ */
+std::size_t get_leading_identical_bits(const std::uint64_t a, const std::uint64_t b);
+
+/**
  * Calculate multiplication by Karatsuba method.
  *
  * @param out The output buffer. Least significant block first.

@@ -28,6 +28,7 @@ static constexpr std::uint64_t BitMask[] = {
 };
 
 static constexpr uint64_t One = 1;
+static constexpr std::size_t Uint64Bits = sizeof(std::uint64_t) * 8;
 
 static uint32_t upper(const uint64_t a) {
     return a >> 32;
@@ -182,6 +183,14 @@ std::size_t gear::get_most_significant_active_bit(const std::uint64_t n) {
             idx = trial_idx;
     }
     return idx;
+}
+
+std::size_t gear::get_leading_identical_bits(const std::uint64_t a, const std::uint64_t b) {
+    const std::uint64_t xor_ab = a xor b;
+    if (xor_ab == 0)
+        return Uint64Bits;
+    const std::size_t first_diff_pos = get_most_significant_active_bit(xor_ab);
+    return (Uint64Bits-1) - first_diff_pos;
 }
 
 gear::initial_inverse_struct gear::calc_initial_inverse(const std::uint64_t* n,

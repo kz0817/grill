@@ -213,4 +213,31 @@ BOOST_DATA_TEST_CASE(get_most_significant_active_bit, get_most_significant_activ
     BOOST_TEST(result == sample.expected);
 }
 
+struct get_leading_identical_bits_sample_t {
+    const std::uint64_t n0;
+    const std::uint64_t n1;
+    const std::uint64_t expected;
+    friend std::ostream& operator<<(std::ostream& os,
+                                    const get_leading_identical_bits_sample_t& s) {
+        os << std::hex << "n0: " << s.n0 << ", n1: " << s.n1 <<
+            ", expected: " << s.expected << std::endl;
+        return os;
+    }
+};
+
+static get_leading_identical_bits_sample_t get_leading_identical_bits_samples[] {
+    {0x8000'0000'0000'0000, 0x0000'0000'0000'0000, 0},
+    {0x8000'0000'0000'0000, 0x4000'0000'0000'0000, 0},
+    {0x8000'0000'0000'0000, 0xc000'0000'0000'0000, 1},
+    {0x8000'0000'0000'0000, 0xa000'0000'0000'0000, 2},
+    {0x8000'1234'0000'5678, 0x8000'1234'0000'5679, 63},
+    {0x8000'1234'0000'5678, 0x8000'1234'0000'5678, 64},
+};
+
+BOOST_DATA_TEST_CASE(get_leading_identical_bits, get_leading_identical_bits_samples)
+{
+    const std::uint64_t result = gear::get_leading_identical_bits(sample.n0, sample.n1);
+    BOOST_TEST(result == sample.expected);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
