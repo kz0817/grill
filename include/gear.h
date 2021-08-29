@@ -7,6 +7,8 @@
 namespace grill {
 namespace gear {
 
+static constexpr std::size_t NotFound = -1;
+
 template<typename T>
 bool is_all_zero(const T* blocks, const std::size_t n) {
     for (std::size_t i = 0; i < n; i++) {
@@ -130,6 +132,22 @@ void mul(uint64_t out[2], const uint64_t in0, const uint64_t in1);
  * @param num The number of blocks of `buf`.
  */
 void twos_complement(uint64_t* buf, const std::size_t num);
+
+/**
+ * Calculate the most significant active bit.
+ *
+ * Example: n -> return
+ *   0x0000'0000'0000'0000 -> NotFound
+ *   0x0000'0000'0000'0001 -> 0
+ *   0x0000'0000'0000'0002 -> 1
+ *   0x0000'0000'0000'0003 -> 1
+ *   0x8000'0000'0000'0000 -> 63
+ *   0x8012'3456'789a'bcde -> 63
+ *
+ * @param n The number to be calculated.
+ * @return The most significant active bit position or NotFound.
+ */
+std::size_t get_most_significant_active_bit(const std::uint64_t n);
 
 /**
  * Calculate multiplication by Karatsuba method.

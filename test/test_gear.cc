@@ -161,4 +161,31 @@ BOOST_DATA_TEST_CASE(karatsuba, karatsuba_samples)
     BOOST_TEST(out == sample.expected);
 }
 
+struct get_most_significant_active_bit_sample_t {
+    const std::uint64_t n;
+    const std::uint64_t expected;
+    friend std::ostream& operator<<(std::ostream& os,
+                                    const get_most_significant_active_bit_sample_t& s) {
+        os << std::hex << "n: " << s.n << ", expected: " << s.expected << std::endl;
+        return os;
+    }
+};
+
+static get_most_significant_active_bit_sample_t get_most_significant_active_bit_samples[] {
+    {0x0000'0000'0000'0000, gear::NotFound},
+    {0x0000'0000'0000'0001, 0},
+    {0x0000'0000'0000'0002, 1},
+    {0x0000'0000'0000'0003, 1},
+    {0x0000'0000'8765'4321, 31},
+    {0x7fff'ffff'ffff'ffff, 62},
+    {0x8000'0000'0000'0000, 63},
+    {0xffff'ffff'ffff'ffff, 63},
+};
+
+BOOST_DATA_TEST_CASE(get_most_significant_active_bit, get_most_significant_active_bit_samples)
+{
+    const std::uint64_t result = gear::get_most_significant_active_bit(sample.n);
+    BOOST_TEST(result == sample.expected);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
